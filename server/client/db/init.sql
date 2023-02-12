@@ -23,3 +23,14 @@ CREATE TABLE service_cases
     date_begin    timestamp without time zone,
     date_end      timestamp without time zone
 );
+
+CREATE TABLE USERS
+(
+    id          bigserial PRIMARY KEY,
+    address     bigint UNIQUE,
+    name        text,
+    surname     text,
+    phoneNUmber text,
+    email       text,
+    operator    boolean
+);
