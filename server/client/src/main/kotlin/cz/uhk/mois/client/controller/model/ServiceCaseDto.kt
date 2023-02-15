@@ -24,10 +24,6 @@ data class ServiceCaseDto(
     }
 }
 
-data class ServiceCaseTypeDto(
-    val code: String,
-    val value: String
-)
 //TODO refactor to @Builder from lombok
 class ServiceCaseDtoBuilder {
     private var type: ServiceCaseType? = null
