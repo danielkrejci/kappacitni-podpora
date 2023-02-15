@@ -14,7 +14,6 @@ class DeviceService(
     private val mapper: DomainMapper
 ) {
 
-
     fun findAll(): Flux<DeviceDto> {
         val devices = deviceRepository.findAll()
         return devices.map {

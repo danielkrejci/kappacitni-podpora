@@ -17,7 +17,7 @@ CREATE TABLE service_cases
     email         text not null,
     phone         text,
     street        text,
-    house_number  integer,
+    house_number  text,
     city          text,
     postal_code   text,
     date_begin    timestamp without time zone,
@@ -27,10 +27,29 @@ CREATE TABLE service_cases
 CREATE TABLE USERS
 (
     id          bigserial PRIMARY KEY,
-    address     bigint UNIQUE,
+    address     bigint,
     name        text,
     surname     text,
-    phoneNUmber text,
-    email       text,
+    phone       text,
+    email       text UNIQUE,
     operator    boolean
 );
+
+CREATE TABLE ADDRESSES (
+    id serial primary key,
+    street text not null,
+    house_number text not null,
+    postal_code text not null,
+    city text not null
+);
+
+
+/*
+ CONSTRAINTY
+ */
+/*kontrola zda existuje adresa v databázi předs vložením usera*/
+ALTER TABLE USERS
+    ADD CONSTRAINT "fk_address"
+        FOREIGN KEY (address) REFERENCES ADDRESSES(id)
+            ON DELETE RESTRICT
+            ON UPDATE CASCADE;

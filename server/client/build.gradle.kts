@@ -27,17 +27,18 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
     implementation("javax.persistence:javax.persistence-api")
-    runtimeOnly("org.postgresql:postgresql")
-    runtimeOnly("org.postgresql:r2dbc-postgresql")
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("io.projectreactor:reactor-test")
     implementation("javax.persistence:javax.persistence-api:2.2")
 
+    //db
+    runtimeOnly("org.postgresql:postgresql")
+    runtimeOnly("org.postgresql:r2dbc-postgresql")
 
+    //test
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("io.projectreactor:reactor-test")
 
     implementation("org.mapstruct:mapstruct:1.5.2.Final")
     kapt("org.mapstruct:mapstruct-processor:1.5.2.Final")
-
 }
 
 kapt {

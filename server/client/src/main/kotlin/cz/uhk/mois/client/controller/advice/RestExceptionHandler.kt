@@ -13,8 +13,7 @@ class RestExceptionHandler {
 
     @ExceptionHandler(value = [DeviceNotFoundException::class])
     fun handleYourException(ex: DeviceNotFoundException): ResponseEntity<ErrorResponse?>? {
-        val error: ErrorResponse =
-            ErrorResponse.create(DeviceNotFoundException(), HttpStatus.NOT_FOUND, "Device not found")
+        val error: ErrorResponse = ErrorResponse.create(ex, HttpStatus.NOT_FOUND, "Device not found")
         return ResponseEntity<ErrorResponse?>(error, HttpStatus.NOT_FOUND)
     }
 }
