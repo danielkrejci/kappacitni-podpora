@@ -16,7 +16,7 @@ class DeviceController(private val deviceService: DeviceService) {
 
     @GetMapping
     fun findAll(): ResponseEntity<List<CodableDto>> {
-        val deviceTypes = DeviceType.values().map { CodableDto(it.code,it.representation) }
+        val deviceTypes = DeviceType.values().map { CodableDto(it.code, it.representation) }
         return ResponseEntity(deviceTypes, HttpStatus.OK)
     }
 
@@ -29,6 +29,6 @@ class DeviceController(private val deviceService: DeviceService) {
 
     @PostMapping("/save")
     fun addDevice(@RequestBody device: Device): ResponseEntity<Mono<Device>> {
-        return ResponseEntity(deviceService.save(device),HttpStatus.CREATED)
+        return ResponseEntity(deviceService.save(device), HttpStatus.CREATED)
     }
 }

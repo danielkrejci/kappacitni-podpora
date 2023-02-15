@@ -1,6 +1,5 @@
 package cz.uhk.mois.client.service
 
-import cz.uhk.mois.client.controller.model.ServiceCaseDto
 import cz.uhk.mois.client.controller.model.ServiceCaseDtoBuilder
 import cz.uhk.mois.client.controller.model.ServiceCaseType
 import cz.uhk.mois.client.domain.ServiceCase
@@ -8,7 +7,8 @@ import cz.uhk.mois.client.domain.User
 import cz.uhk.mois.client.repository.AddressRepository
 import cz.uhk.mois.client.repository.ServiceCaseRepository
 import cz.uhk.mois.client.repository.UserRepository
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.mapstruct.Mapper
@@ -46,9 +46,24 @@ class ServiceCaseServiceTest {
             .name("John")
             .surname("Doe")
             .build()
-        val expectedServiceCase = ServiceCase(null, ServiceCaseType.OS,serviceCaseDto.email, serviceCaseDto.name, serviceCaseDto.surname, "null","",null,null,null,serviceCaseDto.phone, null,null,Instant.now())
+        val expectedServiceCase = ServiceCase(
+            null,
+            ServiceCaseType.OS,
+            serviceCaseDto.email,
+            serviceCaseDto.name,
+            serviceCaseDto.surname,
+            "null",
+            "",
+            null,
+            null,
+            null,
+            serviceCaseDto.phone,
+            null,
+            null,
+            Instant.now()
+        )
 
-            val user = User(1L, 1L, "John", "Doe", "123456789", "email@example.com", false)
+        val user = User(1L, 1L, "John", "Doe", "123456789", "email@example.com", false)
         userRepository.save(user).block()
 
         val result = serviceCaseService.save(serviceCaseDto).block()

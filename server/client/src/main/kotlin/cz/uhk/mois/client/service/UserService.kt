@@ -13,6 +13,6 @@ class UserService(
     private val mapper: DomainMapper
 ) {
 
-   fun saveUser(user: UserDto): Mono<User> = userRepository.save(mapper.fromDto(user))
+    fun saveUser(user: UserDto): Mono<User> = userRepository.save(mapper.fromDto(user))
 
 }

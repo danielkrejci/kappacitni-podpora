@@ -15,7 +15,7 @@ import reactor.core.publisher.Mono
 class ServiceCaseController(private val serviceCaseService: ServiceCaseService) {
 
     @GetMapping("/types")
-    fun getServiceTypes(): ResponseEntity<List<CodableDto>>  {
+    fun getServiceTypes(): ResponseEntity<List<CodableDto>> {
         val types = ServiceCaseType.values().map { CodableDto(it.code, it.representation) }
         return ResponseEntity.ok(types)
     }

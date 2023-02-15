@@ -2,14 +2,11 @@ package cz.uhk.mois.client.service
 
 import cz.uhk.mois.client.controller.model.ServiceCaseDto
 import cz.uhk.mois.client.controller.model.UserDto
-import cz.uhk.mois.client.domain.Address
 import cz.uhk.mois.client.domain.ServiceCase
-import cz.uhk.mois.client.domain.User
 import cz.uhk.mois.client.mapper.DomainMapper
 import cz.uhk.mois.client.repository.AddressRepository
 import cz.uhk.mois.client.repository.ServiceCaseRepository
 import cz.uhk.mois.client.repository.UserRepository
-import org.mapstruct.control.MappingControl.Use
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty

@@ -4,7 +4,10 @@ import cz.uhk.mois.client.controller.model.ServiceCaseType
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Table
 import java.time.Instant
-import javax.persistence.*
+import javax.persistence.EnumType
+import javax.persistence.Enumerated
+import javax.persistence.GeneratedValue
+import javax.persistence.GenerationType
 
 @Table(name = "SERVICE_CASES")
 class ServiceCase(

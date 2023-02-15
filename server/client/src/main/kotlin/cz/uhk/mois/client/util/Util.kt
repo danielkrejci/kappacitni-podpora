@@ -5,5 +5,4 @@ data class CodableDto(
     val value: String
 )
 
-class Util {
-}
+class Util

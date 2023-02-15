@@ -29,8 +29,8 @@ interface DomainMapper {
     fun toDto(user: User): UserDto
     fun fromDto(userDto: UserDto): User
 
-    @Mapping(target ="operator", ignore = true)
-    @Mapping(target ="address", ignore = true)
+    @Mapping(target = "operator", ignore = true)
+    @Mapping(target = "address", ignore = true)
     fun fromServiceCaseToUser(serviceCaseDto: ServiceCaseDto): User
 
     fun fromServiceCaseToAddressDto(serviceCaseDto: ServiceCaseDto): Address

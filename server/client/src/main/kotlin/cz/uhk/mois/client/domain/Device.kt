@@ -9,7 +9,7 @@ import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 
 @Table(name = "DEVICES")
-class Device (
+class Device(
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE)
     var id: Long? = null,

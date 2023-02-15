@@ -15,6 +15,7 @@ data class UserDto(
         return "UserDto(id=$id, address=$address, name='$name', surname='$surname', phone=$phone, email='$email', operator=$operator)"
     }
 }
+
 data class AddressDto(
     var street: String?,
     var houseNumber: String?,
