@@ -2,7 +2,6 @@ package cz.uhk.mois.client.domain
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Table
-import javax.persistence.Column
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 
