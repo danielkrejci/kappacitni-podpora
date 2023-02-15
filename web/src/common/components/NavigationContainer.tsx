@@ -5,7 +5,7 @@ export const NavigationContainer = (): JSX.Element => {
         <div>
             <ul>
                 <li>
-                    <a href={navigation.href.home()}>Home</a>
+                    <a href={navigation.href.index()}>Home</a>
                 </li>
                 <li>
                     <a href={navigation.href.serviceCaseForm()}>Form</a>

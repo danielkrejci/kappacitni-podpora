@@ -1,30 +1,41 @@
+import { observer } from 'mobx-react'
 import { useEffect } from 'react'
+import { useParams } from 'react-router-dom'
+import { Col } from '../common/components/Col'
+import { FormGroup } from '../common/components/FormGroup'
+import { Input } from '../common/components/Input'
+import { InputGroup } from '../common/components/InputGroup'
+import { InputGroupAddon } from '../common/components/InputGroupAddon'
 import { Label } from '../common/components/Label'
+import { Row } from '../common/components/Row'
 import { Select } from '../common/components/Select'
+import { Textarea } from '../common/components/Textarea'
 import { ServiceCaseFormStore } from './ServiceCaseFormStore'
 
 interface ServiceCaseFormPageProps {
     store: ServiceCaseFormStore
 }
 
-export const ServiceCaseFormPage = (props: ServiceCaseFormPageProps): JSX.Element => {
+export const ServiceCaseFormPage: React.FC<ServiceCaseFormPageProps> = observer(props => {
     const store = props.store
 
+    let { deviceName } = useParams()
+
     useEffect(() => {
-        store.init()
-    }, [store])
+        store.init(deviceName ?? '')
+    }, [store, deviceName])
 
     return (
         <div className='content'>
             <div className='mt-0'>
                 <div className='hero-image text-center py-5'>
-                    <h1 className='my-5'>Podpora pro =$device_type['device-types_name']</h1>
+                    <h1 className='my-5'>Podpora pro {store.selectedDevice.code}</h1>
                 </div>
 
                 <form>
                     <div className='container pb-5 pt-4'>
-                        <div className='row clearfix'>
-                            <div className='col-12'>
+                        <Row>
+                            <Col xs={12}>
                                 {false && (
                                     <div className='form-overlay'>
                                         <div>
@@ -39,163 +50,109 @@ export const ServiceCaseFormPage = (props: ServiceCaseFormPageProps): JSX.Elemen
                                     </div>
                                 )}
 
-                                <p className='mb-5 text-muted'>
-                                    <a href='/index'>Úvodní stránka</a> / Podpora pro =$device_type['device-types_name']
+                                <p className='mb-5'>
+                                    <a href='/index'>Úvodní stránka</a>{' '}
+                                    <span className='text-muted'>/ Podpora pro {store.selectedDevice.code}</span>
                                 </p>
 
-                                <h2>Jaký máš s =$device_type['device-types_name'] problém?</h2>
+                                <h2>Jaký máš s {store.selectedDevice.code} problém?</h2>
                                 <p>
                                     Vyber požadované téma a popíš svůj problém.
                                     <br />
                                     Spojíme se&nbsp;e-mailem a&nbsp;najdeme ti&nbsp;ty&nbsp;nejlepší možnosti řešení.
                                 </p>
 
-                                <div className='row clearfix my-5'>
-                                    <div className='col-12 col-md-4'>
-                                        <div className='form-group'>
+                                <Row className='my-5'>
+                                    <Col xs={12} md={4}>
+                                        <FormGroup>
                                             <Label id='case-type'>Vyber téma:</Label>
                                             <Select name='case-type' field={store.form.caseType} required />
-                                        </div>
-                                    </div>
-                                    <div className='col-12 col-md-4'>
-                                        <div className='form-group'>
-                                            <label htmlFor='serial-number'>Sériové číslo:</label>
-                                            <input
-                                                value="=($serial_number) ? $serial_number : ''"
-                                                id='serial-number'
-                                                name='serial-number'
-                                                type='text'
-                                                className='form-control'
-                                                required
-                                                autoComplete='off'
-                                            />
-                                            <small className='form-text text-muted'>Povinný údaj.</small>
-                                        </div>
-                                    </div>
-                                    <div className='col-12'>
-                                        <div className='form-group'>
-                                            <label htmlFor='message'>Zpráva:</label>
-                                            <textarea
-                                                maxLength={5000}
-                                                id='message'
-                                                name='message'
-                                                className='form-control'
-                                                rows={7}
-                                                required
-                                                autoComplete='off'></textarea>
-                                            <div className='d-flex justify-content-between'>
-                                                <small className='form-text text-muted'>Povinný údaj.</small>
-                                                <small className='form-text text-muted'>
-                                                    Zbývá <span id='char-count'>5000</span> znaků.
-                                                </small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                        </FormGroup>
+                                    </Col>
+                                    <Col xs={12} md={4}>
+                                        <FormGroup>
+                                            <Label id='email'>Sériové číslo:</Label>
+                                            <Input field={store.form.serialNumber} name='serialNumber' type='text' required />
+                                        </FormGroup>
+                                    </Col>
+                                    <Col xs={12}>
+                                        <FormGroup>
+                                            <Label id='email'>Zpráva:</Label>
+                                            <Textarea field={store.form.message} maxLength={5000} required />
+                                        </FormGroup>
+                                    </Col>
+                                </Row>
 
                                 <h2>Informace o tobě</h2>
 
-                                <div className='row clearfix mt-5'>
-                                    <div className='col-12 col-md-4'>
-                                        <div className='form-group'>
-                                            <label htmlFor='name'>Jméno:</label>
-                                            <input id='name' name='name' type='text' className='form-control' required autoComplete='off' />
-                                            <small className='form-text text-muted'>Povinný údaj.</small>
-                                        </div>
-                                    </div>
-                                    <div className='col-12 col-md-4'>
-                                        <div className='form-group'>
-                                            <label htmlFor='surname'>Příjmení:</label>
-                                            <input
-                                                id='surname'
-                                                name='surname'
-                                                type='text'
-                                                className='form-control'
-                                                required
-                                                autoComplete='off'
-                                            />
-                                            <small className='form-text text-muted'>Povinný údaj.</small>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className='row clearfix'>
-                                    <div className='col-12 col-md-4'>
-                                        <div className='form-group'>
-                                            <label htmlFor='email'>E-mail:</label>
-                                            <input
-                                                id='email'
-                                                name='email'
-                                                type='email'
-                                                className='form-control'
-                                                required
-                                                autoComplete='off'
-                                            />
-                                            <small className='form-text text-muted'>Povinný údaj.</small>
-                                        </div>
-                                    </div>
-                                    <div className='col-12 col-md-4'>
-                                        <div className='form-group'>
-                                            <label htmlFor='phone'>Telefon:</label>
-                                            <div className='input-group'>
-                                                <div className='input-group-prepend'>
-                                                    <select id='prefix' name='prefix' className='form-control' required>
-                                                        <option value='+420' selected>
-                                                            +420
-                                                        </option>
-                                                        <option value='+421'>+421</option>
-                                                    </select>
-                                                </div>
-                                                <input id='phone' name='phone' type='text' className='form-control' autoComplete='off' />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                <Row className='mt-5'>
+                                    <Col xs={12} md={4}>
+                                        <FormGroup>
+                                            <Label id='email'>Jméno:</Label>
+                                            <Input field={store.form.name} name='name' type='text' required />
+                                        </FormGroup>
+                                    </Col>
+                                    <Col xs={12} md={4}>
+                                        <FormGroup>
+                                            <Label id='email'>Příjmení:</Label>
+                                            <Input field={store.form.surname} name='surname' type='text' required />
+                                        </FormGroup>
+                                    </Col>
+                                </Row>
 
-                                <div className='row clearfix mt-5'>
-                                    <div className='col-12 col-md-4'>
-                                        <div className='form-group'>
-                                            <label htmlFor='street'>Ulice:</label>
-                                            <input id='street' name='street' type='text' className='form-control' autoComplete='off' />
-                                        </div>
-                                    </div>
-                                    <div className='col-12 col-md-2'>
-                                        <div className='form-group'>
-                                            <label htmlFor='house-number'>ČP:</label>
-                                            <input
-                                                id='house-number'
-                                                name='house-number'
-                                                type='text'
-                                                className='form-control'
-                                                autoComplete='off'
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className='row clearfix'>
-                                    <div className='col-12 col-md-4'>
-                                        <div className='form-group'>
-                                            <label htmlFor='city'>Město:</label>
-                                            <input id='city' name='city' type='text' className='form-control' autoComplete='off' />
-                                        </div>
-                                    </div>
-                                    <div className='col-12 col-md-2'>
-                                        <div className='form-group'>
-                                            <label htmlFor='postal-code'>PSČ:</label>
-                                            <input
-                                                maxLength={5}
-                                                id='postal-code'
-                                                name='postal-code'
-                                                type='text'
-                                                className='form-control'
-                                                autoComplete='off'
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
+                                <Row>
+                                    <Col xs={12} md={4}>
+                                        <FormGroup>
+                                            <Label id='email'>E-mail:</Label>
+                                            <Input field={store.form.email} name='email' type='email' required />
+                                        </FormGroup>
+                                    </Col>
+                                    <Col xs={12} md={4}>
+                                        <FormGroup>
+                                            <Label id='phone'>Telefon:</Label>
+                                            <InputGroup>
+                                                <InputGroupAddon>
+                                                    <Select name='phonePrefix' field={store.form.phonePrefix} />
+                                                </InputGroupAddon>
+                                                <Input field={store.form.phone} name='phone' type='tel' />
+                                            </InputGroup>
+                                        </FormGroup>
+                                    </Col>
+                                </Row>
 
-                                <div className='row clearfix mt-5 align-items-center'>
-                                    <div className='col-12 col-xl-6'>
-                                        <div className='form-group'>
+                                <Row className='mt-5'>
+                                    <Col xs={12} md={4}>
+                                        <FormGroup>
+                                            <Label id='street'>Ulice:</Label>
+                                            <Input field={store.form.street} name='street' type='text' />
+                                        </FormGroup>
+                                    </Col>
+                                    <Col xs={12} md={2}>
+                                        <FormGroup>
+                                            <Label id='houseNumber'>Číslo popisné:</Label>
+                                            <Input field={store.form.houseNumber} name='houseNumber' type='text' />
+                                        </FormGroup>
+                                    </Col>
+                                </Row>
+
+                                <Row>
+                                    <Col xs={12} md={4}>
+                                        <FormGroup>
+                                            <Label id='city'>Město:</Label>
+                                            <Input field={store.form.city} name='city' type='text' />
+                                        </FormGroup>
+                                    </Col>
+                                    <Col xs={12} md={2}>
+                                        <FormGroup>
+                                            <Label id='postalCode'>PSČ:</Label>
+                                            <Input field={store.form.postalCode} name='postalCode' maxLength={5} type='text' />
+                                        </FormGroup>
+                                    </Col>
+                                </Row>
+
+                                <Row className='mt-5 align-items-center'>
+                                    <Col xs={12} xl={6}>
+                                        <FormGroup>
                                             <div className='form-check'>
                                                 <input
                                                     className='form-check-input'
@@ -213,22 +170,22 @@ export const ServiceCaseFormPage = (props: ServiceCaseFormPageProps): JSX.Elemen
                                                     společností Kappacitní Podpora s.r.o.
                                                 </label>
                                             </div>
-                                        </div>
-                                    </div>
+                                        </FormGroup>
+                                    </Col>
 
                                     <input type='hidden' readOnly name='device-type-id' value="=$device_type['device-types_id']" />
 
-                                    <div className='col-12 col-xl-6 text-center text-xl-right mt-5 mt-xl-0'>
+                                    <Col xs={12} xl={6} className='text-center text-xl-right mt-5 mt-xl-0'>
                                         <button type='button' className='btn btn-primary'>
                                             Odeslat
                                         </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                                    </Col>
+                                </Row>
+                            </Col>
+                        </Row>
                     </div>
                 </form>
             </div>
         </div>
     )
-}
+})

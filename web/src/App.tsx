@@ -6,9 +6,6 @@ import { HomeStore } from './home/HomeStore'
 import { ServiceCaseFormStore } from './serviceCaseForm/ServiceCaseFormStore'
 import { HomePage } from './home/HomePage'
 import { ServiceCaseFormPage } from './serviceCaseForm/ServiceCaseFormPage'
-import { PageContainer } from './common/components/PageContainer'
-
-import './App.css'
 
 /**
  * Single browser history instance used by router and also by stores when it's needed (eg. for redirect after action).
@@ -28,7 +25,7 @@ function App() {
             <Router>
                 <Routes>
                     <Route
-                        path={navigation.href.home()}
+                        path={navigation.href.index()}
                         loader={({ request, params }) => {
                             console.log('loader', request, params)
                         }}
@@ -43,7 +40,7 @@ function App() {
                         element={<ServiceCaseFormPage store={rootStore.ServiceCaseFormStore} />}
                     />
 
-                    <Route path='/' element={<Navigate to={navigation.href.home()} replace />} />
+                    <Route path='/' element={<Navigate to={navigation.href.index()} replace />} />
                 </Routes>
             </Router>
         </div>

@@ -1,18 +1,31 @@
 import { action, makeObservable, observable, runInAction } from 'mobx'
+import { CodetableStorage } from '../common/data/CodetableStorage'
 import { Field } from '../common/forms/Field'
-import { SelectField } from '../common/forms/SelectField'
+import { EMPTY_SELECT_FIELD, SelectField } from '../common/forms/SelectField'
+import { ListUtils } from '../common/utils/ListUtils'
 import { SelectFieldUtils } from '../common/utils/SelectFieldUtils'
 
 export class ServiceCaseFormStore {
     isLoading = false
 
+    selectedDevice: SelectField = EMPTY_SELECT_FIELD
+
+    codetables = {
+        deviceTypes: [] as SelectField[],
+        caseTypes: [] as SelectField[],
+    }
+
     form = {
-        caseType: Field.select('caseType', SelectFieldUtils.optionNone(), () => [SelectFieldUtils.optionNone()]),
+        caseType: Field.select('caseType', SelectFieldUtils.optionNotSelected(), () => [SelectFieldUtils.optionNotSelected()]),
         serialNumber: Field.text('serialNumber'),
         message: Field.text('message'),
         name: Field.text('name'),
         surname: Field.text('surname'),
         email: Field.text('email'),
+        phonePrefix: Field.select('phonePrefix', { code: '+420', value: '+420' }, () => [
+            { code: '+420', value: '+420' },
+            { code: '+421', value: '+421' },
+        ]),
         phone: Field.text('phone'),
         street: Field.text('street'),
         houseNumber: Field.text('houseNumber'),
@@ -24,67 +37,29 @@ export class ServiceCaseFormStore {
     constructor() {
         makeObservable(this, {
             isLoading: observable,
+            codetables: observable,
+            selectedDevice: observable,
             init: action,
         })
     }
 
-    init() {
-        this.loadCodetables()
+    init(deviceName: string) {
+        this.loadCodetables(deviceName)
     }
 
-    loadCodetables() {
+    loadCodetables(deviceName: string) {
         this.isLoading = true
 
-        new Promise<SelectField[]>(resolve => {
-            resolve([
-                {
-                    code: '1',
-                    value: 'Zapínání a napájení',
-                },
-                {
-                    code: '2',
-                    value: 'Problémy s hardwarem',
-                },
-                {
-                    code: '3',
-                    value: 'Instalace a aktualizace',
-                },
-                {
-                    code: '4',
-                    value: 'Navigace v aplikacích',
-                },
-                {
-                    code: '5',
-                    value: 'Software a používání',
-                },
-                {
-                    code: '6',
-                    value: 'Problémy s účty',
-                },
-                {
-                    code: '7',
-                    value: 'Internet a připojení',
-                },
-                {
-                    code: '8',
-                    value: 'Kamera',
-                },
-                {
-                    code: '9',
-                    value: 'Technický dotaz',
-                },
-                {
-                    code: '10',
-                    value: 'Obecný dotaz',
-                },
-                {
-                    code: '11',
-                    value: 'Operační systém',
-                },
-            ])
-        }).then(options =>
+        Promise.all([CodetableStorage.deviceTypes(), CodetableStorage.serviceCases()]).then(data =>
             runInAction(() => {
-                SelectFieldUtils.initFieldSelect(this.form.caseType, options, false, false, true)
+                this.codetables.deviceTypes = ListUtils.asList(data[0])
+                this.codetables.caseTypes = ListUtils.asList(data[1])
+
+                this.selectedDevice =
+                    this.codetables.deviceTypes.find(device => device.code.toLocaleLowerCase() === deviceName) || EMPTY_SELECT_FIELD
+
+                SelectFieldUtils.initFieldSelect(this.form.caseType, this.codetables.caseTypes, false, false, true)
+                this.isLoading = false
             })
         )
     }
