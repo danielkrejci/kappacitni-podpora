@@ -1,6 +1,7 @@
 package cz.uhk.mois.client.domain
 
 import org.springframework.data.annotation.Id
+import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
@@ -28,7 +29,9 @@ class Address(
     @GeneratedValue(strategy = GenerationType.TABLE)
     var id: Long? = null,
     var street: String?,
+    @Column("housenumber")
     var houseNumber: String?,
+    @Column("postalcode")
     var postalCode: String?,
     var city: String?
 ) {

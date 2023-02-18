@@ -28,6 +28,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
     implementation("javax.persistence:javax.persistence-api")
     implementation("javax.persistence:javax.persistence-api:2.2")
+    implementation("commons-lang:commons-lang:2.6")
+    implementation("org.springdoc:springdoc-openapi-starter-webflux-ui:2.0.0")
 
     //db
     runtimeOnly("org.postgresql:postgresql")
@@ -42,6 +44,7 @@ dependencies {
 }
 
 kapt {
+    generateStubs = false
     arguments {
         arg("mapstruct.unmappedTargetPolicy", "ignore")
     }

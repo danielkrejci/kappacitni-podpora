@@ -10,7 +10,6 @@ data class UserDto(
     var operator: Boolean
 ) {
 
-
     override fun toString(): String {
         return "UserDto(id=$id, address=$address, name='$name', surname='$surname', phone=$phone, email='$email', operator=$operator)"
     }

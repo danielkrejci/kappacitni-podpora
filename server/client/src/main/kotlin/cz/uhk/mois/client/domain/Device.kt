@@ -2,6 +2,7 @@ package cz.uhk.mois.client.domain
 
 import cz.uhk.mois.client.controller.model.DeviceType
 import org.springframework.data.annotation.Id
+import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
 import javax.persistence.EnumType
 import javax.persistence.Enumerated
@@ -15,6 +16,9 @@ class Device(
     var id: Long? = null,
     @Enumerated(EnumType.STRING)
     var type: DeviceType,
+
+    @Column("modelname")
     var modelName: String,
+    @Column("serialnumber")
     var serialNumber: String
 )
