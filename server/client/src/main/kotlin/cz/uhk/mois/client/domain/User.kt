@@ -1,8 +1,8 @@
 package cz.uhk.mois.client.domain
 
 import org.springframework.data.annotation.Id
+import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
-import javax.persistence.Column
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 
@@ -11,22 +11,31 @@ class User(
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE)
     var id: Long? = null,
-    @Column(name = "address", unique = true)
     var address: Long,
     var name: String,
     var surname: String,
-    var phoneNUmber: String,
+    var phone: String?,
     var email: String,
     var operator: Boolean
-)
+) {
+    override fun toString(): String {
+        return "User(id=$id, address=$address, name='$name', surname='$surname', phone='$phone', email='$email', operator=$operator)"
+    }
+}
 
 @Table(name = "ADDRESSES")
 class Address(
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE)
-    val id: Long? = null,
-    val street: String?,
-    val houseNumber: Int?,
-    val postalCode: Int?,
-    val city: String?
-)
+    var id: Long? = null,
+    var street: String?,
+    @Column("housenumber")
+    var houseNumber: String?,
+    @Column("postalcode")
+    var postalCode: String?,
+    var city: String?
+) {
+    override fun toString(): String {
+        return "Address(id=$id, street=$street, houseNumber=$houseNumber, postalCode=$postalCode, city=$city)"
+    }
+}

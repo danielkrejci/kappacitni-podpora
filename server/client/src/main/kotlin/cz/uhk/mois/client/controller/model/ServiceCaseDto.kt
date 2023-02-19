@@ -1,33 +1,34 @@
 package cz.uhk.mois.client.controller.model
 
-import java.time.Instant
+data class CreateServiceCaseDto(
+    var deviceName: String,
+    var caseType: String,
+    var serialNumber: String,
+    var message: String,
 
-data class ServiceCaseDto(
-    val type: ServiceCaseType,
-    val serialNumber: String,
-    val message: String,
-    val name: String,
-    val surname: String?,
-    val email: String,
-    val phone: String?,
-    val street: String?,
-    val houseNumber: Int?,
-    val city: String?,
-    val postalCode: String?,
-    val dateBegin: Instant?,
-    val dateEnd: Instant?,
+    //USER
+    var name: String,
+    var surname: String,
+    var email: String,
+    var phone: String?,
+
+    //ADDRESS
+    var street: String?,
+    var houseNumber: String?,
+    var city: String?,
+    var postalCode: String?,
 )
 
-enum class ServiceCaseType(val representation: String) {
-    TURN_ON_OFF("Zapínání a vypínání"),
-    HARDWARE_PROBLEM("Problémy s hardwarem"),
-    INSTALL_UPDATE("Instalace a aktualizace"),
-    APP_NAVIGATION("Navigace v aplikacích"),
-    SOFTWARE_USAGE("Software a používání"),
-    ACCOUNT_PROBLEM("Problémy s účty"),
-    INTERNET_CONNECTION("Internet a připojení"),
-    CAMERA("Kamera"),
-    TECHNICAL_QUESTION("Technický dotaz"),
-    QUESTION("Obecný dotaz"),
-    OS("Operační systém")
+enum class ServiceCaseType(val representation: String, val code: String) {
+    TURN_ON_OFF("Zapínání a vypínání", "1"),
+    HARDWARE_PROBLEM("Problémy s hardwarem", "2"),
+    INSTALL_UPDATE("Instalace a aktualizace", "3"),
+    APP_NAVIGATION("Navigace v aplikacích", "4"),
+    SOFTWARE_USAGE("Software a používání", "5"),
+    ACCOUNT_PROBLEM("Problémy s účty", "6"),
+    INTERNET_CONNECTION("Internet a připojení", "7"),
+    CAMERA("Kamera", "8"),
+    TECHNICAL_QUESTION("Technický dotaz", "9"),
+    QUESTION("Obecný dotaz", "10"),
+    OS("Operační systém", "11")
 }

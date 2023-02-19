@@ -7,14 +7,14 @@ data class DeviceDto(
     val serialNumber: String
 )
 
-enum class DeviceType(val representation: String) {
-    MY_PHONE("Mobilní telefon"),
-    MY_PAD("Tablet"),
-    MY_BOOK("Notebook"),
-    MY_STUDIO("Osobní počítač"),
-    MY_WATCH("Chytré hodinky"),
-    MY_PODS("Sluchátka"),
-    ACCESSORIES("Ostatní"),
+enum class DeviceType(val representation: String, val code: String) {
+    MY_PHONE("Mobilní telefon", "myPhone"),
+    MY_PAD("Tablet", "myPad"),
+    MY_BOOK("Notebook", "myBook"),
+    MY_STUDIO("Osobní počítač", "myStudio"),
+    MY_WATCH("Chytré hodinky", "myWatch"),
+    MY_PODS("Sluchátka", "myPods"),
+    ACCESSORIES("Ostatní", "accessories"),
 }
 
 

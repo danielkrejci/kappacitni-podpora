@@ -1,36 +1,67 @@
-CREATE TABLE devices
-(
-    id            bigserial primary key,
-    type          text not null,
-    model_name    text not null,
-    serial_number text not null
-);
-
 CREATE TABLE service_cases
 (
-    id            bigserial primary key,
-    type          text not null,
-    serial_number text not null,
-    message       text not null,
-    name          text not null,
-    surname       text not null,
-    email         text not null,
-    phone         text,
-    street        text,
-    house_number  integer,
-    city          text,
-    postal_code   text,
-    date_begin    timestamp without time zone,
-    date_end      timestamp without time zone
+    id        bigserial primary key,
+    userId    bigserial,
+    deviceId  bigserial not null,
+    caseType  text      not null,
+    stateType text      not null,
+
+    dateBegin timestamp without time zone,
+    dateEnd   timestamp without time zone
 );
 
-CREATE TABLE USERS
+CREATE TABLE devices
+(
+    id           bigserial primary key,
+    type         text not null,
+    modelName    text not null,
+    serialNumber text not null
+);
+
+CREATE TABLE users
+(
+    id       bigserial PRIMARY KEY,
+    address  bigint,
+    name     text,
+    surname  text,
+    phone    text,
+    email    text UNIQUE,
+    operator boolean
+);
+
+CREATE TABLE addresses
 (
     id          bigserial PRIMARY KEY,
-    address     bigint UNIQUE,
-    name        text,
-    surname     text,
-    phoneNUmber text,
-    email       text,
-    operator    boolean
+    street      text not null,
+    houseNumber text not null,
+    postalCode  text not null,
+    city        text not null
 );
+
+CREATE TABLE messages
+(
+    id            bigserial PRIMARY KEY,
+    userId        bigserial not null,
+    serviceCaseId bigserial not null,
+    stateType     text      not null,
+    message       text      not null,
+    date          timestamp without time zone,
+    FOREIGN KEY (userId) REFERENCES users (id),
+    FOREIGN KEY (serviceCaseId) REFERENCES service_cases (id)
+);
+
+
+/*
+ CONSTRAINTY
+ */
+/*kontrola zda existuje adresa v databázi předs vložením usera*/
+ALTER TABLE USERS
+    ADD CONSTRAINT "fk_address"
+        FOREIGN KEY (address) REFERENCES ADDRESSES (id)
+            ON DELETE RESTRICT
+            ON UPDATE CASCADE;
+
+
+/*ADD DATA*/
+INSERT INTO public.devices (id, type, modelname, serialnumber)
+VALUES (1, 'MY_PHONE', 'SAD', 'dsadsda');

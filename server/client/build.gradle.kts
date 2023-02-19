@@ -27,20 +27,24 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
     implementation("javax.persistence:javax.persistence-api")
+    implementation("javax.persistence:javax.persistence-api:2.2")
+    implementation("commons-lang:commons-lang:2.6")
+    implementation("org.springdoc:springdoc-openapi-starter-webflux-ui:2.0.0")
+
+    //db
     runtimeOnly("org.postgresql:postgresql")
     runtimeOnly("org.postgresql:r2dbc-postgresql")
+
+    //test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("io.projectreactor:reactor-test")
-    implementation("javax.persistence:javax.persistence-api:2.2")
-
-
 
     implementation("org.mapstruct:mapstruct:1.5.2.Final")
     kapt("org.mapstruct:mapstruct-processor:1.5.2.Final")
-
 }
 
 kapt {
+    generateStubs = false
     arguments {
         arg("mapstruct.unmappedTargetPolicy", "ignore")
     }

@@ -4,33 +4,27 @@ import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
 import java.time.Instant
+import javax.persistence.EnumType
+import javax.persistence.Enumerated
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 
-@Table(name = "SERVICE_CASES")
-class ServiceCase(
+@Table(name = "MESSAGES")
+class Message(
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE)
     var id: Long? = null,
-
     @Column("userid")
-    var userId: Long? = null,
-
-    @Column("deviceid")
-    var deviceId: Long? = null,
-
-    @Column("casetype")
-    var caseType: String,
-
+    var userId: Long,
+    @Column("servicecaseid")
+    var serviceCaseId: Long,
+    @Enumerated(EnumType.STRING)
     @Column("statetype")
     var stateType: String,
-
-    @Column("datebegin")
-    var dateBegin: Instant?,
-    @Column("dateend")
-    var dateEnd: Instant?
+    var message: String,
+    var date: Instant
 ) {
     override fun toString(): String {
-        return "ServiceCase(id=$id, userId=$userId, deviceId=$deviceId, caseType='$caseType', stateType='$stateType', dateBegin=$dateBegin, dateEnd=$dateEnd)"
+        return "Message(id=$id, userId=$userId, serviceCaseId=$serviceCaseId, stateType='$stateType', message='$message', date=$date)"
     }
 }

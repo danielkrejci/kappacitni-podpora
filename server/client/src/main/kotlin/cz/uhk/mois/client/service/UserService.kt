@@ -1,5 +1,6 @@
 package cz.uhk.mois.client.service
 
+import cz.uhk.mois.client.controller.model.UserDto
 import cz.uhk.mois.client.domain.User
 import cz.uhk.mois.client.mapper.DomainMapper
 import cz.uhk.mois.client.repository.UserRepository
@@ -12,7 +13,6 @@ class UserService(
     private val mapper: DomainMapper
 ) {
 
-    fun saveUser(user: User): Mono<User> = userRepository.save(user)
-
+    fun saveUser(user: UserDto): Mono<User> = userRepository.save(mapper.fromDto(user))
 
 }
