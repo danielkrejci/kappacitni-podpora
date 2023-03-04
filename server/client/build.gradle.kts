@@ -30,6 +30,8 @@ dependencies {
     implementation("javax.persistence:javax.persistence-api:2.2")
     implementation("commons-lang:commons-lang:2.6")
     implementation("org.springdoc:springdoc-openapi-starter-webflux-ui:2.0.0")
+    implementation("org.springframework.security:spring-security-config")
+    implementation("org.springframework.security:spring-security-oauth2-client")
 
     //db
     runtimeOnly("org.postgresql:postgresql")
