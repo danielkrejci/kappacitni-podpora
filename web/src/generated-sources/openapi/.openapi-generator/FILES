@@ -1,0 +1,8 @@
+.openapi-generator-ignore
+apis/ServiceCaseControllerApi.ts
+apis/index.ts
+index.ts
+models/CodableDto.ts
+models/CreateServiceCaseDto.ts
+models/index.ts
+runtime.ts
