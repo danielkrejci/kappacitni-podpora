@@ -1,5 +1,6 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+
 plugins {
 	id("org.springframework.boot") version "3.0.2"
 	id("io.spring.dependency-management") version "1.1.0"
@@ -19,7 +20,7 @@ repositories {
 }
 
 dependencies {
-	implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
+//	implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
 	implementation("org.springframework.boot:spring-boot-starter-webflux")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
@@ -30,10 +31,10 @@ dependencies {
 	implementation("javax.persistence:javax.persistence-api:2.2")
 	implementation("commons-lang:commons-lang:2.6")
 	implementation("org.springdoc:springdoc-openapi-starter-webflux-ui:2.0.0")
-
+	implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client:4.0.0")
 	//db
-	runtimeOnly("org.postgresql:postgresql")
-	runtimeOnly("org.postgresql:r2dbc-postgresql")
+//	runtimeOnly("org.postgresql:postgresql")
+//	runtimeOnly("org.postgresql:r2dbc-postgresql")
 
 	//test
 	testImplementation("org.springframework.boot:spring-boot-starter-test")

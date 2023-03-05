@@ -32,6 +32,7 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-starter-webflux-ui:2.0.0")
     implementation("org.springframework.security:spring-security-config")
     implementation("org.springframework.security:spring-security-oauth2-client")
+    implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client:4.0.0")
 
     //db
     runtimeOnly("org.postgresql:postgresql")
