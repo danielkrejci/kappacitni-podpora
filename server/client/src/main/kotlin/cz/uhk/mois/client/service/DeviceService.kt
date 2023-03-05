@@ -28,4 +28,8 @@ class DeviceService(
     fun findBySerialNumber(serialNumber: String): Mono<Device> {
         return deviceRepository.findBySerialNumber(serialNumber)
     }
+
+    fun findByModelName(name: String): Mono<Device> {
+        return deviceRepository.findByModelName(name)
+    }
 }
