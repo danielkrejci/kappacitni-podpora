@@ -5,7 +5,6 @@ import org.springframework.boot.runApplication
 
 @SpringBootApplication
 class KappaSupportApplication
-
 fun main(args: Array<String>) {
 	runApplication<KappaSupportApplication>(*args)
 }
