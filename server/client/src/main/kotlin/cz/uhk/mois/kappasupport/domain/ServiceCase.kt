@@ -1,4 +1,4 @@
-package cz.uhk.mois.client.domain
+package cz.uhk.mois.kappasupport.domain
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Column
@@ -28,10 +28,7 @@ class ServiceCase(
     @Column("datebegin")
     var dateBegin: Instant?,
     @Column("dateend")
-    var dateEnd: Instant?,
-
-    @Column("hash")
-    var hash: String?
+    var dateEnd: Instant?
 ) {
     override fun toString(): String {
         return "ServiceCase(id=$id, userId=$userId, deviceId=$deviceId, caseType='$caseType', stateType='$stateType', dateBegin=$dateBegin, dateEnd=$dateEnd)"

@@ -33,6 +33,10 @@ dependencies {
     implementation("org.springframework.security:spring-security-config")
     implementation("org.springframework.security:spring-security-oauth2-client")
 
+    // https://mvnrepository.com/artifact/org.springframework.security/spring-security-oauth2-jose
+    implementation("org.springframework.security:spring-security-oauth2-jose:6.0.2")
+
+
     //db
     runtimeOnly("org.postgresql:postgresql")
     runtimeOnly("org.postgresql:r2dbc-postgresql")

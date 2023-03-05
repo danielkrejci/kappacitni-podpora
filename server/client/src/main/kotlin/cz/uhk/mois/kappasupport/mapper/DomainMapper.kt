@@ -1,7 +1,12 @@
-package cz.uhk.mois.client.mapper
+package cz.uhk.mois.kappasupport.mapper
 
-import cz.uhk.mois.client.controller.model.*
-import cz.uhk.mois.client.domain.*
+import cz.uhk.mois.kappasupport.controller.model.AddressDto
+import cz.uhk.mois.kappasupport.controller.model.CreateServiceCaseDto
+import cz.uhk.mois.kappasupport.controller.model.StateType
+import cz.uhk.mois.kappasupport.controller.model.UserDto
+import cz.uhk.mois.kappasupport.domain.Address
+import cz.uhk.mois.kappasupport.domain.ServiceCase
+import cz.uhk.mois.kappasupport.domain.User
 import org.mapstruct.Mapper
 import org.mapstruct.Mapping
 import org.springframework.stereotype.Component
@@ -11,9 +16,6 @@ import org.springframework.stereotype.Component
 @Mapper(componentModel = "spring")
 interface DomainMapper {
 
-    fun toDto(device: Device): DeviceDto
-    fun fromDto(deviceDto: DeviceDto): Device
-
     fun toDto(address: Address): AddressDto
     fun fromDto(adress: AddressDto): Address
 
@@ -21,13 +23,8 @@ interface DomainMapper {
     fun fromDto(userDto: UserDto): User
 
     @Mapping(target = "stateType", constant = StateType.NEW_CONSTANT)
-    @Mapping(target = "hash", ignore = true)
     fun fromDto(sc: CreateServiceCaseDto): ServiceCase
     fun toDto(sc: ServiceCase): CreateServiceCaseDto
 
-    fun toDto(message: Message): MessageDto
-    fun fromDto(messageDto: MessageDto): Message
-
-    fun fromServiceCaseToAddressDto(serviceCaseDto: CreateServiceCaseDto): Address
 
 }

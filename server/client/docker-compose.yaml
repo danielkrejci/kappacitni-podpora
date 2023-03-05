@@ -2,6 +2,7 @@ version: '3'
 services:
   postgres:
     image: postgres:12.4
+    container_name: MOIS_DB
     environment:
       POSTGRES_DB: postgres
       POSTGRES_USER: postgres

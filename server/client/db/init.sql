@@ -5,7 +5,7 @@ CREATE TABLE service_cases
     deviceId  bigserial not null,
     caseType  text      not null,
     stateType text      not null,
-
+    hash      text      not null,
     dateBegin timestamp without time zone,
     dateEnd   timestamp without time zone
 );
@@ -65,3 +65,5 @@ ALTER TABLE USERS
 /*ADD DATA*/
 INSERT INTO public.devices (id, type, modelname, serialnumber)
 VALUES (1, 'MY_PHONE', 'SAD', 'dsadsda');
+
+/* TODO kontrola před vložením service_case že daný device_id existuje */

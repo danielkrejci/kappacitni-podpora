@@ -1,4 +1,5 @@
-package cz.uhk.mois.client.controller.model
+package cz.uhk.mois.kappasupport.controller.model
+
 
 data class CreateServiceCaseDto(
     var deviceName: String,

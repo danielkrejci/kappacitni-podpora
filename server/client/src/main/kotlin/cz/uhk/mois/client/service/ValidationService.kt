@@ -46,7 +46,7 @@ class ValidationService(private val deviceService: DeviceService) {
         // Serial number validation
         return deviceService.findBySerialNumber(sc.serialNumber)
             .switchIfEmpty {
-                exceptions.add("Device with ${sc.serialNumber} does not exist")
+                exceptions.add("Device with serial number ${sc.serialNumber} does not exist")
                 Mono.error(ValidationFailedException(exceptions.toString()))
             }
             .flatMap { device ->

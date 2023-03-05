@@ -23,6 +23,31 @@ class ServiceCaseService(
     private val validationService: ValidationService,
     private val messageService: MessageService
 ) {
+
+    fun getServiceCaseDetail(id: String, hash: String): Mono<ServiceCase> {
+
+        //potřbeuju service case jako takový
+
+        // usera a operátora
+        // daný device který se toho case týká
+        // vsechny messages které se daného sc týkají
+
+        //add validation for id.toLong
+        return serviceCaseRepository.findById(id.toLong()).flatMap { serviceCase ->
+            //   userRepository.findById(serviceCase.userId)
+
+
+            if (serviceCase.hash == hash) {
+                println("GUF PICO")
+            } else {
+                println("ERROR PICO")
+            }
+            Mono.just(serviceCase)
+        }
+
+
+    }
+
     fun createServiceCase(serviceCase: CreateServiceCaseDto): Mono<ServiceCase> {
         return validationService.validate(serviceCase).flatMap {
             //TODO UPDATE ADRES
@@ -63,7 +88,8 @@ class ServiceCaseService(
         }
     }
 
-    fun saveServiceCaseAndMessage(sc: ServiceCase, message: String): Mono<ServiceCase> {
+    private fun saveServiceCaseAndMessage(sc: ServiceCase, message: String): Mono<ServiceCase> {
+        sc.hash = generateHash()
         return serviceCaseRepository.save(sc).flatMap { savedServiceCase ->
             val msg =
                 MessageDto(null, sc.userId!!, savedServiceCase.id!!, MessageStateType.DELIVERED, message, Instant.now())
@@ -71,5 +97,13 @@ class ServiceCaseService(
                 Mono.just(savedServiceCase)
             }
         }
+    }
+
+    private fun generateHash(): String {
+        val charPool: List<Char> = ('a'..'z') + ('A'..'Z') + ('0'..'9')
+        return (1..128)
+            .map { kotlin.random.Random.nextInt(0, charPool.size) }
+            .map(charPool::get)
+            .joinToString("")
     }
 }
