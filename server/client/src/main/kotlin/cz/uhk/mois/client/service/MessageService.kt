@@ -5,6 +5,7 @@ import cz.uhk.mois.client.domain.Message
 import cz.uhk.mois.client.mapper.DomainMapper
 import cz.uhk.mois.client.repository.MessageRepository
 import org.springframework.stereotype.Service
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
 @Service
@@ -15,5 +16,9 @@ class MessageService(
 
     fun save(message: MessageDto): Mono<Message> {
         return messageRepository.save(mapper.fromDto(message))
+    }
+
+    fun findAllMessagesByServiceCaseId(id: Long): Flux<MessageDto> {
+        return messageRepository.findAllByServiceCaseId(id).map { mapper.toDto(it) }
     }
 }

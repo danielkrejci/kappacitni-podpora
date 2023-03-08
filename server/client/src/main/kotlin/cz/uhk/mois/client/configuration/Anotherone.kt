@@ -12,17 +12,17 @@ import org.springframework.security.web.server.SecurityWebFilterChain
 import reactor.core.publisher.Mono
 import java.net.URI
 
-
 @Configuration
 @EnableWebFluxSecurity
 @DependsOnDatabaseInitialization
 class OAuth2LoginSecurityConfig(var userRepository: UserRepository) {
 
 
+    //TODO MOVE TO ANOTHER COMPONENT, CLIENT DEOS NOT REQUIRE ANY UUTH
     @Bean
     fun securityWebFilterChain(http: ServerHttpSecurity): SecurityWebFilterChain {
         http.authorizeExchange()
-            .pathMatchers("/login", "/error**").permitAll()
+            .pathMatchers("/login", "/error**", "/service-cases/**").permitAll()
             .anyExchange().authenticated()
             .and()
             .oauth2Login { oauth2Login ->
@@ -49,6 +49,7 @@ class OAuth2LoginSecurityConfig(var userRepository: UserRepository) {
                     }
 
             }
+        http.csrf { it.disable() }
         return http.build()
     }
 }

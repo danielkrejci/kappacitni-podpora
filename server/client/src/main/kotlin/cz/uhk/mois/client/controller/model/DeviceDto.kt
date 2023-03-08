@@ -14,7 +14,7 @@ enum class DeviceType(val representation: String, val code: String) {
     MY_STUDIO("Osobní počítač", "myStudio"),
     MY_WATCH("Chytré hodinky", "myWatch"),
     MY_PODS("Sluchátka", "myPods"),
-    ACCESSORIES("Ostatní", "accessories"),
+    ACCESSORIES("Ostatní", "accessories");
 }
 
 

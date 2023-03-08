@@ -2,6 +2,7 @@ package cz.uhk.mois.client.mapper
 
 import cz.uhk.mois.client.controller.model.*
 import cz.uhk.mois.client.domain.*
+import cz.uhk.mois.client.service.UserLoser
 import org.mapstruct.Mapper
 import org.mapstruct.Mapping
 import org.springframework.stereotype.Component
@@ -26,6 +27,11 @@ interface DomainMapper {
 
     fun toDto(message: Message): MessageDto
     fun fromDto(messageDto: MessageDto): Message
+
+    fun fromDto(userDto: UsersServiceCasesDto): UsersServiceCases
+    fun toDto(userDto: UsersServiceCases): UsersServiceCasesDto
+
+    fun toUserLoser(userDto: UserDto, addressDto: AddressDto): UserLoser
 
     fun fromServiceCaseToAddressDto(serviceCaseDto: CreateServiceCaseDto): Address
 

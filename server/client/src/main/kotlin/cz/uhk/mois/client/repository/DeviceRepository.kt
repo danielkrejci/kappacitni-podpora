@@ -7,4 +7,6 @@ import reactor.core.publisher.Mono
 interface DeviceRepository : ReactiveCrudRepository<Device, Long> {
 
     fun findBySerialNumber(serialNumber: String): Mono<Device>
+
+    fun findByModelName(serialNumber: String): Mono<Device>
 }

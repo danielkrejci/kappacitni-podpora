@@ -21,11 +21,19 @@ class DeviceService(
         }
     }
 
-    fun save(device: Device): Mono<Device> {
-        return deviceRepository.save(device)
-    }
 
     fun findBySerialNumber(serialNumber: String): Mono<Device> {
         return deviceRepository.findBySerialNumber(serialNumber)
+    }
+
+    fun findByModelName(name: String): Mono<Device> {
+        return deviceRepository.findByModelName(name)
+    }
+
+    fun findByDeviceId(deviceId: Long): Mono<DeviceDto> {
+        var device = deviceRepository.findById(deviceId)
+        return device.map {
+            mapper.toDto(it)
+        }
     }
 }

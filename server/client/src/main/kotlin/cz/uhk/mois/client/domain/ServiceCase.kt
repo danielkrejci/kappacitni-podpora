@@ -28,7 +28,10 @@ class ServiceCase(
     @Column("datebegin")
     var dateBegin: Instant?,
     @Column("dateend")
-    var dateEnd: Instant?
+    var dateEnd: Instant?,
+
+    @Column("hash")
+    var hash: String?
 ) {
     override fun toString(): String {
         return "ServiceCase(id=$id, userId=$userId, deviceId=$deviceId, caseType='$caseType', stateType='$stateType', dateBegin=$dateBegin, dateEnd=$dateEnd)"

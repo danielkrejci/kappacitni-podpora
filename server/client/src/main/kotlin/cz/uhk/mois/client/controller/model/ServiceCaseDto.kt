@@ -32,3 +32,14 @@ enum class ServiceCaseType(val representation: String, val code: String) {
     QUESTION("Obecný dotaz", "10"),
     OS("Operační systém", "11")
 }
+
+enum class StateType(val representation: String, val code: String) {
+    NEW("Nový", "1"),
+    ACTIVE("Aktivní", "2"),
+    WAITING("Čekající", "3"),
+    CLOSED("Uzavřený", "4");
+
+    companion object {
+        const val NEW_CONSTANT = "1"
+    }
+}
