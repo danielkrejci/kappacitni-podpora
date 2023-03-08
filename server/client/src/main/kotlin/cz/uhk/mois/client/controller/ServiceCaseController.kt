@@ -14,6 +14,11 @@ import reactor.core.publisher.Mono
 @RequestMapping("/service-cases")
 class ServiceCaseController(private val serviceCaseService: ServiceCaseService) {
 
+    @GetMapping("/{id}/{hash}")
+    fun getServiceCaseDetail(@PathVariable id: String, @PathVariable hash: String): Mono<Map<String, Any>> {
+        return serviceCaseService.getServiceCaseDetail(id, hash)
+    }
+
     @GetMapping("/types")
     fun getServiceTypes(): ResponseEntity<List<CodableDto>> {
         val types = ServiceCaseType.values().map { CodableDto(it.code, it.representation) }
@@ -25,4 +30,6 @@ class ServiceCaseController(private val serviceCaseService: ServiceCaseService) 
     fun createServiceCase(@RequestBody sc: CreateServiceCaseDto): ResponseEntity<Mono<Long>> {
         return ResponseEntity(serviceCaseService.createServiceCase(sc).mapNotNull { k -> k.id }, HttpStatus.CREATED)
     }
+
+
 }
