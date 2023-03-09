@@ -8,12 +8,14 @@ import cz.uhk.mois.client.mapper.DomainMapper
 import cz.uhk.mois.client.repository.AddressRepository
 import cz.uhk.mois.client.repository.ServiceCaseRepository
 import cz.uhk.mois.client.repository.UserRepository
-import mu.KotlinLogging
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
 import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.util.logging.Logger
 
 @Service
 class ServiceCaseService(
@@ -27,11 +29,15 @@ class ServiceCaseService(
     private val usersServiceCasesService: UsersServiceCasesService
 ) {
 
-    private val logger = KotlinLogging.logger {}
+    private val logger = Logger.getLogger(this.javaClass.name)
 
+    companion object {
+        private const val format =  "yyyy-MM-dd HH:mm:ss"
+        private val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern(format).withZone(ZoneId.systemDefault())
+    }
 
     fun getServiceCaseDetail(id: String, hash: String): Mono<Map<String, Any>> {
-        var map = HashMap<String, Any>()
+        val map = HashMap<String, Any>()
         //TODO validation for id.toLong
         return serviceCaseRepository.findById(id.toLong())
             .switchIfEmpty(Mono.error(ServiceCaseNotFoundException("Service case with $id not found")))
@@ -41,16 +47,17 @@ class ServiceCaseService(
                         Pair("id", serviceCase.id),
                         Pair("stateTypeId", serviceCase.stateType),
                         Pair("caseTypeId", serviceCase.caseType),
-                        Pair("dateBegin", serviceCase.dateBegin),
-                        Pair("dateEnd", serviceCase.dateEnd),
+                        Pair("dateBegin",formatter.format(serviceCase.dateBegin)),
+                        Pair("dateEnd", formatter.format(serviceCase.dateBegin)),
+                        Pair("hash", serviceCase.hash)
                     )
                 } else {
                     return@flatMap Mono.error(ValidationFailedException("Hash does not match"))
                 }
 
-                var user = userRepository.findById(serviceCase.userId!!).map { mapper.toDto(it) }
+                val user = userRepository.findById(serviceCase.userId!!).map { mapper.toDto(it) }
                     .flatMap { userToUserLoser(it) }
-                var operators = usersServiceCasesService.findAllByServiceCaseId(serviceCase.id!!)
+                val operators = usersServiceCasesService.findAllByServiceCaseId(serviceCase.id!!)
                     .map { it.userId }
                     .collectList()
                     .flatMap { ids ->
@@ -60,8 +67,8 @@ class ServiceCaseService(
                             .flatMap { userToUserLoser(it) }
                             .collectList()
                     }
-                var device = deviceService.findByDeviceId(serviceCase.deviceId!!)
-                var messages = messageService.findAllMessagesByServiceCaseId(serviceCase.id!!)
+                val device = deviceService.findByDeviceId(serviceCase.deviceId!!)
+                val messages = messageService.findAllMessagesByServiceCaseId(serviceCase.id!!)
                     .flatMap { message ->
                         userRepository.findById(message.userId)
                             .flatMap { user ->
@@ -70,12 +77,12 @@ class ServiceCaseService(
                             .flatMap {
                                 Mono.zip(it.first, it.second)
                                     .flatMap {
-                                        var user = it.t1
-                                        var msg = it.t2
-                                        var map = mapOf(
-                                            Pair("author", user),
+                                        val user = it.t1
+                                        val msg = it.t2
+                                        val map = mapOf(
+                                           Pair("author", user),
                                             Pair("id", msg.id),
-                                            Pair("date", msg.date),
+                                            Pair("date", formatter.format(msg.date)),
                                             Pair("message", msg.message),
                                             Pair("state", msg.stateType),
                                         )

@@ -9,10 +9,8 @@ import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
 @Service
-
 class UsersServiceCasesService(
     private val repository: UsersServiceCasesRepository,
-
     private val mapper: DomainMapper
 ) {
 

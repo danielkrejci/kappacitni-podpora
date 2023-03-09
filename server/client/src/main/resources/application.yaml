@@ -3,10 +3,5 @@ spring:
     url: r2dbc:postgresql://localhost:5432/postgres
     username: postgres
     password: postgres
-  security:
-    oauth2:
-      client:
-        registration:
-          google:
-            client-id: 357194755188-152tonbed8mcljmb28spg8759fol73rf.apps.googleusercontent.com
-            client-secret: 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
+server:
+  port: 8081

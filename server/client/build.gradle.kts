@@ -30,11 +30,6 @@ dependencies {
     implementation("javax.persistence:javax.persistence-api:2.2")
     implementation("commons-lang:commons-lang:2.6")
     implementation("org.springdoc:springdoc-openapi-starter-webflux-ui:2.0.0")
-    implementation("org.springframework.security:spring-security-config")
-    implementation("org.springframework.security:spring-security-oauth2-client")
-    implementation("org.springframework.security:spring-security-oauth2-jose:6.0.2")
-    implementation("io.github.microutils:kotlin-logging-jvm:2.0.11")
-    implementation("ch.qos.logback:logback-classic:1.2.6")
 
     runtimeOnly("org.postgresql:postgresql")
     runtimeOnly("org.postgresql:r2dbc-postgresql")

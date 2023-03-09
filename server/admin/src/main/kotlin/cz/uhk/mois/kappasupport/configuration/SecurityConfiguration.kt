@@ -1,6 +1,7 @@
-package cz.uhk.mois.client.configuration
+package cz.uhk.mois.kappasupport.configuration
 
-import cz.uhk.mois.client.repository.UserRepository
+
+import cz.uhk.mois.kappasupport.repository.UserRepository
 import org.springframework.boot.sql.init.dependency.DependsOnDatabaseInitialization
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -15,7 +16,7 @@ import java.net.URI
 @Configuration
 @EnableWebFluxSecurity
 @DependsOnDatabaseInitialization
-class OAuth2LoginSecurityConfig(var userRepository: UserRepository) {
+class SecurityConfiguration(private val userRepository: UserRepository) {
 
 
     //TODO MOVE TO ANOTHER COMPONENT, CLIENT DEOS NOT REQUIRE ANY UUTH
@@ -53,4 +54,3 @@ class OAuth2LoginSecurityConfig(var userRepository: UserRepository) {
         return http.build()
     }
 }
-
