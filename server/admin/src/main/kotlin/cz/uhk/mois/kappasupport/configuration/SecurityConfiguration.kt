@@ -18,12 +18,10 @@ import java.net.URI
 @DependsOnDatabaseInitialization
 class SecurityConfiguration(private val userRepository: UserRepository) {
 
-
-    //TODO MOVE TO ANOTHER COMPONENT, CLIENT DEOS NOT REQUIRE ANY UUTH
     @Bean
     fun securityWebFilterChain(http: ServerHttpSecurity): SecurityWebFilterChain {
         http.authorizeExchange()
-            .pathMatchers("/login", "/error**", "/service-cases/**").permitAll()
+            .pathMatchers("/login", "/error**", "/admin/service-cases/**").permitAll()
             .anyExchange().authenticated()
             .and()
             .oauth2Login { oauth2Login ->
@@ -40,12 +38,12 @@ class SecurityConfiguration(private val userRepository: UserRepository) {
                                 }.then()
                             } else {
                                 exchange.exchange.response.statusCode = HttpStatus.FOUND
-                                exchange.exchange.response.headers.location = URI.create("/users")
+                                exchange.exchange.response.headers.location = URI.create("/admin/service-cases")
                                 Mono.empty()
                             }
                         }
                     }
-                    .authenticationFailureHandler { exchange, authentication ->
+                    .authenticationFailureHandler { _, _ ->
                         Mono.empty()
                     }
 

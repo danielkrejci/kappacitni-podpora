@@ -10,3 +10,11 @@ spring:
           google:
             client-id: 357194755188-152tonbed8mcljmb28spg8759fol73rf.apps.googleusercontent.com
             client-secret: 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
+        provider:
+          google:
+            authorization-uri: https://accounts.google.com/o/oauth2/auth
+            token-uri: https://oauth2.googleapis.com/token
+
+  webflux:
+    base-path: /admin
+
