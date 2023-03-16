@@ -38,25 +38,3 @@ class User(
     }
 }
 
-@Table(name = "ADDRESSES")
-class Address(
-    @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
-    var id: Long? = null,
-
-    @Column("street")
-    var street: String?,
-
-    @Column("houseNumber")
-    var houseNumber: String?,
-
-    @Column("postalCode")
-    var postalCode: String?,
-
-    @Column("city")
-    var city: String?
-) {
-    override fun toString(): String {
-        return "Address(id=$id, street=$street, houseNumber=$houseNumber, postalCode=$postalCode, city=$city)"
-    }
-}

@@ -45,7 +45,7 @@ class ValidationService(private val deviceService: DeviceService) {
         sc.street = sc.street?.let { sanitizeString(it) }
         sc.houseNumber = sc.houseNumber?.let { sanitizeString(it) }
         sc.city = sc.city?.let { sanitizeString(it) }
-        sc.postalCode = sc.postalCode?.let { sanitizeString(it) }
+        sc.postalCode = sc.postalCode?.let { sanitizePostalCode(it) }
 
         // Serial number validation
         return deviceService.findBySerialNumber(sc.serialNumber)
@@ -54,22 +54,29 @@ class ValidationService(private val deviceService: DeviceService) {
                 Mono.error(ValidationFailedException(exceptions.toString()))
             }
             .flatMap { device ->
-                // if (device.type.code.lowercase() != sc.deviceName) {
-                //     exceptions.add("Device with ${sc.serialNumber} does not belong to ${sc.deviceName}")
-                // }
+                if (device.typeId != sc.deviceTypeId) {
+                    exceptions.add("Device with serial number ${sc.serialNumber} does not belongs to this deviceTypeId: ${sc.deviceTypeId}")
+                }
                 if (exceptions.isNotEmpty()) Mono.error(ValidationFailedException(exceptions.toString())) else Mono.just(
                     sc
                 )
             }
     }
 
-    private fun sanitizeString(dirtyString: String): String {
-        return StringEscapeUtils.escapeSql(dirtyString.replace(HTML_REGEX, ""))
+    private fun sanitizeString(dirtyString: String) = StringEscapeUtils.escapeSql(dirtyString.replace(HTML_REGEX, ""))
+
+
+    fun sanitizePostalCode(pc: String?): String? {
+        if (pc == null) return null
+        var sanitizedPostalCode = sanitizeString(pc).filter { it.isDigit() }
+        if (sanitizedPostalCode.length != 5) return null
+        return sanitizedPostalCode
     }
 
     private fun sanitizePhoneNumber(pn: String?): String? {
         if (pn == null) return null
         val digitsOnly = pn.replace(NUMBER_REGEX, "")
+        if (digitsOnly.length != 12) return null
         return when {
             digitsOnly.startsWith("420") -> "+420 " + digitsOnly.drop(3).chunked(3).joinToString(" ")
             digitsOnly.startsWith("421") -> "+421 " + digitsOnly.drop(3).chunked(3).joinToString(" ")
