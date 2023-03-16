@@ -45,8 +45,8 @@ class ServiceCaseService(
                 if (serviceCase.hash == hash) {
                     map["serviceCase"] = mapOf(
                         Pair("id", serviceCase.id),
-                        Pair("stateTypeId", serviceCase.stateType),
-                        Pair("caseTypeId", serviceCase.caseType),
+                        Pair("stateId", serviceCase.stateId),
+                        Pair("caseTypeId", serviceCase.caseTypeId),
                         Pair("dateBegin",formatter.format(serviceCase.dateBegin)),
                         Pair("dateEnd", formatter.format(serviceCase.dateBegin)),
                         Pair("hash", serviceCase.hash)
@@ -62,7 +62,7 @@ class ServiceCaseService(
                     .collectList()
                     .flatMap { ids ->
                         userRepository.findAllByIdIn(ids)
-                            .filter { it.operator }
+                            .filter { it.isOperator }
                             .map { mapper.toDto(it) }
                             .flatMap { userToUserLoser(it) }
                             .collectList()
@@ -84,7 +84,7 @@ class ServiceCaseService(
                                             Pair("id", msg.id),
                                             Pair("date", formatter.format(msg.date)),
                                             Pair("message", msg.message),
-                                            Pair("state", msg.stateType),
+                                            Pair("state", msg.stateId),
                                         )
                                         Mono.just(map)
                                     }
@@ -121,7 +121,11 @@ class ServiceCaseService(
                                 saveServiceCaseAndMessage(sc, serviceCase.message, serviceCase.serialNumber)
                             }
                     }.switchIfEmpty {
-                        val address = mapper.fromServiceCaseToAddressDto(serviceCase)
+                        // TODO adresa není povinný údaj, když ji nezadám, tak se nesmí vytvořit prázdný záznam v tabulce addresses
+                        val address = mapper.fromServiceCaseToAddress(serviceCase)
+
+                        logger.info { address.toString() }
+
                         addressRepository.save(address)
                             .flatMap { savedAddress ->
                                 val newUser = UserDto(
@@ -131,9 +135,15 @@ class ServiceCaseService(
                                     serviceCase.surname,
                                     serviceCase.phone,
                                     serviceCase.email,
-                                    false
+                                    false,
+                                    true
                                 )
-                                userRepository.save(mapper.fromDto(newUser))
+
+                                val user = mapper.fromDto(newUser)
+
+                                logger.info { user.toString() }
+
+                                userRepository.save(user)
                             }
                             .flatMap { user ->
                                 sc.userId = user.id!!
@@ -167,7 +177,7 @@ class ServiceCaseService(
     private fun saveServiceCaseAndMessage(sc: ServiceCase, message: String, serialNUmber: String): Mono<ServiceCase> {
         sc.hash = generateHash()
         return deviceService.findBySerialNumber(serialNUmber).flatMap {
-            sc.deviceId = it.id
+            sc.deviceId = it.id!!
             serviceCaseRepository.save(sc)
                 .flatMap { savedServiceCase ->
                     logger.info { "Service case saved $savedServiceCase" }
@@ -180,6 +190,9 @@ class ServiceCaseService(
                             message,
                             Instant.now()
                         )
+
+                    logger.info { msg.toString() }
+
                     messageService.save(msg)
                         .flatMap {
                             val userToSave = UsersServiceCasesDto(savedServiceCase.userId!!, savedServiceCase.id!!)
@@ -210,7 +223,7 @@ class ServiceCaseService(
     }
 
     private fun userToUserLoser(user: UserDto): Mono<UserLoser> {
-        return addressRepository.findById(user.address!!).map { address ->
+        return addressRepository.findById(user.addressId!!).map { address ->
             mapper.toUserLoser(user, mapper.toDto(address))
         }
     }

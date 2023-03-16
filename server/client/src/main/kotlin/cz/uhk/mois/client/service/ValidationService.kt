@@ -8,12 +8,16 @@ import org.apache.commons.lang.StringEscapeUtils
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
+import java.util.logging.Logger
 
 
 @Service
 class ValidationService(private val deviceService: DeviceService) {
+
+    private val logger = Logger.getLogger(this.javaClass.name)
+
     companion object {
-        private val EMAIL_REGEX = Regex("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}\$")
+        private val EMAIL_REGEX = Regex("^[A-Z0-9a-z._%+-]+@[A-Z0-9a-z.-]+\\.[A-Za-z]{2,9}\$")
         private val HTML_REGEX = Regex("<.*?>")
         private val NUMBER_REGEX = Regex("\\D+")
     }
@@ -23,13 +27,13 @@ class ValidationService(private val deviceService: DeviceService) {
         // Email validation
         if (!EMAIL_REGEX.matches(sc.email)) exceptions.add("Email is invalid")
 
-        // Device names validation
-        val deviceNames = DeviceType.values().map { it.code.lowercase() }
-        if (!deviceNames.contains(sc.deviceName)) exceptions.add("Device name is invalid")
+        // Device type validation
+        val deviceTypeIds = DeviceType.values().map { it.code }
+        if (!deviceTypeIds.contains(sc.deviceTypeId)) exceptions.add("Device type is invalid")
 
         // Case type validation
         val caseTypes = ServiceCaseType.values().map { it.code }
-        if (!caseTypes.contains(sc.caseType)) exceptions.add("Case type is invalid")
+        if (!caseTypes.contains(sc.caseTypeId)) exceptions.add("Case type is invalid")
 
         // Message validation
         if (sc.message.length > 5000) exceptions.add("Message is too long")
@@ -50,9 +54,9 @@ class ValidationService(private val deviceService: DeviceService) {
                 Mono.error(ValidationFailedException(exceptions.toString()))
             }
             .flatMap { device ->
-                if (device.type.code.lowercase() != sc.deviceName) {
-                    exceptions.add("Device with ${sc.serialNumber} does not belong to ${sc.deviceName}")
-                }
+                // if (device.type.code.lowercase() != sc.deviceName) {
+                //     exceptions.add("Device with ${sc.serialNumber} does not belong to ${sc.deviceName}")
+                // }
                 if (exceptions.isNotEmpty()) Mono.error(ValidationFailedException(exceptions.toString())) else Mono.just(
                     sc
                 )

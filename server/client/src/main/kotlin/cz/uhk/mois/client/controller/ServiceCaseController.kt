@@ -1,6 +1,7 @@
 package cz.uhk.mois.client.controller
 
 import cz.uhk.mois.client.controller.model.CreateServiceCaseDto
+import cz.uhk.mois.client.controller.model.SavedServiceCaseDto
 import cz.uhk.mois.client.controller.model.ServiceCaseType
 import cz.uhk.mois.client.service.ServiceCaseService
 import cz.uhk.mois.client.util.CodableDto
@@ -10,6 +11,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Mono
 
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/service-cases")
 class ServiceCaseController(private val serviceCaseService: ServiceCaseService) {
@@ -26,9 +28,9 @@ class ServiceCaseController(private val serviceCaseService: ServiceCaseService) 
     }
 
     @Operation(summary = "Send Messages to Ibm Mq", description = "Send Message to the related ibm mq")
-    @PostMapping("/create")
-    fun createServiceCase(@RequestBody sc: CreateServiceCaseDto): ResponseEntity<Mono<Long>> {
-        return ResponseEntity(serviceCaseService.createServiceCase(sc).mapNotNull { k -> k.id }, HttpStatus.CREATED)
+    @PostMapping
+    fun createServiceCase(@RequestBody sc: CreateServiceCaseDto): ResponseEntity<Mono<SavedServiceCaseDto>> {
+        return ResponseEntity(serviceCaseService.createServiceCase(sc).mapNotNull { SavedServiceCaseDto(it.id!!, it.hash!!) }, HttpStatus.CREATED)
     }
 
 

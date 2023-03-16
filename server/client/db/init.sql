@@ -1,51 +1,56 @@
-CREATE TABLE service_cases
+CREATE TABLE addresses
 (
-    id        bigserial primary key,
-    userId    bigserial,
-    deviceId  bigserial not null,
-    caseType  text      not null,
-    stateType text      not null,
-    hash      text      not null,
-    dateBegin timestamp without time zone,
-    dateEnd   timestamp without time zone
-);
-
-CREATE TABLE devices
-(
-    id           bigserial primary key,
-    type         text not null,
-    modelName    text not null,
-    serialNumber text not null
+    id          SERIAL PRIMARY KEY,
+    street      TEXT NOT NULL,
+    houseNumber TEXT NOT NULL,
+    postalCode  TEXT NOT NULL,
+    city        TEXT NOT NULL
 );
 
 CREATE TABLE users
 (
-    id       bigserial PRIMARY KEY,
-    address  bigint,
-    name     text,
-    surname  text,
-    phone    text,
-    email    text UNIQUE,
-    operator boolean
+    id          SERIAL PRIMARY KEY,
+    addressId   SERIAL,
+    name        TEXT,
+    surname     TEXT,
+    phone       TEXT,
+    email       TEXT UNIQUE,
+    isOperator  boolean,
+    isClient    boolean,
+    FOREIGN KEY (addressId) REFERENCES addresses (id)
 );
 
-CREATE TABLE addresses
+CREATE TABLE devices
 (
-    id          bigserial PRIMARY KEY,
-    street      text not null,
-    houseNumber text not null,
-    postalCode  text not null,
-    city        text not null
+    id           SERIAL PRIMARY KEY,
+    typeId       BIGINT NOT NULL,
+    modelName    TEXT NOT NULL,
+    serialNumber TEXT NOT NULL,
+    releaseDate  TIMESTAMP WITHOUT TIME ZONE
 );
 
-CREATE TABLE messages
+CREATE TABLE service_cases
 (
-    id            bigserial PRIMARY KEY,
-    userId        bigserial not null,
-    serviceCaseId bigserial not null,
-    stateType     text      not null,
-    message       text      not null,
-    date          timestamp without time zone,
+    id          SERIAL PRIMARY KEY,
+    userId      SERIAL NOT NULL,
+    deviceId    BIGINT NOT NULL,
+    caseTypeId  BIGINT NOT NULL,
+    stateId     BIGINT NOT NULL,
+    hash        TEXT NOT NULL,
+    dateBegin   TIMESTAMP WITHOUT TIME ZONE,
+    dateEnd     TIMESTAMP WITHOUT TIME ZONE,
+    FOREIGN KEY (userId) REFERENCES users (id),
+    FOREIGN KEY (deviceId) REFERENCES devices (id)
+);
+
+CREATE TABLE service_case_messages
+(
+    id            SERIAL PRIMARY KEY,
+    userId        BIGINT NOT NULL,
+    serviceCaseId BIGINT NOT NULL,
+    stateId       BIGINT NOT NULL,
+    message       TEXT NOT NULL,
+    date          TIMESTAMP WITHOUT TIME ZONE,
     FOREIGN KEY (userId) REFERENCES users (id),
     FOREIGN KEY (serviceCaseId) REFERENCES service_cases (id)
 );
@@ -65,27 +70,25 @@ CREATE TABLE users_service_cases
 /*kontrola zda existuje adresa v databázi předs vložením usera*/
 ALTER TABLE USERS
     ADD CONSTRAINT "fk_address"
-        FOREIGN KEY (address) REFERENCES ADDRESSES (id)
+        FOREIGN KEY (addressId) REFERENCES ADDRESSES (id)
             ON DELETE RESTRICT
             ON UPDATE CASCADE;
 
+/* DEVICES */
+INSERT INTO public.devices (id, typeId, modelName, serialNumber, releaseDate) VALUES (1, 1, 'MP-H100', 'SI2E26ZDBD6YVKQ', TIMESTAMP '2020-03-01 00:00:00.000000 CET');
+INSERT INTO public.devices (id, typeId, modelName, serialNumber, releaseDate) VALUES (2, 2, 'MP-D100', '2H6KDZDSKDPRP5B', TIMESTAMP '2020-03-01 00:00:00.000000 CET');
+INSERT INTO public.devices (id, typeId, modelName, serialNumber, releaseDate) VALUES (3, 3, 'MB-K100', '067FOPSTKEI76HZ', TIMESTAMP '2020-03-01 00:00:00.000000 CET');
+INSERT INTO public.devices (id, typeId, modelName, serialNumber, releaseDate) VALUES (4, 4, 'MS-O100', 'POVS700YN7ZPDVU', TIMESTAMP '2020-03-01 00:00:00.000000 CET');
+INSERT INTO public.devices (id, typeId, modelName, serialNumber, releaseDate) VALUES (5, 5, 'MW-CH10', 'WA6KVFQZ2JTZWCZ', TIMESTAMP '2020-03-01 00:00:00.000000 CET');
+INSERT INTO public.devices (id, typeId, modelName, serialNumber, releaseDate) VALUES (6, 6, 'MP-DS10', 'K3FUYM54R6LCPJE', TIMESTAMP '2020-03-01 00:00:00.000000 CET');
 
-/*DEVICES*/
-INSERT INTO public.devices (id, type, modelname, serialnumber)
-VALUES (1, 'MY_PHONE', 'MP-D100', 'dsadsda');
-/*ADDRESSES*/
-INSERT INTO public.addresses (id, street, housenumber, postalcode, city)
-VALUES (1, 'Divická', '450', '56601', 'Vyoské Mýto');
-INSERT INTO public.addresses (id, street, housenumber, postalcode, city)
-VALUES (2, 'Bratří zvonků', '690', '50003', 'Hradec Králové');
-INSERT INTO public.addresses (id, street, housenumber, postalcode, city)
-VALUES (3, 'Na pouchově', '534', '50003', 'Praha');
+/* ADDRESSES */
+INSERT INTO public.addresses (id, street, housenumber, postalcode, city) VALUES (1, 'U hadů a krys', '666', '666 00', 'Vysoké Mýto');
+INSERT INTO public.addresses (id, street, housenumber, postalcode, city) VALUES (2, 'Černý Benzo', 'c63s', '500 00', 'Hradec Králové');
 
-/*OPERATORS*/
-INSERT INTO public.users (id, address, name, surname, phone, email, operator)
-VALUES (1, 1, 'Jan', 'Chaloupka', '123456789', 'drdobbylp@gmail.com', true);
-INSERT INTO public.users (id, address, name, surname, phone, email, operator)
-VALUES (2, 2, 'Daniel', 'Krejčí', '123456789', 'danielkrejci7@gmail.com', true);
+/* OPERATORS */
+INSERT INTO public.users (id, addressid, name, surname, phone, email, isClient, isOperator) VALUES (1, 1, 'Jan', 'Chaloupka', '+420 123 456 789', 'drdobbylp@gmail.com', false, true);
+INSERT INTO public.users (id, addressid, name, surname, phone, email, isClient, isOperator) VALUES (2, 2, 'Daniel', 'Krejčí', '+420 123 456 789', 'daniel.krejci777@gmail.com', false, true);
 
 
 /* TODO kontrola před vložením service_case že daný device_id existuje */

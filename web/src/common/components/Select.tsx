@@ -44,7 +44,7 @@ export const Select: React.FC<SelectProps> = observer(props => {
     // Action called on selected value change
     const onChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         runInAction(() => {
-            const selected = props.field.options().filter(opt => opt.code === e.target.value)[0]
+            const selected = props.field.options().filter(opt => opt.code.toString() === e.target.value.toString())[0]
             if (selected) {
                 props.field.value = selected
 

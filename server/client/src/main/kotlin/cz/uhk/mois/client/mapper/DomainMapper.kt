@@ -16,12 +16,12 @@ interface DomainMapper {
     fun fromDto(deviceDto: DeviceDto): Device
 
     fun toDto(address: Address): AddressDto
-    fun fromDto(adress: AddressDto): Address
+    fun fromDto(address: AddressDto): Address
 
     fun toDto(user: User): UserDto
     fun fromDto(userDto: UserDto): User
 
-    @Mapping(target = "stateType", constant = StateType.NEW_CONSTANT)
+    @Mapping(target = "stateId", constant = StateType.NEW_CONSTANT)
     fun fromDto(sc: CreateServiceCaseDto): ServiceCase
     fun toDto(sc: ServiceCase): CreateServiceCaseDto
 
@@ -33,6 +33,6 @@ interface DomainMapper {
 
     fun toUserLoser(userDto: UserDto, addressDto: AddressDto): UserLoser
 
-    fun fromServiceCaseToAddressDto(serviceCaseDto: CreateServiceCaseDto): Address
+    fun fromServiceCaseToAddress(serviceCaseDto: CreateServiceCaseDto): Address
 
 }

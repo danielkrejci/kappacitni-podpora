@@ -11,15 +11,30 @@ class User(
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE)
     var id: Long? = null,
-    var address: Long,
+
+    @Column("addressId")
+    var addressId: Long?,
+
+    @Column("name")
     var name: String,
+
+    @Column("surname")
     var surname: String,
+
+    @Column("phone")
     var phone: String?,
+
+    @Column("email")
     var email: String,
-    var operator: Boolean
+
+    @Column("isOperator")
+    var isOperator: Boolean,
+
+    @Column("isClient")
+    var isClient: Boolean
 ) {
     override fun toString(): String {
-        return "User(id=$id, address=$address, name='$name', surname='$surname', phone='$phone', email='$email', operator=$operator)"
+        return "User(id=$id, addressId=$addressId, name='$name', surname='$surname', phone='$phone', email='$email', isOperator=$isOperator, isClient=$isClient)"
     }
 }
 
@@ -28,11 +43,17 @@ class Address(
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE)
     var id: Long? = null,
+
+    @Column("street")
     var street: String?,
-    @Column("housenumber")
+
+    @Column("houseNumber")
     var houseNumber: String?,
-    @Column("postalcode")
+
+    @Column("postalCode")
     var postalCode: String?,
+
+    @Column("city")
     var city: String?
 ) {
     override fun toString(): String {

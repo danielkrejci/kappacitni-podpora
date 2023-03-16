@@ -13,27 +13,28 @@ class ServiceCase(
     @GeneratedValue(strategy = GenerationType.TABLE)
     var id: Long? = null,
 
-    @Column("userid")
+    @Column("userId")
     var userId: Long? = null,
 
-    @Column("deviceid")
-    var deviceId: Long? = null,
+    @Column("deviceId")
+    var deviceId: Long,
 
-    @Column("casetype")
-    var caseType: String,
+    @Column("caseTypeId")
+    var caseTypeId: Long,
 
-    @Column("statetype")
-    var stateType: String,
-
-    @Column("datebegin")
-    var dateBegin: Instant?,
-    @Column("dateend")
-    var dateEnd: Instant?,
+    @Column("stateId")
+    var stateId: Long,
 
     @Column("hash")
-    var hash: String?
+    var hash: String?,
+
+    @Column("dateBegin")
+    var dateBegin: Instant?,
+
+    @Column("dateEnd")
+    var dateEnd: Instant?
 ) {
     override fun toString(): String {
-        return "ServiceCase(id=$id, userId=$userId, deviceId=$deviceId, caseType='$caseType', stateType='$stateType', dateBegin=$dateBegin, dateEnd=$dateEnd)"
+        return "ServiceCase(id=$id, userId=$userId, deviceId=$deviceId, caseTypeId='$caseTypeId', stateId='$stateId', hash=$hash, dateBegin=$dateBegin, dateEnd=$dateEnd)"
     }
 }

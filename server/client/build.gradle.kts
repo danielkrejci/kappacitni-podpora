@@ -30,6 +30,7 @@ dependencies {
     implementation("javax.persistence:javax.persistence-api:2.2")
     implementation("commons-lang:commons-lang:2.6")
     implementation("org.springdoc:springdoc-openapi-starter-webflux-ui:2.0.0")
+    implementation("org.projectlombok:lombok:1.18.20")
 
     runtimeOnly("org.postgresql:postgresql")
     runtimeOnly("org.postgresql:r2dbc-postgresql")

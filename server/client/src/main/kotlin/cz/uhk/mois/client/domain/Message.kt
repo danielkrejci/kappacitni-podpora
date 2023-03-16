@@ -7,21 +7,28 @@ import java.time.Instant
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 
-@Table(name = "MESSAGES")
+@Table(name = "SERVICE_CASE_MESSAGES")
 class Message(
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE)
     var id: Long? = null,
-    @Column("userid")
+
+    @Column("userId")
     var userId: Long,
-    @Column("servicecaseid")
+
+    @Column("serviceCaseId")
     var serviceCaseId: Long,
-    @Column("statetype")
-    var stateType: String,
+
+    @Column("stateId")
+    var stateId: Long,
+
+    @Column("message")
     var message: String,
+
+    @Column("date")
     var date: Instant
 ) {
     override fun toString(): String {
-        return "Message(id=$id, userId=$userId, serviceCaseId=$serviceCaseId, stateType='$stateType', message='$message', date=$date)"
+        return "Message(id=$id, userId=$userId, serviceCaseId=$serviceCaseId, stateId='$stateId', message='$message', date=$date)"
     }
 }
