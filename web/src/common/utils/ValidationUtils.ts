@@ -20,8 +20,19 @@ export module ValidationUtils {
         }
     }
 
+    export function checked(field: Field<boolean>) {
+        if (field && field.value !== true) {
+            field.validation.addError('fieldIsRequired')
+        }
+    }
+
     export function requiredSelect(field: Field<SelectField>) {
-        if (field && (field.value.code === '' || field.value.code === SelectFieldUtils.optionNone().code)) {
+        if (
+            field &&
+            (field.value.code === '' ||
+                field.value.code === SelectFieldUtils.optionNone().code ||
+                field.value.code === SelectFieldUtils.optionNotSelected().code)
+        ) {
             field.validation.addError('fieldIsRequired')
         }
     }
@@ -46,8 +57,16 @@ export module ValidationUtils {
     }
 
     export function phone(field: Field<string>) {
-        if (field && (field.value.length < 5 || field.value.length > 20)) {
+        const phoneRegex = /^[1-9][0-9]{2} ?[0-9]{3} ?[0-9]{3}$/
+        if (field && (field.value.length < 9 || field.value.length > 20 || !phoneRegex.test(field.value))) {
             field.validation.addError('Field must contain valid phone number')
+        }
+    }
+
+    export function postalCode(field: Field<string>) {
+        const postalCodeRegex = /^[0-9]{5}$/
+        if (field && (field.value.length !== 5 || !postalCodeRegex.test(field.value))) {
+            field.validation.addError('Field must contain valid postal code')
         }
     }
 

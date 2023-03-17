@@ -15,4 +15,16 @@ export type ServiceCaseForm = {
     postalCode: string
 }
 
+export type ServiceCaseCreated = {
+    id: string
+    hash: string
+    email?: string
+}
+
+export const EMPTY_SERVICE_CASE_CREATED = {
+    id: '',
+    hash: '',
+    email: '',
+}
+
 export type ServiceCaseDetail = {}

@@ -11,13 +11,15 @@ export class NavigationStore {
 
     index = () => this.history.push(this.href.index())
     serviceCaseForm = (deviceName: AnyParam) => this.history.push(this.href.serviceCaseForm(deviceName))
-    serviceCaseDetail = (serviceCaseId: AnyParam) => this.history.push(this.href.serviceCaseDetail(serviceCaseId))
+    serviceCaseDetail = (serviceCaseId: AnyParam, serviceCaseHash: AnyParam) =>
+        this.history.push(this.href.serviceCaseDetail(serviceCaseId, serviceCaseHash))
 
     back = () => this.history.back()
 
     href = {
         index: () => `/index`,
         serviceCaseForm: (deviceName?: AnyParam) => `/device/${deviceName ?? ':deviceName'}`,
-        serviceCaseDetail: (serviceCaseId: AnyParam) => `/detail/${serviceCaseId ?? 'serviceCaseId'}`,
+        serviceCaseDetail: (serviceCaseId: AnyParam, serviceCaseHash: AnyParam) =>
+            `/detail/${serviceCaseId ?? ':serviceCaseId'}/${serviceCaseHash ?? ':serviceCaseHash'}`,
     }
 }
