@@ -10,7 +10,6 @@ import { Input } from '../common/components/Input'
 import { InputGroup } from '../common/components/InputGroup'
 import { InputGroupAddon } from '../common/components/InputGroupAddon'
 import { Label } from '../common/components/Label'
-import { Loader } from '../common/components/Loader'
 import { Row } from '../common/components/Row'
 import { Select } from '../common/components/Select'
 import { Textarea } from '../common/components/Textarea'
@@ -26,8 +25,10 @@ export const ServiceCaseFormPage: React.FC<ServiceCaseFormPageProps> = props => 
     const { deviceName } = useParams<{ deviceName: string }>()
 
     useEffect(() => {
-        store.init(deviceName!)
-    }, [])
+        if (!store.initDone) {
+            store.init(deviceName!)
+        }
+    }, [deviceName, store])
 
     return (
         <div className='content'>
@@ -52,11 +53,19 @@ export const ServiceCaseFormPageCreated: React.FC<ServiceCaseFormPageCreatedProp
                 </h1>
                 <h2 className='text-success text-uppercase'>Žádost byla odeslána</h2>
                 <p className='mt-2 restricted'>
-                    Zkontroluj svou e-mailovou schránku <strong>{store.created.email ?? ''}</strong>,<br />
+                    Zkontroluj svou e-mailovou schránku
+                    {store.saved.email ? (
+                        <>
+                            &nbsp;<strong>{store.saved.email}</strong>
+                        </>
+                    ) : (
+                        ''
+                    )}
+                    ,<br />
                     odeslali jsme Ti potvrzení a dodatečné informace.
                 </p>
                 <p className='mt-5'>
-                    <a href={navigation.href.serviceCaseDetail(store.created.id, store.created.hash)}>
+                    <a href={navigation.href.serviceCaseDetail(store.saved.id, store.saved.hash)}>
                         Přejít na servisní případ&nbsp;
                         <i className='fa fa-arrow-right' />
                     </a>
@@ -78,7 +87,7 @@ export const ServiceCaseFormPageForm: React.FC<ServiceCaseFormPageFormProps> = o
                 <h1 className='my-5'>Podpora pro {store.selectedDevice.name}</h1>
             </div>
 
-            {store.isCreated ? (
+            {store.isSaved ? (
                 <ServiceCaseFormPageCreated store={store} />
             ) : (
                 <form>
@@ -87,7 +96,9 @@ export const ServiceCaseFormPageForm: React.FC<ServiceCaseFormPageFormProps> = o
                             <Col xs={12}>
                                 <p className='mb-5'>
                                     <a href='/index'>Úvodní stránka</a>{' '}
-                                    <span className='text-muted'>/ Podpora pro {store.selectedDevice.name}</span>
+                                    <span className='text-muted'>
+                                        / Podpora {store.selectedDevice.name ? `pro ${store.selectedDevice.name}` : ''}
+                                    </span>
                                 </p>
 
                                 <h2>Jaký máš s {store.selectedDevice.name} problém?</h2>
@@ -106,13 +117,13 @@ export const ServiceCaseFormPageForm: React.FC<ServiceCaseFormPageFormProps> = o
                                     </Col>
                                     <Col xs={12} md={4}>
                                         <FormGroup>
-                                            <Label id='email'>Sériové číslo:</Label>
+                                            <Label id='serialNumber'>Sériové číslo:</Label>
                                             <Input field={store.form.serialNumber} name='serialNumber' type='text' required />
                                         </FormGroup>
                                     </Col>
                                     <Col xs={12}>
                                         <FormGroup>
-                                            <Label id='email'>Zpráva:</Label>
+                                            <Label id='message'>Zpráva:</Label>
                                             <Textarea field={store.form.message} maxLength={5000} required />
                                         </FormGroup>
                                     </Col>
@@ -123,13 +134,13 @@ export const ServiceCaseFormPageForm: React.FC<ServiceCaseFormPageFormProps> = o
                                 <Row className='mt-5'>
                                     <Col xs={12} md={4}>
                                         <FormGroup>
-                                            <Label id='email'>Jméno:</Label>
+                                            <Label id='name'>Jméno:</Label>
                                             <Input field={store.form.name} name='name' type='text' required />
                                         </FormGroup>
                                     </Col>
                                     <Col xs={12} md={4}>
                                         <FormGroup>
-                                            <Label id='email'>Příjmení:</Label>
+                                            <Label id='surname'>Příjmení:</Label>
                                             <Input field={store.form.surname} name='surname' type='text' required />
                                         </FormGroup>
                                     </Col>

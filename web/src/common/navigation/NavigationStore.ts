@@ -19,7 +19,6 @@ export class NavigationStore {
     href = {
         index: () => `/index`,
         serviceCaseForm: (deviceName?: AnyParam) => `/device/${deviceName ?? ':deviceName'}`,
-        serviceCaseDetail: (serviceCaseId: AnyParam, serviceCaseHash: AnyParam) =>
-            `/detail/${serviceCaseId ?? ':serviceCaseId'}/${serviceCaseHash ?? ':serviceCaseHash'}`,
+        serviceCaseDetail: (id?: AnyParam, hash?: AnyParam) => `/detail/${id ?? ':id'}/${hash ?? ':hash'}`,
     }
 }

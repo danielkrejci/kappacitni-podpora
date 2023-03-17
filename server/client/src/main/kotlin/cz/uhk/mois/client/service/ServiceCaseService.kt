@@ -265,4 +265,6 @@ data class UserLoser(
     var houseNumber: String?,
     var city: String?,
     var postalCode: String?,
+    var isClient: Boolean,
+    var isOperator: Boolean
 )

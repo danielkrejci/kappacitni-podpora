@@ -7,7 +7,7 @@ export module ValidationUtils {
     export function requiredDate(field: Field<string>) {
         const regex = /^\s*\d{4}-(1[012]|0?[1-9])-(3[01]|[12][0-9]|0?[1-9])\s*$/
         if (field && field.value.trim() === '') {
-            field.validation.addError('fieldIsRequired')
+            field.validation.addError('Povinný údaj')
         }
         if (field && !(regex.test(field.value) && !isNaN(new Date(field.value).getTime()))) {
             field.validation.addError('Field must contain valid date')
@@ -16,13 +16,13 @@ export module ValidationUtils {
 
     export function required(field: Field<string>) {
         if (field && field.value.trim() === '') {
-            field.validation.addError('fieldIsRequired')
+            field.validation.addError('Povinný údaj')
         }
     }
 
     export function checked(field: Field<boolean>) {
         if (field && field.value !== true) {
-            field.validation.addError('fieldIsRequired')
+            field.validation.addError('Povinný údaj')
         }
     }
 
@@ -33,7 +33,7 @@ export module ValidationUtils {
                 field.value.code === SelectFieldUtils.optionNone().code ||
                 field.value.code === SelectFieldUtils.optionNotSelected().code)
         ) {
-            field.validation.addError('fieldIsRequired')
+            field.validation.addError('Povinný údaj')
         }
     }
 
@@ -84,7 +84,7 @@ export module ValidationUtils {
 
     export function requiredOrNoneSelect(field: Field<SelectField>) {
         if (field && field.value.code === '') {
-            field.validation.addError('fieldIsRequired')
+            field.validation.addError('Povinný údaj')
         }
     }
 

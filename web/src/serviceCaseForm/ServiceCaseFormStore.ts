@@ -15,7 +15,9 @@ import { ValidationUtils } from '../common/utils/ValidationUtils'
 export class ServiceCaseFormStore {
     isLoading = false
 
-    created: ServiceCaseCreated = EMPTY_SERVICE_CASE_CREATED
+    initDone = false
+
+    saved: ServiceCaseCreated = EMPTY_SERVICE_CASE_CREATED
 
     selectedDevice: DeviceType = EMPTY_DEVICE_TYPE
 
@@ -48,16 +50,18 @@ export class ServiceCaseFormStore {
             isLoading: observable,
             codetables: observable,
             selectedDevice: observable,
-            created: observable,
+            saved: observable,
+            initDone: observable,
             init: action,
             save: action,
             reset: action,
             validate: action,
-            isCreated: computed,
+            isSaved: computed,
         })
     }
 
     init(deviceName: string) {
+        this.initDone = true
         this.loadCodetables(deviceName)
     }
 
@@ -116,7 +120,7 @@ export class ServiceCaseFormStore {
                             showAlertDialog('Chyba', result.cause, AlertDialogType.Danger)
                         } else {
                             this.isLoading = false
-                            this.created = {
+                            this.saved = {
                                 id: result.id,
                                 hash: result.hash,
                                 email: data.email,
@@ -133,8 +137,8 @@ export class ServiceCaseFormStore {
         }
     }
 
-    get isCreated(): boolean {
-        return this.created.id !== '' && this.created.hash !== ''
+    get isSaved(): boolean {
+        return this.saved.id !== '' && this.saved.hash !== ''
     }
 
     validate(): boolean {

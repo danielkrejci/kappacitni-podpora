@@ -7,6 +7,8 @@ import { ServiceCaseFormStore } from './serviceCaseForm/ServiceCaseFormStore'
 import { HomePage } from './home/HomePage'
 import { ServiceCaseFormPage } from './serviceCaseForm/ServiceCaseFormPage'
 import { PageLayout } from './common/layout/PageLayout'
+import { ServiceCaseDetailStore } from './serviceCaseDetail/ServiceCaseDetailStore'
+import { ServiceCaseDetailPage } from './serviceCaseDetail/ServiceCaseDetailPage'
 
 /**
  * Single browser history instance used by router and also by stores when it's needed (eg. for redirect after action).
@@ -17,7 +19,8 @@ export const navigation = new NavigationStore(browserHistory)
 
 const rootStore = {
     homeStore: new HomeStore(),
-    ServiceCaseFormStore: new ServiceCaseFormStore(),
+    serviceCaseFormStore: new ServiceCaseFormStore(),
+    serviceCaseDetailStore: new ServiceCaseDetailStore(),
 }
 
 function App() {
@@ -44,7 +47,19 @@ function App() {
                         }}
                         element={
                             <PageLayout>
-                                <ServiceCaseFormPage store={rootStore.ServiceCaseFormStore} />
+                                <ServiceCaseFormPage store={rootStore.serviceCaseFormStore} />
+                            </PageLayout>
+                        }
+                    />
+
+                    <Route
+                        path={navigation.href.serviceCaseDetail()}
+                        loader={({ request, params }) => {
+                            console.log('loader', request, params)
+                        }}
+                        element={
+                            <PageLayout>
+                                <ServiceCaseDetailPage store={rootStore.serviceCaseDetailStore} />
                             </PageLayout>
                         }
                     />

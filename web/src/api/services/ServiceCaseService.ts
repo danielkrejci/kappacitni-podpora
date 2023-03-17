@@ -8,7 +8,7 @@ export class ServiceCaseService {
     }
 
     static async getServiceCase(id: string, hash: string) {
-        return await ApiService.get<ServiceCaseDetail[]>(`http://localhost:8081/service-cases/${id}/${hash}`)
+        return await ApiService.get<ServiceCaseDetail>(`http://localhost:8081/service-cases/${id}/${hash}`)
     }
 
     static async createServiceCase(serviceCase: ServiceCaseForm) {
