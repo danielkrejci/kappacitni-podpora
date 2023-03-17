@@ -32,6 +32,7 @@ interface DomainMapper {
     fun toDto(userDto: UsersServiceCases): UsersServiceCasesDto
 
     fun toUserLoser(userDto: UserDto, addressDto: AddressDto): UserLoser
+    fun toUserLoser(userDto: UserDto): UserLoser
 
     fun fromServiceCaseToAddress(serviceCaseDto: CreateServiceCaseDto): Address
 

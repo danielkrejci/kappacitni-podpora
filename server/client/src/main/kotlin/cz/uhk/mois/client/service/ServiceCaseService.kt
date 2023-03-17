@@ -2,6 +2,7 @@ package cz.uhk.mois.client.service
 
 import cz.uhk.mois.client.controller.model.*
 import cz.uhk.mois.client.domain.ServiceCase
+import cz.uhk.mois.client.exception.AddressNotCompleteException
 import cz.uhk.mois.client.exception.ServiceCaseNotFoundException
 import cz.uhk.mois.client.exception.ValidationFailedException
 import cz.uhk.mois.client.mapper.DomainMapper
@@ -13,7 +14,9 @@ import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
 import java.time.Instant
+import java.time.LocalDateTime
 import java.time.ZoneId
+import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.logging.Logger
 
@@ -32,7 +35,7 @@ class ServiceCaseService(
     private val logger = Logger.getLogger(this.javaClass.name)
 
     companion object {
-        private const val format =  "yyyy-MM-dd HH:mm:ss"
+        private const val format = "yyyy-MM-dd HH:mm:ss"
         private val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern(format).withZone(ZoneId.systemDefault())
     }
 
@@ -47,7 +50,7 @@ class ServiceCaseService(
                         Pair("id", serviceCase.id),
                         Pair("stateId", serviceCase.stateId),
                         Pair("caseTypeId", serviceCase.caseTypeId),
-                        Pair("dateBegin",formatter.format(serviceCase.dateBegin)),
+                        Pair("dateBegin", formatter.format(serviceCase.dateBegin)),
                         Pair("dateEnd", formatter.format(serviceCase.dateBegin)),
                         Pair("hash", serviceCase.hash)
                     )
@@ -80,7 +83,7 @@ class ServiceCaseService(
                                         val user = it.t1
                                         val msg = it.t2
                                         val map = mapOf(
-                                           Pair("author", user),
+                                            Pair("author", user),
                                             Pair("id", msg.id),
                                             Pair("date", formatter.format(msg.date)),
                                             Pair("message", msg.message),
@@ -96,14 +99,13 @@ class ServiceCaseService(
                     map["client"] = data.t1
                     map["operators"] = data.t2
                     map["device"] = data.t3
-                    map["messages"] = data.t4
+                    map["messages"] = data.t4.sortedBy { getMessageTime(it["date"] as CharSequence) }
                     Mono.just(map)
                 }
             }
     }
 
     fun createServiceCase(serviceCase: CreateServiceCaseDto): Mono<ServiceCase> {
-        //TODO při vytvoření SC přiřadit operátorovi, pokud žádný nemá nic tak náhodně, jinak tomu kdo jich má nejméně
         return validationService.validate(serviceCase)
             .flatMap {
                 //TODO UPDATE ADRES
@@ -124,27 +126,40 @@ class ServiceCaseService(
                         // TODO adresa není povinný údaj, když ji nezadám, tak se nesmí vytvořit prázdný záznam v tabulce addresses
                         val address = mapper.fromServiceCaseToAddress(serviceCase)
 
-                        logger.info { address.toString() }
-
-                        addressRepository.save(address)
-                            .flatMap { savedAddress ->
-                                val newUser = UserDto(
-                                    null,
-                                    savedAddress.id,
-                                    serviceCase.name,
-                                    serviceCase.surname,
-                                    serviceCase.phone,
-                                    serviceCase.email,
-                                    false,
-                                    true
-                                )
-
-                                val user = mapper.fromDto(newUser)
-
-                                logger.info { user.toString() }
-
-                                userRepository.save(user)
+                        if (address.isEmpty()) {
+                            val newUser = UserDto(
+                                null,
+                                null,
+                                serviceCase.name,
+                                serviceCase.surname,
+                                serviceCase.phone,
+                                serviceCase.email,
+                                false,
+                                true
+                            )
+                            val user = mapper.fromDto(newUser)
+                            userRepository.save(user)
+                        } else {
+                            if (address.hasIncompleteAttributes()) {
+                                throw AddressNotCompleteException("Address is not complete")
+                            } else {
+                                addressRepository.save(address)
+                                    .flatMap { savedAddress ->
+                                        val newUser = UserDto(
+                                            null,
+                                            savedAddress.id,
+                                            serviceCase.name,
+                                            serviceCase.surname,
+                                            serviceCase.phone,
+                                            serviceCase.email,
+                                            false,
+                                            true
+                                        )
+                                        val user = mapper.fromDto(newUser)
+                                        userRepository.save(user)
+                                    }
                             }
+                        }
                             .flatMap { user ->
                                 sc.userId = user.id!!
                                 saveServiceCaseAndMessage(sc, serviceCase.message, serviceCase.serialNumber)
@@ -214,6 +229,13 @@ class ServiceCaseService(
         }
     }
 
+    private fun getMessageTime(das: CharSequence): Instant {
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+        val localDateTime = LocalDateTime.parse(das as CharSequence?, formatter)
+        val zonedDateTime = ZonedDateTime.of(localDateTime, ZoneId.systemDefault())
+        return zonedDateTime.toInstant()
+    }
+
     private fun generateHash(): String {
         val charPool: List<Char> = ('a'..'z') + ('A'..'Z') + ('0'..'9')
         return (1..128)
@@ -223,9 +245,14 @@ class ServiceCaseService(
     }
 
     private fun userToUserLoser(user: UserDto): Mono<UserLoser> {
-        return addressRepository.findById(user.addressId!!).map { address ->
-            mapper.toUserLoser(user, mapper.toDto(address))
+        if (user.addressId == null) {
+            return Mono.just(mapper.toUserLoser(user))
         }
+
+        return addressRepository.findById(user.addressId!!)
+            .map { address ->
+                mapper.toUserLoser(user, mapper.toDto(address))
+            }
     }
 }
 
@@ -233,9 +260,9 @@ data class UserLoser(
     var name: String,
     var surname: String,
     var email: String,
-    var phone: String,
-    var street: String,
-    var houseNumber: String,
-    var city: String,
-    var postalCode: String,
+    var phone: String?,
+    var street: String?,
+    var houseNumber: String?,
+    var city: String?,
+    var postalCode: String?,
 )

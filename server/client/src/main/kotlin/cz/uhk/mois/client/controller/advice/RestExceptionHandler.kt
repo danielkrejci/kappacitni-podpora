@@ -1,5 +1,6 @@
 package cz.uhk.mois.client.controller.advice
 
+import cz.uhk.mois.client.exception.AddressNotCompleteException
 import cz.uhk.mois.client.exception.DeviceNotFoundException
 import cz.uhk.mois.client.exception.ValidationFailedException
 import org.springframework.http.HttpStatus
@@ -20,6 +21,12 @@ class RestExceptionHandler {
 
     @ExceptionHandler(value = [ValidationFailedException::class])
     fun handleValidation(ex: ValidationFailedException): ResponseEntity<ErrorResponse?>? {
+        val error: ErrorResponse = ErrorResponse.create(ex, HttpStatus.BAD_REQUEST, ex.message!!)
+        return ResponseEntity<ErrorResponse?>(error, HttpStatus.BAD_REQUEST)
+    }
+
+    @ExceptionHandler(value = [AddressNotCompleteException::class])
+    fun handleValidation(ex: AddressNotCompleteException): ResponseEntity<ErrorResponse?>? {
         val error: ErrorResponse = ErrorResponse.create(ex, HttpStatus.BAD_REQUEST, ex.message!!)
         return ResponseEntity<ErrorResponse?>(error, HttpStatus.BAD_REQUEST)
     }
