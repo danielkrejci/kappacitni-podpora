@@ -1,7 +1,6 @@
 import { GoogleLogin } from '@react-oauth/google'
 import { observer } from 'mobx-react-lite'
 import { navigationStore } from '../../App'
-import { Col } from '../../common/components/Col'
 import { Row } from '../../common/components/Row'
 import { LoginStore } from './LoginStore'
 
