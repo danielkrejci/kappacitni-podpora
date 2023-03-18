@@ -39,6 +39,9 @@ class ServiceCaseService(
         private val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern(format).withZone(ZoneId.systemDefault())
     }
 
+    fun findServiceCase(id: Long): Mono<ServiceCase> = serviceCaseRepository.findById(id)
+        .switchIfEmpty(Mono.error(ServiceCaseNotFoundException("Service case not found")))
+
     fun getServiceCaseDetail(id: String, hash: String): Mono<Map<String, Any>> {
         val map = HashMap<String, Any>()
         //TODO validation for id.toLong
@@ -106,7 +109,7 @@ class ServiceCaseService(
     }
 
     fun createServiceCase(serviceCase: CreateServiceCaseDto): Mono<ServiceCase> {
-        return validationService.validate(serviceCase)
+        return validationService.validateServiceCase(serviceCase)
             .flatMap {
                 //TODO UPDATE ADRES
                 val sc = mapper.fromDto(it)
@@ -166,6 +169,15 @@ class ServiceCaseService(
 
                             }
                     }
+            }
+    }
+
+    fun updateServiceCaseState(serviceCaseId: Long, stateId: Long): Mono<ServiceCase> {
+        return serviceCaseRepository.findById(serviceCaseId)
+            .switchIfEmpty(Mono.error(ServiceCaseNotFoundException("Service case with id $serviceCaseId not found")))
+            .flatMap {
+                it.stateId = stateId
+                serviceCaseRepository.save(it)
             }
     }
 

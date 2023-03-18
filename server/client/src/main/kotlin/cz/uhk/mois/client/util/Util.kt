@@ -5,4 +5,8 @@ data class CodableDto(
     val value: String
 )
 
-class Util
+data class SendMessage(
+    var userId: Long,
+    var hash: String,
+    var message: String
+)

@@ -3,8 +3,11 @@ package cz.uhk.mois.client.controller
 import cz.uhk.mois.client.controller.model.CreateServiceCaseDto
 import cz.uhk.mois.client.controller.model.SavedServiceCaseDto
 import cz.uhk.mois.client.controller.model.ServiceCaseType
+import cz.uhk.mois.client.domain.Message
+import cz.uhk.mois.client.service.MessageService
 import cz.uhk.mois.client.service.ServiceCaseService
 import cz.uhk.mois.client.util.CodableDto
+import cz.uhk.mois.client.util.SendMessage
 import io.swagger.v3.oas.annotations.Operation
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -14,7 +17,19 @@ import reactor.core.publisher.Mono
 @CrossOrigin("*")
 @RestController
 @RequestMapping("/service-cases")
-class ServiceCaseController(private val serviceCaseService: ServiceCaseService) {
+class ServiceCaseController(
+    private val serviceCaseService: ServiceCaseService,
+    private val messageService: MessageService
+) {
+
+
+    @PostMapping("/{serviceCaseId}/message")
+    fun sendMessageToServiceCase(
+        @RequestBody message: SendMessage,
+        @PathVariable serviceCaseId: Long
+    ): ResponseEntity<Mono<Message>> {
+        return ResponseEntity(messageService.sendMessage(message, serviceCaseId), HttpStatus.CREATED)
+    }
 
     @GetMapping("/{id}/{hash}")
     fun getServiceCaseDetail(@PathVariable id: String, @PathVariable hash: String): Mono<Map<String, Any>> {
@@ -30,8 +45,9 @@ class ServiceCaseController(private val serviceCaseService: ServiceCaseService) 
     @Operation(summary = "Send Messages to Ibm Mq", description = "Send Message to the related ibm mq")
     @PostMapping
     fun createServiceCase(@RequestBody sc: CreateServiceCaseDto): ResponseEntity<Mono<SavedServiceCaseDto>> {
-        return ResponseEntity(serviceCaseService.createServiceCase(sc).mapNotNull { SavedServiceCaseDto(it.id!!, it.hash!!) }, HttpStatus.CREATED)
+        return ResponseEntity(
+            serviceCaseService.createServiceCase(sc).mapNotNull { SavedServiceCaseDto(it.id!!, it.hash!!) },
+            HttpStatus.CREATED
+        )
     }
-
-
 }

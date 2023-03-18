@@ -25,6 +25,10 @@ class UsersServiceCasesService(
         }
     }
 
+    fun hasOperatorAssignedServiseCase(operatorId: Long, serviceCaseId: Long): Mono<Boolean> {
+        return repository.findIfOperatorIsAssigned(operatorId, serviceCaseId)
+    }
+
     fun getOperatorScCount(userId: Long): Mono<Long> {
         return repository.findUserIdWithFewestServiceCases(userId)
     }
