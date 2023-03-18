@@ -16,6 +16,8 @@ import { AdminIndexStore } from './admin/index/AdminIndexStore'
 import { AdminIndexPage } from './admin/index/AdminIndexPage'
 import { browserHistory, NavigationContext } from './common/navigation/NavigationContext'
 import { observer } from 'mobx-react'
+import { AdminUsersPage } from './admin/users/AdminUsersPage'
+import { AdminUsersStore } from './admin/users/AdminUsersStore'
 
 // Global navigation store instance
 export const navigationStore = new NavigationStore(browserHistory)
@@ -26,6 +28,7 @@ const rootStore = {
     serviceCaseDetailStore: new ServiceCaseDetailStore(),
     loginStore: new LoginStore(),
     adminIndexStore: new AdminIndexStore(),
+    adminUsersStore: new AdminUsersStore(),
 }
 
 export const authService = new AuthService()
@@ -84,6 +87,23 @@ export const App = observer((props: any) => {
                                 <AdminPageLayout>
                                     {authService.isLoggedIn}
                                     <AdminIndexPage store={rootStore.adminIndexStore} />
+                                </AdminPageLayout>
+                            ) : (
+                                <PageLayout>
+                                    {authService.isLoggedIn}
+                                    <LoginPage store={rootStore.loginStore} />
+                                </PageLayout>
+                            )
+                        }
+                    />
+
+                    <Route
+                        path={navigation.href.adminUsers()}
+                        render={() =>
+                            authService.isLoggedIn ? (
+                                <AdminPageLayout>
+                                    {authService.isLoggedIn}
+                                    <AdminUsersPage store={rootStore.adminUsersStore} />
                                 </AdminPageLayout>
                             ) : (
                                 <PageLayout>

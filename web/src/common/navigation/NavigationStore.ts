@@ -18,6 +18,8 @@ export class NavigationStore {
 
     adminIndex = () => this.history.push(this.href.adminIndex())
 
+    adminUsers = (type: AnyParam) => this.history.push(this.href.adminUsers(type))
+
     back = () => this.history.goBack()
 
     href = {
@@ -26,5 +28,6 @@ export class NavigationStore {
         serviceCaseDetail: (id?: AnyParam, hash?: AnyParam) => `/detail/${id ?? ':id'}/${hash ?? ':hash'}`,
         login: () => '/admin/login',
         adminIndex: () => '/admin/index',
+        adminUsers: (type?: AnyParam) => `/admin/users/${type ?? ':type'}`,
     }
 }

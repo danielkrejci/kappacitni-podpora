@@ -38,3 +38,8 @@ export type AuthUser = User & {
     iat: string
     picture: string
 }
+
+export enum UserType {
+    CLIENT = 'CLIENT',
+    OPERATOR = 'OPERATOR',
+}

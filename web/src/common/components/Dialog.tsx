@@ -72,7 +72,7 @@ export const Dialog: React.FC<DialogProps> = observer(props => {
         <>
             {store.visible && (
                 <>
-                    <div className='modal fade show' id={props.id ?? ''} tabIndex={-1} aria-hidden='true'>
+                    <div className='modal fade show d-block' id={props.id ?? ''} tabIndex={-1} aria-hidden='true'>
                         <div
                             className={`modal-dialog ${props.className ?? ''} ${props.size ? `modal-${props.size}` : 'modal-md'}`}
                             style={props.style}>
@@ -80,11 +80,10 @@ export const Dialog: React.FC<DialogProps> = observer(props => {
                                 {props.title && (
                                     <div className='modal-header'>
                                         <h5 className='modal-title'>{props.title}</h5>
-                                        <button
-                                            onClick={() => store.hide()}
-                                            type='button'
-                                            className='btn-close'
-                                            data-bs-dismiss='modal'></button>
+
+                                        <button type='button' className='close' onClick={() => store.hide()}>
+                                            <span aria-hidden='true'>&times;</span>
+                                        </button>
                                     </div>
                                 )}
 

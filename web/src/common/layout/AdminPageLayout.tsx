@@ -1,6 +1,7 @@
 import { observer } from 'mobx-react'
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { UserType } from '../../api/models/User'
 import { authService, navigationStore } from '../../App'
 import { PageLayout } from './PageLayout'
 
@@ -59,12 +60,16 @@ export const AdminPageLayout: React.FC<AdminPageLayoutProps> = observer(props =>
 
                                     <p className='text-muted mt-5 mb-2 ml-1'>Uživatelé</p>
                                     <li className='nav flex-column'>
-                                        <Link className='nav-link' to={'#'}>
+                                        <Link
+                                            className='nav-link'
+                                            to={navigationStore.href.adminUsers(UserType.CLIENT.toLocaleLowerCase())}>
                                             Klienti
                                         </Link>
                                     </li>
                                     <li className='nav flex-column'>
-                                        <Link className='nav-link' to={'#'}>
+                                        <Link
+                                            className='nav-link'
+                                            to={navigationStore.href.adminUsers(UserType.OPERATOR.toLocaleLowerCase())}>
                                             Operátoři
                                         </Link>
                                     </li>
