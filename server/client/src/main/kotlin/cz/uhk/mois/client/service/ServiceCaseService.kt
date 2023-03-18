@@ -269,6 +269,7 @@ class ServiceCaseService(
 }
 
 data class UserLoser(
+    var id: Long,
     var name: String,
     var surname: String,
     var email: String,

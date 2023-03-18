@@ -3,7 +3,6 @@ package cz.uhk.mois.client.controller
 import cz.uhk.mois.client.controller.model.CreateServiceCaseDto
 import cz.uhk.mois.client.controller.model.SavedServiceCaseDto
 import cz.uhk.mois.client.controller.model.ServiceCaseType
-import cz.uhk.mois.client.domain.Message
 import cz.uhk.mois.client.service.MessageService
 import cz.uhk.mois.client.service.ServiceCaseService
 import cz.uhk.mois.client.util.CodableDto
@@ -27,7 +26,7 @@ class ServiceCaseController(
     fun sendMessageToServiceCase(
         @RequestBody message: SendMessage,
         @PathVariable serviceCaseId: Long
-    ): ResponseEntity<Mono<Message>> {
+    ): ResponseEntity<Mono<Boolean>> {
         return ResponseEntity(messageService.sendMessage(message, serviceCaseId), HttpStatus.CREATED)
     }
 

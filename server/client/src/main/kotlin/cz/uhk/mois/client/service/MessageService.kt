@@ -35,7 +35,7 @@ class MessageService(
         return messageRepository.findAllByServiceCaseId(id).map { mapper.toDto(it) }
     }
 
-    fun sendMessage(sendMessage: SendMessage, serviceCaseId: Long): Mono<Message> {
+    fun sendMessage(sendMessage: SendMessage, serviceCaseId: Long): Mono<Boolean> {
         return validationService.validateMessage(sendMessage, serviceCaseId).flatMap {
             val senderUser = it.second
             val messageDto = MessageDto(
@@ -74,7 +74,7 @@ class MessageService(
         senderUserId: Long,
         serviceCaseState: Long,
         messageDto: MessageDto
-    ): Mono<Message> {
+    ): Mono<Boolean> {
         return updateServiceCaseState(serviceCaseId, serviceCaseState)
             .flatMapMany { serviceCase ->
                 allMessagesForUser.filter {
@@ -86,7 +86,9 @@ class MessageService(
             }.collectList()
             .flatMap {
                 var message = mapper.fromDto(messageDto)
-                messageRepository.save(message)
+                messageRepository.save(message).flatMap {
+                    Mono.just(true)
+                }
             }
     }
 

@@ -31,6 +31,7 @@ interface DomainMapper {
     fun fromDto(userDto: UsersServiceCasesDto): UsersServiceCases
     fun toDto(userDto: UsersServiceCases): UsersServiceCasesDto
 
+    @Mapping(source = "userDto.id", target = "id")
     fun toUserLoser(userDto: UserDto, addressDto: AddressDto): UserLoser
     fun toUserLoser(userDto: UserDto): UserLoser
 
