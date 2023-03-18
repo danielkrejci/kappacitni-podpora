@@ -1,14 +1,14 @@
-import { navigation } from '../../App'
+import { navigationStore } from '../../App'
 
 export const NavigationContainer = (): JSX.Element => {
     return (
         <div>
             <ul>
                 <li>
-                    <a href={navigation.href.index()}>Home</a>
+                    <a href={navigationStore.href.index()}>Home</a>
                 </li>
                 <li>
-                    <a href={navigation.href.serviceCaseForm()}>Form</a>
+                    <a href={navigationStore.href.serviceCaseForm()}>Form</a>
                 </li>
             </ul>
         </div>

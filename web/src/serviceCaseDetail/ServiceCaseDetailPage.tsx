@@ -9,7 +9,7 @@ import { Row } from '../common/components/Row'
 import { Textarea } from '../common/components/Textarea'
 import { ServiceCaseDetailStore } from './ServiceCaseDetailStore'
 import { DateUtils } from '../common/utils/DateUtils'
-import { navigation } from '../App'
+import { navigationStore } from '../App'
 
 interface ServiceCaseDetailPageProps {
     store: ServiceCaseDetailStore
@@ -53,7 +53,7 @@ export const ServiceCaseDetailPage: React.FC<ServiceCaseDetailPageProps> = obser
                                         případně nás kontaktuj prostřednictvím zprávy.
                                     </p>
                                     <p className='mt-5'>
-                                        <a href={navigation.href.index()}>
+                                        <a href={navigationStore.href.index()}>
                                             Přejít na úvodní stránku&nbsp;
                                             <i className='fa fa-arrow-right' />
                                         </a>

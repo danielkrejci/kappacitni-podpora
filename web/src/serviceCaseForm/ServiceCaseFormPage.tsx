@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react'
 import { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
-import { navigation } from '../App'
+import { navigationStore } from '../App'
 import { Button } from '../common/components/Button'
 import { Checkbox } from '../common/components/Checkbox'
 import { Col } from '../common/components/Col'
@@ -65,7 +65,7 @@ export const ServiceCaseFormPageCreated: React.FC<ServiceCaseFormPageCreatedProp
                     odeslali jsme Ti potvrzení a dodatečné informace.
                 </p>
                 <p className='mt-5'>
-                    <a href={navigation.href.serviceCaseDetail(store.saved.id, store.saved.hash)}>
+                    <a href={navigationStore.href.serviceCaseDetail(store.saved.id, store.saved.hash)}>
                         Přejít na servisní případ&nbsp;
                         <i className='fa fa-arrow-right' />
                     </a>

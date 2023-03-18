@@ -30,3 +30,11 @@ export const EMPTY_USER: User = {
     isOperator: false,
     ...EMPTY_ADDRESS,
 }
+
+export type AuthUser = User & {
+    exp: string
+    sub: string
+    aud: string
+    iat: string
+    picture: string
+}

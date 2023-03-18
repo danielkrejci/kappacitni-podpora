@@ -1,3 +1,5 @@
+import { authService } from '../../App'
+
 export type ApiError = {
     message: string
     cause: string
@@ -9,7 +11,13 @@ export function isApiError<T>(result: T | ApiError): result is ApiError {
 
 export class ApiService {
     static async get<T>(url: string): Promise<T | ApiError> {
-        const response = await fetch(url)
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${authService.token}`,
+                'Content-Type': 'application/json',
+            },
+        })
         const result = await response.json()
 
         if (!response.ok) {

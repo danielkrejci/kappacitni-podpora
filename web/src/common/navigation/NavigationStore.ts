@@ -3,7 +3,7 @@ import { History } from 'history'
 type AnyParam = number | string | undefined
 
 export class NavigationStore {
-    private history: History
+    history: History
 
     constructor(history: History) {
         this.history = history
@@ -14,11 +14,17 @@ export class NavigationStore {
     serviceCaseDetail = (serviceCaseId: AnyParam, serviceCaseHash: AnyParam) =>
         this.history.push(this.href.serviceCaseDetail(serviceCaseId, serviceCaseHash))
 
-    back = () => this.history.back()
+    login = () => this.history.push(this.href.login())
+
+    adminIndex = () => this.history.push(this.href.adminIndex())
+
+    back = () => this.history.goBack()
 
     href = {
         index: () => `/index`,
         serviceCaseForm: (deviceName?: AnyParam) => `/device/${deviceName ?? ':deviceName'}`,
         serviceCaseDetail: (id?: AnyParam, hash?: AnyParam) => `/detail/${id ?? ':id'}/${hash ?? ':hash'}`,
+        login: () => '/admin/login',
+        adminIndex: () => '/admin/index',
     }
 }
