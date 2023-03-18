@@ -51,7 +51,7 @@ class ServiceCaseService(
                         Pair("stateId", serviceCase.stateId),
                         Pair("caseTypeId", serviceCase.caseTypeId),
                         Pair("dateBegin", formatter.format(serviceCase.dateBegin)),
-                        Pair("dateEnd", formatter.format(serviceCase.dateBegin)),
+                        Pair("dateEnd", serviceCase.dateEnd?.let { formatter.format(serviceCase.dateEnd) }),
                         Pair("hash", serviceCase.hash)
                     )
                 } else {
@@ -112,20 +112,55 @@ class ServiceCaseService(
                 val sc = mapper.fromDto(it)
                 sc.dateBegin = Instant.now()
                 userRepository.findByEmail(serviceCase.email)
-                    .flatMap {
-                        it.name = serviceCase.name
-                        it.surname = serviceCase.surname
-                        it.email = serviceCase.email
-                        it.phone = serviceCase.phone
-                        userRepository.save(it)
-                            .flatMap { user ->
-                                sc.userId = user.id!!
-                                saveServiceCaseAndMessage(sc, serviceCase.message, serviceCase.serialNumber)
+                    .flatMap { user ->
+
+                        user.name = serviceCase.name
+                        user.surname = serviceCase.surname
+                        user.email = serviceCase.email
+                        user.phone = serviceCase.phone
+
+                        val address = mapper.fromServiceCaseToAddress(serviceCase)
+                        if (address.hasIncompleteAttributes()) {
+                            return@flatMap Mono.error(AddressNotCompleteException("Address is not complete"))
+                        }
+                        // TODO good for now, refactor later
+                        if (user.addressId == null && !address.isEmpty()) {
+                            addressRepository.save(address)
+                                .flatMap { savedAddress ->
+                                    user.addressId = savedAddress.id
+                                    userRepository.save(user)
+                                        .flatMap { user ->
+                                            sc.userId = user.id!!
+                                            saveServiceCaseAndMessage(sc, serviceCase.message, serviceCase.serialNumber)
+                                        }
+                                }
+                        } else
+                            if (user.addressId != null && !address.isEmpty()) {
+                                addressRepository.findById(user.addressId!!)
+                                    .flatMap { addressInDb ->
+                                        address.id = addressInDb.id
+                                        addressRepository.save(address)
+                                            .flatMap {
+                                                userRepository.save(user)
+                                                    .flatMap { user ->
+                                                        sc.userId = user.id!!
+                                                        saveServiceCaseAndMessage(
+                                                            sc,
+                                                            serviceCase.message,
+                                                            serviceCase.serialNumber
+                                                        )
+                                                    }
+                                            }
+                                    }
+                            } else {
+                                userRepository.save(user)
+                                    .flatMap { user ->
+                                        sc.userId = user.id!!
+                                        saveServiceCaseAndMessage(sc, serviceCase.message, serviceCase.serialNumber)
+                                    }
                             }
                     }.switchIfEmpty {
-                        // TODO adresa není povinný údaj, když ji nezadám, tak se nesmí vytvořit prázdný záznam v tabulce addresses
                         val address = mapper.fromServiceCaseToAddress(serviceCase)
-
                         if (address.isEmpty()) {
                             val newUser = UserDto(
                                 null,
