@@ -72,7 +72,7 @@ class ValidationService(private val deviceService: DeviceService) {
 
 
     fun sanitizePostalCode(pc: String?): String? {
-        if (pc == null) return null
+        if (pc.isNullOrEmpty() || pc.isNullOrBlank()) return null
         val trimmedInput = pc.replace("\\s".toRegex(), "")
         return if (POSTAL_CODE_REGEX.matches(trimmedInput)) {
             pc
@@ -80,7 +80,7 @@ class ValidationService(private val deviceService: DeviceService) {
     }
 
     private fun sanitizePhoneNumber(pn: String?): String? {
-        if (pn == null) return null
+        if (pn.isNullOrEmpty() || pn.isNullOrBlank() || pn == "+420" || pn == "+421") return null
         val digitsOnly = pn.replace(PHONE_REGEX, "")
         if (digitsOnly.length != 12) return INVALID
         return when {
