@@ -92,6 +92,8 @@ class ValidationService(
             var userCreatedServiceCaseAndIsClient = user.id!! == serviceCase.userId!! && user.isClient
             var userIsOperatorAndHasAssaginedCase = user.isOperator && isOperatorAssigned
 
+            if (serviceCase.hash != sendMessage.hash) exceptions.add("Hash does not match")
+
             if (!(userCreatedServiceCaseAndIsClient || userIsOperatorAndHasAssaginedCase)) {
                 if (!userCreatedServiceCaseAndIsClient) exceptions.add("User with id ${user.id} not created servisecase or he is not client")
                 if (!userIsOperatorAndHasAssaginedCase) exceptions.add("User with id ${user.id} is not operator or he does not have assaigned this servise case")
