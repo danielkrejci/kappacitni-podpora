@@ -13,6 +13,7 @@ export const EMPTY_ADDRESS: Address = {
 }
 
 export type User = Address & {
+    id: number
     name: string
     surname: string
     email: string
@@ -22,6 +23,7 @@ export type User = Address & {
 }
 
 export const EMPTY_USER: User = {
+    id: -1,
     name: '',
     surname: '',
     email: '',

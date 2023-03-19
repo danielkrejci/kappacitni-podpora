@@ -1,7 +1,7 @@
 import { CredentialResponse } from '@react-oauth/google'
 import jwtDecode from 'jwt-decode'
 import { action, makeObservable, observable } from 'mobx'
-import { EMPTY_ADDRESS } from '../../api/models/User'
+import { EMPTY_ADDRESS, EMPTY_USER } from '../../api/models/User'
 import { authService, navigationStore } from '../../App'
 
 export class LoginStore {
@@ -21,6 +21,8 @@ export class LoginStore {
 
             authService.token = response.credential
             authService.authUser = {
+                ...EMPTY_USER,
+                ...EMPTY_ADDRESS,
                 exp: userData.exp,
                 sub: userData.sub,
                 aud: userData.aud,
@@ -29,10 +31,8 @@ export class LoginStore {
                 name: userData.given_name,
                 surname: userData.family_name,
                 email: userData.email,
-                phone: '',
                 isClient: false,
                 isOperator: true,
-                ...EMPTY_ADDRESS,
             }
 
             console.log(authService.authUser, authService.token, userData)
