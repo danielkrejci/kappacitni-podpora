@@ -19,7 +19,7 @@ class UsersServiceCasesService(
         return repository.findAllByServiceCaseId(serviceCaseId)
             .map { mapper.toDto(it) }.map { it.userId }.collectList()
             .flatMapMany {
-                Flux.from(userService.findALlByIds(it).filter { it.operator })
+                Flux.from(userService.findALlByIds(it).filter { it.isOperator })
             }
     }
 

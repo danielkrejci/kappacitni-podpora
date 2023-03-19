@@ -60,7 +60,7 @@ class ServiceCaseService(
         return userService.findByUserId(id)
             .switchIfEmpty(Mono.error(UserNotFoundException("User with $id does not exists")))
             .flatMap {
-                Mono.just(it.operator)
+                Mono.just(it.isOperator)
             }
     }
 

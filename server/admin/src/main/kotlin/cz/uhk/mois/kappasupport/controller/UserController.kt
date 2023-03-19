@@ -1,22 +1,43 @@
 package cz.uhk.mois.kappasupport.controller
 
-import cz.uhk.mois.kappasupport.controller.model.UserDto
+import cz.uhk.mois.kappasupport.exception.UserIsNotOperatorException
+import cz.uhk.mois.kappasupport.exception.UserNotFoundException
+import cz.uhk.mois.kappasupport.mapper.DomainMapper
+import cz.uhk.mois.kappasupport.service.AddressService
+import cz.uhk.mois.kappasupport.service.JwtService
 import cz.uhk.mois.kappasupport.service.UserService
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken
+import cz.uhk.mois.kappasupport.util.UserLoser
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import reactor.core.publisher.Mono
 
 @RestController
 @RequestMapping("/users")
-class UserController(private val userService: UserService) {
+class UserController(
+    private val userService: UserService,
+    private val jwtService: JwtService,
+    private val addressService: AddressService,
+    private val mapper: DomainMapper
+) {
 
-    @GetMapping
-    fun currentUser(token: OAuth2AuthenticationToken): Mono<UserDto> {
-        var username: String = token.principal.attributes["email"] as String
-        return userService.findByEmail(username)
+    @GetMapping("/current")
+    fun currentUser(@RequestHeader("Authorization") token: String): ResponseEntity<Mono<UserLoser>> {
+        val email = jwtService.getEmailFromToken(token.substring(7))
+        var user = userService.findByEmail(email!!).flatMap { user ->
+            if (!user.isOperator) return@flatMap Mono.error(UserIsNotOperatorException("Unauthorized"))
+            if (user.addressId != null) {
+                addressService.findAddressById(user.addressId!!).flatMap { address ->
+                    Mono.just(mapper.toUserLoser(user, mapper.toDto(address)))
+                }
+            } else {
+                Mono.just(mapper.toUserLoser(user))
+            }
+
+        }.switchIfEmpty(Mono.error(UserNotFoundException("User with email $email not found")))
+        return ResponseEntity.ok(user)
     }
-
 
 }

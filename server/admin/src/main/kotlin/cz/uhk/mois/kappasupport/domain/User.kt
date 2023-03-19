@@ -12,31 +12,29 @@ class User(
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE)
     var id: Long? = null,
-    var address: Long,
-    var name: String,
-    var surname: String,
-    var phone: String?,
-    var email: String,
-    var operator: Boolean
-) {
-    override fun toString(): String {
-        return "User(id=$id, address=$address, name='$name', surname='$surname', phone='$phone', email='$email', operator=$operator)"
-    }
-}
 
-@Table(name = "ADDRESSES")
-class Address(
-    @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
-    var id: Long? = null,
-    var street: String?,
-    @Column("housenumber")
-    var houseNumber: String?,
-    @Column("postalcode")
-    var postalCode: String?,
-    var city: String?
+    @Column("addressId")
+    var addressId: Long?,
+
+    @Column("name")
+    var name: String,
+
+    @Column("surname")
+    var surname: String,
+
+    @Column("phone")
+    var phone: String?,
+
+    @Column("email")
+    var email: String,
+
+    @Column("isOperator")
+    var isOperator: Boolean,
+
+    @Column("isClient")
+    var isClient: Boolean
 ) {
     override fun toString(): String {
-        return "Address(id=$id, street=$street, houseNumber=$houseNumber, postalCode=$postalCode, city=$city)"
+        return "User(id=$id, addressId=$addressId, name='$name', surname='$surname', phone='$phone', email='$email', isOperator=$isOperator, isClient=$isClient)"
     }
 }

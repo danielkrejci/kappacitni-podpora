@@ -1,12 +1,16 @@
 package cz.uhk.mois.kappasupport.mapper
 
+import cz.uhk.mois.kappasupport.controller.model.AddressDto
 import cz.uhk.mois.kappasupport.controller.model.ServiceCaseDto
 import cz.uhk.mois.kappasupport.controller.model.UserDto
 import cz.uhk.mois.kappasupport.controller.model.UsersServiceCasesDto
+import cz.uhk.mois.kappasupport.domain.Address
 import cz.uhk.mois.kappasupport.domain.ServiceCase
 import cz.uhk.mois.kappasupport.domain.User
 import cz.uhk.mois.kappasupport.domain.UsersServiceCases
+import cz.uhk.mois.kappasupport.util.UserLoser
 import org.mapstruct.Mapper
+import org.mapstruct.Mapping
 import org.springframework.stereotype.Component
 
 @Component
@@ -21,4 +25,11 @@ interface DomainMapper {
 
     fun fromDto(usersServiceCasesDto: UsersServiceCasesDto): UsersServiceCases
     fun toDto(usersServiceCases: UsersServiceCases): UsersServiceCasesDto
+
+    @Mapping(source = "userDto.id", target = "id")
+    fun toUserLoser(userDto: UserDto, addressDto: AddressDto): UserLoser
+    fun toUserLoser(userDto: UserDto): UserLoser
+
+    fun toDto(address: Address): AddressDto
+    fun fromDto(address: AddressDto): Address
 }
