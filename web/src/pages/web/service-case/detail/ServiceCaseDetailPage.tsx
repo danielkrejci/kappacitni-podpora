@@ -78,8 +78,10 @@ export const ServiceCaseDetailPage: React.FC<ServiceCaseDetailPageProps> = obser
                                                 </>
                                             </h3>
                                             <p className='mb-0 p-2 px-3'>{message.message}</p>
-                                            <br />
-                                            <span className='text-muted text-xs m-1'>{DateUtils.toUIDateTime(message.date)}</span>
+                                            <span className='text-muted d-block text-xs mt-1'>{DateUtils.toUIDateTime(message.date)}</span>
+                                            <span className='text-muted d-block text-xs'>
+                                                {message.state === 1 ? 'Doručeno' : 'Přečteno'}
+                                            </span>
                                         </div>
                                     ))}
                                 </div>

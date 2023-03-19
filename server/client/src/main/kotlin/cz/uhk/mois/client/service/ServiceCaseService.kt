@@ -39,6 +39,21 @@ class ServiceCaseService(
         private val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern(format).withZone(ZoneId.systemDefault())
     }
 
+    fun findServiceCase(id: Long): Mono<ServiceCase> = serviceCaseRepository.findById(id)
+        .switchIfEmpty(Mono.error(ServiceCaseNotFoundException("Service case not found")))
+
+    fun getAssignedOperatorsForServiceCase(serviceCaseId: Long): Flux<UserLoser> {
+        return usersServiceCasesService.findAllByServiceCaseId(serviceCaseId)
+            .map { it.userId }
+            .collectList()
+            .flatMapMany { ids ->
+                userRepository.findAllByIdIn(ids)
+                    .filter { it.isOperator }
+                    .map { mapper.toDto(it) }
+                    .flatMap { userToUserLoser(it) }
+            }
+    }
+
     fun getServiceCaseDetail(id: String, hash: String): Mono<Map<String, Any>> {
         val map = HashMap<String, Any>()
         //TODO validation for id.toLong
@@ -106,7 +121,7 @@ class ServiceCaseService(
     }
 
     fun createServiceCase(serviceCase: CreateServiceCaseDto): Mono<ServiceCase> {
-        return validationService.validate(serviceCase)
+        return validationService.validateServiceCase(serviceCase)
             .flatMap {
                 //TODO UPDATE ADRES
                 val sc = mapper.fromDto(it)
@@ -204,6 +219,15 @@ class ServiceCaseService(
             }
     }
 
+    fun updateServiceCaseState(serviceCaseId: Long, stateId: Long): Mono<ServiceCase> {
+        return serviceCaseRepository.findById(serviceCaseId)
+            .switchIfEmpty(Mono.error(ServiceCaseNotFoundException("Service case with id $serviceCaseId not found")))
+            .flatMap {
+                it.stateId = stateId
+                serviceCaseRepository.save(it)
+            }
+    }
+
     private fun getAssignOperatorId(): Mono<Long> {
         return userRepository.findAllByOperator()
             .map { it.id!! }
@@ -292,6 +316,7 @@ class ServiceCaseService(
 }
 
 data class UserLoser(
+    var id: Long,
     var name: String,
     var surname: String,
     var email: String,

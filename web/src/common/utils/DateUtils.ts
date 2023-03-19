@@ -1,20 +1,19 @@
 /**
  * Helper methods related to work with date and time in format ISO8601.
- * 
- * See: 
+ *
+ * See:
  *  https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/date
  *  https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/time
  */
 
 export module DateUtils {
-
     /**
      * Converts given date to string acceptable by input element with type date.
      * @param date date to be converted to string. Or empty string in case null or undefined date.
      */
     export function toDateString(date: Date): string {
         if (date) {
-            const dateParts = date.toISOString().split("T")
+            const dateParts = date.toISOString().split('T')
             if (dateParts && dateParts[0]) {
                 return dateParts[0]
             } else {
@@ -72,7 +71,7 @@ export module DateUtils {
      * Returns first day of next month.
      * @param baseDate date from which will be search next month. When missing, current date is used.
      */
-     export function firstDayOfNextMonth(baseDate?: Date): Date {
+    export function firstDayOfNextMonth(baseDate?: Date): Date {
         const today = baseDate || new Date()
 
         return new Date(Date.UTC(today.getFullYear(), today.getMonth() + 1, 1))
@@ -82,16 +81,16 @@ export module DateUtils {
      * Returns first day of month.
      * @param baseDate date, when missing, current date is used.
      */
-     export function firstDayOfMonth(baseDate?: Date): Date {
+    export function firstDayOfMonth(baseDate?: Date): Date {
         const today = baseDate || new Date()
         return new Date(Date.UTC(today.getFullYear(), today.getMonth(), 1))
     }
 
-      /**
+    /**
      * Returns last day of month.
      * @param baseDate date, when missing, current date is used.
      */
-       export function lastDayOfMonth(baseDate?: Date): Date {
+    export function lastDayOfMonth(baseDate?: Date): Date {
         const today = baseDate || new Date()
         return new Date(Date.UTC(today.getFullYear(), today.getMonth() + 1, 0))
     }
@@ -141,7 +140,6 @@ export module DateUtils {
      * @param date base date.
      */
     export function timeSpanString(date: Date): string {
-
         let diffInMilliSeconds = Math.abs(new Date().getTime() - date.getTime()) / 1000
 
         // calculate days
@@ -157,15 +155,15 @@ export module DateUtils {
         diffInMilliSeconds -= minutes * 60
 
         if (days > 0) {
-            return (days === 1) ? `${days} day` : `${days} days`
+            return days === 1 ? `${days} day` : `${days} days`
         }
 
         if (hours > 0) {
-            return (hours === 1) ? `${hours} hour` : `${hours} hours`
+            return hours === 1 ? `${hours} hour` : `${hours} hours`
         }
 
         if (minutes > 0) {
-            return (minutes === 1) ? `${minutes} minute` : `${minutes} minutes`
+            return minutes === 1 ? `${minutes} minute` : `${minutes} minutes`
         }
 
         return 'less than a minute'
@@ -173,7 +171,7 @@ export module DateUtils {
 
     /**
      * Given ISO date time string or number with date in millis converts to UI label with current user locale formar.
-     * @param date ISO formatted date. 
+     * @param date ISO formatted date.
      */
     export function toUITime(date: string | undefined | null | number) {
         if (date === null || date === undefined || date === '') {
@@ -190,7 +188,7 @@ export module DateUtils {
 
     /**
      * Given ISO date time string or number with date in millis converts to UI label with current user locale formar.
-     * @param date ISO formatted date. 
+     * @param date ISO formatted date.
      */
     export function toUIDateTime(date: string | undefined | null | number) {
         if (date === null || date === undefined || date === '') {
@@ -200,14 +198,17 @@ export module DateUtils {
             if (isNaN(asDate.getDate())) {
                 return '--'
             } else {
-                return `${asDate.toLocaleDateString()} ${asDate.toLocaleTimeString()}`
+                return `${asDate.toLocaleDateString()} ${asDate.toLocaleTimeString([], {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                })}`
             }
         }
     }
 
     /**
      * Given ISO date string or number with date in millis converts to UI label with current user locale formar.
-     * @param date ISO formatted date. 
+     * @param date ISO formatted date.
      */
     export function toUIDate(date: string | undefined | null | number) {
         if (date === null || date === undefined || date === '') {
@@ -232,14 +233,17 @@ export module DateUtils {
     }
 
     export function getAgeFromDate(birthDate: string) {
-        const birthDay = new Date(birthDate);
-        const today = new Date();
+        const birthDay = new Date(birthDate)
+        const today = new Date()
 
-        const years = today.getUTCFullYear() - birthDay.getUTCFullYear();
-        if (today.getUTCMonth() > birthDay.getUTCMonth() || (today.getUTCMonth() === birthDay.getUTCMonth() && today.getUTCDate() >= birthDay.getUTCDate())) {
+        const years = today.getUTCFullYear() - birthDay.getUTCFullYear()
+        if (
+            today.getUTCMonth() > birthDay.getUTCMonth() ||
+            (today.getUTCMonth() === birthDay.getUTCMonth() && today.getUTCDate() >= birthDay.getUTCDate())
+        ) {
             return years
         }
-        return years - 1;
+        return years - 1
     }
 
     const defaultDayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']

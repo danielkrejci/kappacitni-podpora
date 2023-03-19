@@ -14,4 +14,9 @@ interface UsersServiceCasesRepository : ReactiveCrudRepository<UsersServiceCases
     @Query("SELECT COUNT(servicecaseid) FROM USERS_SERVICE_CASES WHERE userid = :userId")
     fun findUserIdWithFewestServiceCases(userId: Long): Mono<Long>
 
+    fun findAllByUserId(userId: Long): Flux<UsersServiceCases>
+
+    @Query("SELECT EXISTS (SELECT 1 FROM users_service_cases WHERE userId = :operatorId AND serviceCaseId = :serviceCaseId)")
+    fun findIfOperatorIsAssigned(operatorId: Long, serviceCaseId: Long): Mono<Boolean>
+
 }

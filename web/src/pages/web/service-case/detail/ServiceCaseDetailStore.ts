@@ -1,6 +1,7 @@
 import { action, makeObservable, observable, runInAction } from 'mobx'
 import { DeviceType } from '../../../../api/models/DeviceType'
 import { ServiceCaseDetail, EMPTY_SERVICE_CASE_DETAIL, ServiceCaseType } from '../../../../api/models/ServiceCase'
+import { ServiceCaseMessageForm } from '../../../../api/models/ServiceCaseMessage'
 import { isApiError } from '../../../../api/services/ApiService'
 import { DeviceService } from '../../../../api/services/DeviceService'
 import { ServiceCaseService } from '../../../../api/services/ServiceCaseService'
@@ -69,9 +70,44 @@ export class ServiceCaseDetailStore {
             })
     }
 
+    reloadServiceCase() {
+        this.isLoading = true
+        ServiceCaseService.getServiceCase(this.serviceCase.serviceCase.id, this.serviceCase.serviceCase.hash)
+            .then(data =>
+                runInAction(() => {
+                    if (!isApiError(data)) {
+                        this.serviceCase = data
+                    }
+                })
+            )
+            .finally(() => {
+                this.isLoading = false
+            })
+    }
+
     save() {
         if (this.validate()) {
             this.isLoading = true
+
+            const message: ServiceCaseMessageForm = {
+                hash: this.serviceCase.serviceCase.hash,
+                userId: this.serviceCase.client.id,
+                message: this.form.message.value,
+            }
+
+            ServiceCaseService.createServiceCaseMessage(this.serviceCase.serviceCase.id, message)
+                .then(data =>
+                    runInAction(() => {
+                        this.isLoading = false
+                        if (!isApiError(data)) {
+                            this.reset()
+                            this.reloadServiceCase()
+                        }
+                    })
+                )
+                .finally(() => {
+                    this.isLoading = false
+                })
 
             Promise.resolve(true)
                 .then(data =>
