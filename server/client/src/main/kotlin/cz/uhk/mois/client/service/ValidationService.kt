@@ -20,7 +20,7 @@ class ValidationService(private val deviceService: DeviceService) {
         private val EMAIL_REGEX = Regex("^[A-Z0-9a-z._%+-]+@[A-Z0-9a-z.-]+\\.[A-Za-z]{2,9}\$")
         private val HTML_REGEX = Regex("<.*?>")
         private val POSTAL_CODE_REGEX = Regex("^\\d{5}\$")
-        private val PHONE_REGEX = Regex("\\D+")
+        private val PHONE_NUMBER_REGEX = """^(\+420|\+421) ?[1-9][0-9]{2} ?[0-9]{3} ?[0-9]{3}$""".toRegex()
         private val INVALID = "INVALID"
     }
 
@@ -80,14 +80,24 @@ class ValidationService(private val deviceService: DeviceService) {
     }
 
     private fun sanitizePhoneNumber(pn: String?): String? {
-        if (pn.isNullOrEmpty() || pn.isNullOrBlank() || pn == "+420" || pn == "+421") return null
-        val digitsOnly = pn.replace(PHONE_REGEX, "")
-        if (digitsOnly.length != 12) return INVALID
-        return when {
-            digitsOnly.startsWith("420") -> "+420 " + digitsOnly.drop(3).chunked(3).joinToString(" ")
-            digitsOnly.startsWith("421") -> "+421 " + digitsOnly.drop(3).chunked(3).joinToString(" ")
-            else -> INVALID
+        if (pn.isNullOrEmpty() || pn.isNullOrBlank()) return null
+        var trimmed = pn.replace("\\s".toRegex(), "")
+        return if (PHONE_NUMBER_REGEX.matches(trimmed)) {
+            reformatPhoneNumber(trimmed)
+        } else {
+            INVALID
         }
+    }
+
+    fun reformatPhoneNumber(phoneNumber: String): String {
+        if (phoneNumber.length < 10) {
+            return phoneNumber
+        }
+        val countryCode = phoneNumber.substring(0, 4)
+        val firstThreeDigits = phoneNumber.substring(4, 7)
+        val nextThreeDigits = phoneNumber.substring(7, 10)
+        val lastThreeDigits = phoneNumber.substring(10)
+        return "$countryCode $firstThreeDigits $nextThreeDigits $lastThreeDigits"
     }
 
 
