@@ -71,7 +71,7 @@ export const ServiceCaseListPage: React.FC<ServiceCaseListPageProps> = observer(
                     {store.serviceCases.data.length > 0 ? (
                         <>
                             {store.serviceCases.data.map(serviceCase => (
-                                <div className='p-3 service-case-item'>
+                                <div className='p-3 mt-3 service-case-item'>
                                     <h3>
                                         #{serviceCase.id}
                                         <span className='text-muted float-right mt-2'>{DateUtils.toUIDateTime(serviceCase.dateBegin)}</span>

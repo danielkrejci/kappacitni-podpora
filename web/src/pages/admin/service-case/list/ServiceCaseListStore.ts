@@ -60,11 +60,21 @@ export class ServiceCaseListStore {
         this.isLoading = true
 
         this.serviceCases = {
-            hasNext: false,
-            hasPrev: false,
+            hasNext: true,
+            hasPrev: true,
             page: 1,
             totalPages: 1,
             data: [
+                {
+                    id: 1,
+                    dateBegin: '2023-03-17 11:12:40',
+                    dateEnd: '',
+                    client: 'Daniel Krejčí',
+                    message: 'string',
+                    newMessagesCount: 1,
+                    stateId: 1,
+                    operators: ['Daniel Krejčí', 'Jan Chaloupka'],
+                },
                 {
                     id: 1,
                     dateBegin: '2023-03-17 11:12:40',
@@ -121,7 +131,12 @@ export class ServiceCaseListStore {
     reload() {
         this.isLoading = true
 
-        navigationStore.adminServiceCases(this.filter.operators.value.code, this.filter.state.value.code, this.filter.sort.value.code)
+        navigationStore.adminServiceCases(
+            this.filter.operators.value.code,
+            this.filter.state.value.code,
+            this.filter.sort.value.code,
+            this.currentPage
+        )
 
         ServiceCaseService.getServiceCases(this.filter.operators.value.code, this.filter.state.value.code, this.filter.sort.value.code)
             .then(data =>

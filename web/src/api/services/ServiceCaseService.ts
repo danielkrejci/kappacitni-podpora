@@ -10,9 +10,9 @@ import { ServiceCaseMessageForm } from '../models/ServiceCaseMessage'
 import { ApiService } from './ApiService'
 
 export class ServiceCaseService {
-    static async getServiceCases(operatorId?: string, state?: string, sort?: string) {
+    static async getServiceCases(operatorId?: string, state?: string, sort?: string, page?: string) {
         return await ApiService.get<ServiceCaseList>(
-            `http://localhost:8081/service-cases?operatorId=${operatorId ?? ''}&state=${state ?? ''}&sort=${sort ?? ''}`
+            `http://localhost:8081/service-cases?operatorId=${operatorId ?? ''}&state=${state ?? ''}&sort=${sort ?? ''}&page=${page ?? 1}`
         )
     }
 

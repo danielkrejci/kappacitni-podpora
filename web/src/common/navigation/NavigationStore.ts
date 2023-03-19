@@ -20,8 +20,8 @@ export class NavigationStore {
 
     adminUsers = (type: AnyParam) => this.history.push(this.href.adminUsers(type))
 
-    adminServiceCases = (operatorId: AnyParam, state: AnyParam, sort: AnyParam) =>
-        this.history.push(this.href.adminServiceCases(operatorId, state, sort))
+    adminServiceCases = (operatorId: AnyParam, state: AnyParam, sort: AnyParam, page: AnyParam) =>
+        this.history.push(this.href.adminServiceCases(operatorId, state, sort, page))
 
     back = () => this.history.goBack()
 
@@ -32,9 +32,9 @@ export class NavigationStore {
         login: () => '/admin/login',
         adminIndex: () => '/admin/index',
         adminUsers: (type?: AnyParam) => `/admin/users/${type ?? ':type'}`,
-        adminServiceCases: (operatorId?: AnyParam, state?: AnyParam, sort?: AnyParam) =>
-            `/admin/service-cases${operatorId || state || sort ? '?' : ''}${operatorId ? `&operatorId=${operatorId}` : ''}${
+        adminServiceCases: (operatorId?: AnyParam, state?: AnyParam, sort?: AnyParam, page?: AnyParam) =>
+            `/admin/service-cases${operatorId || state || sort || page ? '?' : ''}${operatorId ? `&operatorId=${operatorId}` : ''}${
                 state ? `&state=${state}` : ''
-            }${sort ? `&sort=${sort}` : ''}`,
+            }${sort ? `&sort=${sort}` : ''}${page ? `&page=${page}` : ''}`,
     }
 }
