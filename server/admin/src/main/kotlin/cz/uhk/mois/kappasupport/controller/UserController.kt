@@ -8,12 +8,14 @@ import cz.uhk.mois.kappasupport.service.JwtService
 import cz.uhk.mois.kappasupport.service.UserService
 import cz.uhk.mois.kappasupport.util.UserLoser
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import reactor.core.publisher.Mono
 
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/users")
 class UserController(

@@ -1,46 +1,50 @@
 import { CredentialResponse } from '@react-oauth/google'
-import { action, makeObservable, observable } from 'mobx'
+import { action, makeObservable, observable, runInAction } from 'mobx'
 import { authService, navigationStore } from '../../../App'
+import { AlertDialogType, showAlertDialog } from '../../../common/components/AlertDialog'
 
 export class LoginStore {
     token = ''
 
+    initDone = false
+
     constructor() {
         makeObservable(this, {
             token: observable,
+            initDone: observable,
             onSuccess: action,
             onFailure: action,
+            init: action,
         })
+    }
+
+    init() {
+        const token = localStorage.getItem('token')
+
+        if (token && token.length > 0) {
+            authService.login(token).then(result =>
+                runInAction(() => {
+                    if (result) {
+                        navigationStore.adminIndex()
+                    }
+                })
+            )
+        }
     }
 
     onSuccess(response: CredentialResponse) {
         if (response && response.credential) {
-            authService.login(response.credential as string)
-
-            console.log(authService.authUser, authService.token)
-
-            navigationStore.adminIndex()
+            authService.login(response.credential as string).then(result =>
+                runInAction(() => {
+                    if (result) {
+                        navigationStore.adminIndex()
+                    }
+                })
+            )
         }
     }
 
-    loadUserData() {
-        fetch(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${this.token}`, {
-            method: 'GET',
-            headers: {
-                Authorization: `Bearer ${this.token}`,
-                'Content-Type': 'application/json',
-            },
-        })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data)
-            })
-            .catch(error => {
-                console.log(error)
-            })
-    }
-
     onFailure() {
-        console.log('Login failed')
+        showAlertDialog('Chyba', 'Během přihlášení došlo k chybě.', AlertDialogType.Danger)
     }
 }

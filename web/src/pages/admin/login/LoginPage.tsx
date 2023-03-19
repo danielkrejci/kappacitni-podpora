@@ -1,5 +1,6 @@
 import { GoogleLogin } from '@react-oauth/google'
 import { observer } from 'mobx-react-lite'
+import { useEffect } from 'react'
 import { navigationStore } from '../../../App'
 import { Row } from '../../../common/components/Row'
 import { LoginStore } from './LoginStore'
@@ -10,6 +11,13 @@ interface LoginPageProps {
 
 export const LoginPage: React.FC<LoginPageProps> = observer(props => {
     const store = props.store
+
+    useEffect(() => {
+        if (!store.initDone) {
+            store.init()
+        }
+    }, [store])
+
     return (
         <div className='content'>
             <div className='mt-0'>

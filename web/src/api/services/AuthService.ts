@@ -1,6 +1,8 @@
 import jwtDecode from 'jwt-decode'
-import { action, computed, makeObservable, observable } from 'mobx'
-import { AuthUser, EMPTY_ADDRESS, EMPTY_USER } from '../models/User'
+import { action, computed, makeObservable, observable, runInAction } from 'mobx'
+import { showAlertDialog, AlertDialogType } from '../../common/components/AlertDialog'
+import { AuthUser, User } from '../models/User'
+import { ADMIN_API_URL, ApiService, isApiError } from './ApiService'
 
 export class AuthService {
     authUser?: AuthUser = undefined
@@ -12,43 +14,47 @@ export class AuthService {
             authUser: observable,
             token: observable,
             isLoggedIn: computed,
+            login: action,
             logout: action,
         })
-
-        const token = localStorage.getItem('token')
-
-        if (token && token.length > 0) {
-            this.login(token)
-        }
     }
 
-    login(token: string) {
+    async login(token: string) {
         const userData = jwtDecode(token) as any
 
-        localStorage.setItem('token', token)
-
         this.token = token
-        this.authUser = {
-            ...EMPTY_USER,
-            ...EMPTY_ADDRESS,
-            exp: userData.exp,
-            sub: userData.sub,
-            aud: userData.aud,
-            iat: userData.iat,
-            picture: userData.picture,
-            name: userData.given_name,
-            surname: userData.family_name,
-            email: userData.email,
-            phone: '',
-            isClient: false,
-            isOperator: true,
-        }
+
+        return this.loadUserData().then(result =>
+            runInAction(() => {
+                if (!isApiError(result)) {
+                    localStorage.setItem('token', token)
+
+                    this.authUser = {
+                        sub: userData.sub,
+                        aud: userData.aud,
+                        exp: userData.exp,
+                        iat: userData.iat,
+                        picture: userData.picture,
+                        ...result,
+                    }
+
+                    return true
+                } else {
+                    showAlertDialog('Chyba', result.cause, AlertDialogType.Danger)
+                }
+                return false
+            })
+        )
     }
 
     logout() {
         this.token = ''
         this.authUser = undefined
         localStorage.removeItem('token')
+    }
+
+    private async loadUserData() {
+        return await ApiService.get<User>(`${ADMIN_API_URL}/admin/users/current`)
     }
 
     get isLoggedIn(): boolean {
