@@ -42,6 +42,18 @@ class ServiceCaseService(
     fun findServiceCase(id: Long): Mono<ServiceCase> = serviceCaseRepository.findById(id)
         .switchIfEmpty(Mono.error(ServiceCaseNotFoundException("Service case not found")))
 
+    fun getAssignedOperatorsForServiceCase(serviceCaseId: Long): Flux<UserLoser> {
+        return usersServiceCasesService.findAllByServiceCaseId(serviceCaseId)
+            .map { it.userId }
+            .collectList()
+            .flatMapMany { ids ->
+                userRepository.findAllByIdIn(ids)
+                    .filter { it.isOperator }
+                    .map { mapper.toDto(it) }
+                    .flatMap { userToUserLoser(it) }
+            }
+    }
+
     fun getServiceCaseDetail(id: String, hash: String): Mono<Map<String, Any>> {
         val map = HashMap<String, Any>()
         //TODO validation for id.toLong

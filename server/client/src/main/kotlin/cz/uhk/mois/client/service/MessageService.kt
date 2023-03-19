@@ -35,9 +35,10 @@ class MessageService(
         return messageRepository.findAllByServiceCaseId(id).map { mapper.toDto(it) }
     }
 
-    fun sendMessage(sendMessage: SendMessage, serviceCaseId: Long): Mono<Boolean> {
-        return validationService.validateMessage(sendMessage, serviceCaseId).flatMap {
+    fun sendMessage(sendMessage: SendMessage, serviceCaseId: Long): Flux<Boolean> {
+        return validationService.validateMessage(sendMessage, serviceCaseId).flatMapMany {
             val senderUser = it.second
+            val currentServiceCase = it.third
             val messageDto = MessageDto(
                 null,
                 sendMessage.userId,
@@ -46,26 +47,39 @@ class MessageService(
                 sendMessage.message,
                 Instant.now()
             )
-            val allMessagesForUser = messageRepository.findMessagesByUserIdAndServiceCaseIdAndDateBeforeNow(
-                sendMessage.userId,
-                serviceCaseId
-            )
 
-            return@flatMap if (senderUser.isClient && senderUser.isOperator) {
-                // CLIENT @ OPERATOR
-                bulkUpdateMessages(serviceCaseId, allMessagesForUser, senderUser.id!!, 2L, messageDto)
-            } else if (senderUser.isClient) {
-                // CLIENT
-                bulkUpdateMessages(serviceCaseId, allMessagesForUser, senderUser.id!!, 2L, messageDto)
 
-            } else {
-                //OPERATOR
-                bulkUpdateMessages(serviceCaseId, allMessagesForUser, senderUser.id!!, 3L, messageDto)
+            var assignedOperator = serviceCaseService.getAssignedOperatorsForServiceCase(serviceCaseId).map { it.id }
+
+
+            assignedOperator.flatMap { operatorId ->
+                if (senderUser.isClient && senderUser.isOperator) {
+                    // CLIENT @ OPERATOR
+                    val allMessagesForUser = messageRepository.findMessagesByUserIdAndServiceCaseIdAndDateBeforeNow(
+                        senderUser.id!!,
+                        serviceCaseId
+                    )
+                    bulkUpdateMessages(serviceCaseId, allMessagesForUser, senderUser.id!!, 2L, messageDto)
+                } else if (senderUser.isClient) {
+                    // CLIENT
+                    val allMessagesForUser = messageRepository.findMessagesByUserIdAndServiceCaseIdAndDateBeforeNow(
+                        operatorId,
+                        serviceCaseId
+                    )
+                    bulkUpdateMessages(serviceCaseId, allMessagesForUser, operatorId, 2L, messageDto)
+
+                } else {
+                    //OPERATOR
+
+                    val allMessagesForUser = messageRepository.findMessagesByUserIdAndServiceCaseIdAndDateBeforeNow(
+                        currentServiceCase.userId!!,
+                        serviceCaseId
+                    )
+                    bulkUpdateMessages(serviceCaseId, allMessagesForUser, currentServiceCase.userId!!, 3L, messageDto)
+                }
+
             }
-
         }
-
-
     }
 
     fun bulkUpdateMessages(
@@ -77,10 +91,9 @@ class MessageService(
     ): Mono<Boolean> {
         return updateServiceCaseState(serviceCaseId, serviceCaseState)
             .flatMapMany { serviceCase ->
-                allMessagesForUser.filter {
-                    serviceCase.userId == senderUserId && it.date.isBefore(Instant.now())
-                }
+                allMessagesForUser
                     .flatMap { message ->
+                        println("all messages for user $senderUserId in serviceCase $serviceCaseId $message")
                         updateMessageState(message.id!!, 2L)
                     }
             }.collectList()

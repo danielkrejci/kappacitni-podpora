@@ -3,6 +3,7 @@ package cz.uhk.mois.client.service
 import cz.uhk.mois.client.controller.model.CreateServiceCaseDto
 import cz.uhk.mois.client.controller.model.DeviceType
 import cz.uhk.mois.client.controller.model.ServiceCaseType
+import cz.uhk.mois.client.domain.ServiceCase
 import cz.uhk.mois.client.domain.User
 import cz.uhk.mois.client.exception.ValidationFailedException
 import cz.uhk.mois.client.util.SendMessage
@@ -71,7 +72,7 @@ class ValidationService(
             }
     }
 
-    fun validateMessage(sendMessage: SendMessage, serviceCaseId: Long): Mono<Pair<SendMessage, User>> {
+    fun validateMessage(sendMessage: SendMessage, serviceCaseId: Long): Mono<Triple<SendMessage, User, ServiceCase>> {
         val exceptions = mutableListOf<String>()
         if (sendMessage.message.length > 5000) exceptions.add("Message is too long")
         sendMessage.message = sanitizeString(sendMessage.message)
@@ -100,7 +101,7 @@ class ValidationService(
             }
 
             if (exceptions.isNotEmpty()) Mono.error(ValidationFailedException(exceptions.toString())) else Mono.just(
-                Pair(sendMessage, user)
+                Triple(sendMessage, user, serviceCase)
             )
 
         }
