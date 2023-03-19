@@ -1,12 +1,14 @@
 import { action, makeObservable, observable, runInAction } from 'mobx'
-import { User, UserType } from '../../api/models/User'
-import { authService, navigationStore } from '../../App'
-import { AlertDialogType } from '../../common/components/AlertDialog'
-import { UserAddDialogStore } from './dialogs/UserAddDialogStore'
-import { UserDeleteDialogStore } from './dialogs/UserDeleteDialogStore'
-import { UserDetailDialogStore } from './dialogs/UserDetailDialogStore'
+import { User, UserType } from '../../../api/models/User'
+import { isApiError } from '../../../api/services/ApiService'
+import { UserService } from '../../../api/services/UserService'
+import { navigationStore } from '../../../App'
+import { AlertDialogType } from '../../../common/components/AlertDialog'
+import { UserAddDialogStore } from './dialog/UserAddDialogStore'
+import { UserDeleteDialogStore } from './dialog/UserDeleteDialogStore'
+import { UserDetailDialogStore } from './dialog/UserDetailDialogStore'
 
-export class AdminUsersStore {
+export class UserListStore {
     isLoading = false
 
     initDone = false
@@ -45,15 +47,27 @@ export class AdminUsersStore {
             navigationStore.adminIndex()
         }
 
-        this.users = [
-            {
-                ...authService.authUser!,
-            },
-        ]
+        this.load()
     }
 
     load() {
-        // todo
+        if (this.usersType) {
+            this.isLoading = true
+            UserService.getUsers(this.usersType)
+                .then(data =>
+                    runInAction(() => {
+                        this.isLoading = false
+                        if (!isApiError(data)) {
+                            this.users = data
+                        }
+                    })
+                )
+                .finally(() => {
+                    runInAction(() => {
+                        this.isLoading = false
+                    })
+                })
+        }
     }
 
     showAddDialog() {

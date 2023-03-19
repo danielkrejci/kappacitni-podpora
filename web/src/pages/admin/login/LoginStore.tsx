@@ -1,6 +1,6 @@
 import { CredentialResponse } from '@react-oauth/google'
 import { action, makeObservable, observable } from 'mobx'
-import { authService, navigationStore } from '../../App'
+import { authService, navigationStore } from '../../../App'
 
 export class LoginStore {
     token = ''

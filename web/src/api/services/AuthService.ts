@@ -1,6 +1,6 @@
 import jwtDecode from 'jwt-decode'
 import { action, computed, makeObservable, observable } from 'mobx'
-import { AuthUser, EMPTY_ADDRESS } from '../models/User'
+import { AuthUser, EMPTY_ADDRESS, EMPTY_USER } from '../models/User'
 
 export class AuthService {
     authUser?: AuthUser = undefined
@@ -29,6 +29,8 @@ export class AuthService {
 
         this.token = token
         this.authUser = {
+            ...EMPTY_USER,
+            ...EMPTY_ADDRESS,
             exp: userData.exp,
             sub: userData.sub,
             aud: userData.aud,
@@ -40,7 +42,6 @@ export class AuthService {
             phone: '',
             isClient: false,
             isOperator: true,
-            ...EMPTY_ADDRESS,
         }
     }
 

@@ -1,6 +1,21 @@
+import { SelectField } from '../../common/forms/SelectField'
 import { Device, EMPTY_DEVICE } from './Device'
 import { ServiceCaseMessage } from './ServiceCaseMessage'
 import { EMPTY_USER, User } from './User'
+
+export const ServiceCaseListSorting: SelectField[] = [
+    { code: 'date-desc', value: 'Nejnovější' },
+    { code: 'date-asc', value: 'Nestarší' },
+]
+
+export type ServiceCaseList = {
+    id: number
+    client: string
+    message: string
+    newMessagesCount: number
+    stateId: number
+    operators: string[]
+}
 
 export type ServiceCaseForm = {
     deviceTypeId: string
@@ -59,4 +74,14 @@ export const EMPTY_SERVICE_CASE_DETAIL: ServiceCaseDetail = {
     client: EMPTY_USER,
     device: EMPTY_DEVICE,
     messages: [],
+}
+
+export type ServiceCaseType = {
+    code: string
+    value: string
+}
+
+export type ServiceCaseState = {
+    code: string
+    value: string
 }

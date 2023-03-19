@@ -13,6 +13,7 @@ export const EMPTY_ADDRESS: Address = {
 }
 
 export type User = Address & {
+    id: number
     name: string
     surname: string
     email: string
@@ -22,6 +23,7 @@ export type User = Address & {
 }
 
 export const EMPTY_USER: User = {
+    id: -1,
     name: '',
     surname: '',
     email: '',
@@ -29,6 +31,19 @@ export const EMPTY_USER: User = {
     isClient: false,
     isOperator: false,
     ...EMPTY_ADDRESS,
+}
+
+export type UserEdit = Address & {
+    name: string
+    surname: string
+    phone: string
+}
+
+export type UserCreate = Address & {
+    name: string
+    surname: string
+    email: string
+    phone: string
 }
 
 export type AuthUser = User & {

@@ -1,13 +1,15 @@
 import { action, makeObservable, runInAction } from 'mobx'
-import { User } from '../../../api/models/User'
-import { DialogStore } from '../../../common/components/Dialog'
-import { Field } from '../../../common/forms/Field'
-import { Form } from '../../../common/forms/Form'
-import { ValidationUtils } from '../../../common/utils/ValidationUtils'
-import { AdminUsersStore } from '../AdminUsersStore'
+import { UserCreate } from '../../../../api/models/User'
+import { isApiError } from '../../../../api/services/ApiService'
+import { UserService } from '../../../../api/services/UserService'
+import { DialogStore } from '../../../../common/components/Dialog'
+import { Field } from '../../../../common/forms/Field'
+import { Form } from '../../../../common/forms/Form'
+import { ValidationUtils } from '../../../../common/utils/ValidationUtils'
+import { UserListStore } from '../UserListStore'
 
 export class UserAddDialogStore extends DialogStore {
-    parentStore: AdminUsersStore
+    parentStore: UserListStore
 
     form = {
         name: Field.text('name'),
@@ -24,7 +26,7 @@ export class UserAddDialogStore extends DialogStore {
         postalCode: Field.text('postalCode'),
     }
 
-    constructor(parentStore: AdminUsersStore) {
+    constructor(parentStore: UserListStore) {
         super()
         this.parentStore = parentStore
         makeObservable(this, {
@@ -37,9 +39,8 @@ export class UserAddDialogStore extends DialogStore {
     save() {
         if (this.validate()) {
             this.parentStore.isLoading = true
-            this.hide()
 
-            const data: Omit<User, 'isOperator' | 'isClient'> = {
+            const data: UserCreate = {
                 name: this.form.name.value,
                 surname: this.form.surname.value,
                 email: this.form.email.value,
@@ -50,16 +51,22 @@ export class UserAddDialogStore extends DialogStore {
                 postalCode: this.form.postalCode.value,
             }
 
-            setTimeout(
-                () =>
+            UserService.createOperator(data)
+                .then(data =>
                     runInAction(() => {
                         this.parentStore.isLoading = false
-                        this.reset()
 
-                        console.log(data)
-                    }),
-                2000
-            )
+                        if (!isApiError(data)) {
+                            this.reset()
+                            this.hide()
+                        }
+                    })
+                )
+                .finally(() => {
+                    runInAction(() => {
+                        this.parentStore.isLoading = false
+                    })
+                })
         }
     }
 

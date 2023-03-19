@@ -3,6 +3,7 @@ package cz.uhk.mois.client.controller
 import cz.uhk.mois.client.controller.model.CreateServiceCaseDto
 import cz.uhk.mois.client.controller.model.SavedServiceCaseDto
 import cz.uhk.mois.client.controller.model.ServiceCaseType
+import cz.uhk.mois.client.controller.model.StateType
 import cz.uhk.mois.client.service.ServiceCaseService
 import cz.uhk.mois.client.util.CodableDto
 import io.swagger.v3.oas.annotations.Operation
@@ -24,6 +25,12 @@ class ServiceCaseController(private val serviceCaseService: ServiceCaseService) 
     @GetMapping("/types")
     fun getServiceTypes(): ResponseEntity<List<CodableDto>> {
         val types = ServiceCaseType.values().map { CodableDto(it.code, it.representation) }
+        return ResponseEntity.ok(types)
+    }
+
+    @GetMapping("/states")
+    fun getServiceStates(): ResponseEntity<List<CodableDto>> {
+        val types = StateType.values().map { CodableDto(it.code, it.representation) }
         return ResponseEntity.ok(types)
     }
 

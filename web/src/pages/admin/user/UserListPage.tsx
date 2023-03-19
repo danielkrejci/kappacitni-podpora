@@ -1,22 +1,22 @@
 import { observer } from 'mobx-react'
 import { useEffect } from 'react'
 import { useParams } from 'react-router'
-import { UserType } from '../../api/models/User'
-import { Button } from '../../common/components/Button'
-import { Dialog } from '../../common/components/Dialog'
-import { Loader } from '../../common/components/Loader'
-import { YesNoDialog } from '../../common/components/YesNoDialog'
-import { ListUtils } from '../../common/utils/ListUtils'
-import { AdminUsersStore } from './AdminUsersStore'
-import { UserAddDialog } from './dialogs/UserAddDialog'
-import { UserDeleteDialog } from './dialogs/UserDeleteDialog'
-import { UserDetailDialog } from './dialogs/UserDetailDialog'
+import { UserType } from '../../../api/models/User'
+import { Button } from '../../../common/components/Button'
+import { Dialog } from '../../../common/components/Dialog'
+import { Loader } from '../../../common/components/Loader'
+import { YesNoDialog } from '../../../common/components/YesNoDialog'
+import { ListUtils } from '../../../common/utils/ListUtils'
+import { UserListStore } from './UserListStore'
+import { UserAddDialog } from './dialog/UserAddDialog'
+import { UserDeleteDialog } from './dialog/UserDeleteDialog'
+import { UserDetailDialog } from './dialog/UserDetailDialog'
 
-interface AdminUsersPageProps {
-    store: AdminUsersStore
+interface UserListPageProps {
+    store: UserListStore
 }
 
-export const AdminUsersPage: React.FC<AdminUsersPageProps> = observer(props => {
+export const UserListPage: React.FC<UserListPageProps> = observer(props => {
     const store = props.store
     const { type } = useParams<{ type: UserType }>()
 
