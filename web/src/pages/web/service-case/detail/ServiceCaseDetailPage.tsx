@@ -1,15 +1,15 @@
 import { observer } from 'mobx-react'
 import { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
-import { Button } from '../common/components/Button'
-import { Col } from '../common/components/Col'
-import { FormGroup } from '../common/components/FormGroup'
-import { Label } from '../common/components/Label'
-import { Row } from '../common/components/Row'
-import { Textarea } from '../common/components/Textarea'
+import { navigationStore } from '../../../../App'
+import { Button } from '../../../../common/components/Button'
+import { Col } from '../../../../common/components/Col'
+import { FormGroup } from '../../../../common/components/FormGroup'
+import { Label } from '../../../../common/components/Label'
+import { Row } from '../../../../common/components/Row'
+import { Textarea } from '../../../../common/components/Textarea'
+import { DateUtils } from '../../../../common/utils/DateUtils'
 import { ServiceCaseDetailStore } from './ServiceCaseDetailStore'
-import { DateUtils } from '../common/utils/DateUtils'
-import { navigationStore } from '../App'
 
 interface ServiceCaseDetailPageProps {
     store: ServiceCaseDetailStore

@@ -33,10 +33,28 @@ export const EMPTY_USER: User = {
     ...EMPTY_ADDRESS,
 }
 
+export type UserEdit = Address & {
+    name: string
+    surname: string
+    phone: string
+}
+
+export type UserCreate = Address & {
+    name: string
+    surname: string
+    email: string
+    phone: string
+}
+
 export type AuthUser = User & {
     exp: string
     sub: string
     aud: string
     iat: string
     picture: string
+}
+
+export enum UserType {
+    CLIENT = 'CLIENT',
+    OPERATOR = 'OPERATOR',
 }

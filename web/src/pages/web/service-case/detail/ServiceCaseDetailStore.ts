@@ -1,15 +1,14 @@
 import { action, makeObservable, observable, runInAction } from 'mobx'
-import { DeviceType } from '../api/models/DeviceType'
-import { EMPTY_SERVICE_CASE_DETAIL, ServiceCaseDetail } from '../api/models/ServiceCase'
-import { ServiceCaseMessageForm } from '../api/models/ServiceCaseMessage'
-import { ServiceCaseType } from '../api/models/ServiceCaseType'
-import { isApiError } from '../api/services/ApiService'
-import { DeviceService } from '../api/services/DeviceService'
-import { ServiceCaseService } from '../api/services/ServiceCaseService'
-import { Field } from '../common/forms/Field'
-import { Form } from '../common/forms/Form'
-import { ListUtils } from '../common/utils/ListUtils'
-import { ValidationUtils } from '../common/utils/ValidationUtils'
+import { DeviceType } from '../../../../api/models/DeviceType'
+import { ServiceCaseDetail, EMPTY_SERVICE_CASE_DETAIL, ServiceCaseType } from '../../../../api/models/ServiceCase'
+import { ServiceCaseMessageForm } from '../../../../api/models/ServiceCaseMessage'
+import { isApiError } from '../../../../api/services/ApiService'
+import { DeviceService } from '../../../../api/services/DeviceService'
+import { ServiceCaseService } from '../../../../api/services/ServiceCaseService'
+import { Field } from '../../../../common/forms/Field'
+import { Form } from '../../../../common/forms/Form'
+import { ListUtils } from '../../../../common/utils/ListUtils'
+import { ValidationUtils } from '../../../../common/utils/ValidationUtils'
 
 export class ServiceCaseDetailStore {
     isLoading = false
@@ -65,7 +64,9 @@ export class ServiceCaseDetailStore {
                 })
             )
             .finally(() => {
-                this.isLoading = false
+                runInAction(() => {
+                    this.isLoading = false
+                })
             })
     }
 
@@ -115,7 +116,9 @@ export class ServiceCaseDetailStore {
                     })
                 )
                 .finally(() => {
-                    this.isLoading = false
+                    runInAction(() => {
+                        this.isLoading = false
+                    })
                 })
         }
     }

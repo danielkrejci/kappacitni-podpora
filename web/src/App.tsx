@@ -1,21 +1,25 @@
 import React from 'react'
 import { Redirect, Route, Router, Switch } from 'react-router-dom'
 import { NavigationStore } from './common/navigation/NavigationStore'
-import { HomeStore } from './home/HomeStore'
-import { ServiceCaseFormStore } from './serviceCaseForm/ServiceCaseFormStore'
-import { HomePage } from './home/HomePage'
-import { ServiceCaseFormPage } from './serviceCaseForm/ServiceCaseFormPage'
+import { HomeStore } from './pages/web/home/HomeStore'
+import { HomePage } from './pages/web/home/HomePage'
 import { PageLayout } from './common/layout/PageLayout'
-import { ServiceCaseDetailStore } from './serviceCaseDetail/ServiceCaseDetailStore'
-import { ServiceCaseDetailPage } from './serviceCaseDetail/ServiceCaseDetailPage'
-import { LoginPage } from './admin/login/LoginPage'
-import { LoginStore } from './admin/login/LoginStore'
+import { LoginPage } from './pages/admin/login/LoginPage'
+import { LoginStore } from './pages/admin/login/LoginStore'
 import { AuthService } from './api/services/AuthService'
 import { AdminPageLayout } from './common/layout/AdminPageLayout'
-import { AdminIndexStore } from './admin/index/AdminIndexStore'
-import { AdminIndexPage } from './admin/index/AdminIndexPage'
+import { AdminIndexStore } from './pages/admin/index/AdminIndexStore'
+import { AdminIndexPage } from './pages/admin/index/AdminIndexPage'
 import { browserHistory, NavigationContext } from './common/navigation/NavigationContext'
 import { observer } from 'mobx-react'
+import { UserListPage } from './pages/admin/user/UserListPage'
+import { UserListStore } from './pages/admin/user/UserListStore'
+import { ServiceCaseDetailPage } from './pages/web/service-case/detail/ServiceCaseDetailPage'
+import { ServiceCaseDetailStore } from './pages/web/service-case/detail/ServiceCaseDetailStore'
+import { ServiceCaseFormPage } from './pages/web/service-case/form/ServiceCaseFormPage'
+import { ServiceCaseFormStore } from './pages/web/service-case/form/ServiceCaseFormStore'
+import { ServiceCaseListPage } from './pages/admin/service-case/list/ServiceCaseListPage'
+import { ServiceCaseListStore } from './pages/admin/service-case/list/ServiceCaseListStore'
 
 // Global navigation store instance
 export const navigationStore = new NavigationStore(browserHistory)
@@ -26,6 +30,8 @@ const rootStore = {
     serviceCaseDetailStore: new ServiceCaseDetailStore(),
     loginStore: new LoginStore(),
     adminIndexStore: new AdminIndexStore(),
+    adminUsersStore: new UserListStore(),
+    adminServiceCasesListStore: new ServiceCaseListStore(),
 }
 
 export const authService = new AuthService()
@@ -82,12 +88,41 @@ export const App = observer((props: any) => {
                         render={() =>
                             authService.isLoggedIn ? (
                                 <AdminPageLayout>
-                                    {authService.isLoggedIn}
                                     <AdminIndexPage store={rootStore.adminIndexStore} />
                                 </AdminPageLayout>
                             ) : (
                                 <PageLayout>
-                                    {authService.isLoggedIn}
+                                    <LoginPage store={rootStore.loginStore} />
+                                </PageLayout>
+                            )
+                        }
+                    />
+
+                    <Route
+                        path={navigation.href.adminUsers()}
+                        render={() =>
+                            authService.isLoggedIn ? (
+                                <AdminPageLayout>
+                                    <UserListPage store={rootStore.adminUsersStore} />
+                                </AdminPageLayout>
+                            ) : (
+                                <PageLayout>
+                                    <LoginPage store={rootStore.loginStore} />
+                                </PageLayout>
+                            )
+                        }
+                    />
+
+                    <Route
+                        exact
+                        path={navigation.href.adminServiceCases()}
+                        render={() =>
+                            authService.isLoggedIn ? (
+                                <AdminPageLayout>
+                                    <ServiceCaseListPage store={rootStore.adminServiceCasesListStore} />
+                                </AdminPageLayout>
+                            ) : (
+                                <PageLayout>
                                     <LoginPage store={rootStore.loginStore} />
                                 </PageLayout>
                             )

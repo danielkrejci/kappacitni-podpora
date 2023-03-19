@@ -1,7 +1,7 @@
 import { GoogleLogin } from '@react-oauth/google'
 import { observer } from 'mobx-react-lite'
-import { navigationStore } from '../../App'
-import { Row } from '../../common/components/Row'
+import { navigationStore } from '../../../App'
+import { Row } from '../../../common/components/Row'
 import { LoginStore } from './LoginStore'
 
 interface LoginPageProps {

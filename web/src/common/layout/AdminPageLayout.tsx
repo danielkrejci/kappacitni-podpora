@@ -1,6 +1,8 @@
 import { observer } from 'mobx-react'
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { ServiceCaseListSorting } from '../../api/models/ServiceCase'
+import { UserType } from '../../api/models/User'
 import { authService, navigationStore } from '../../App'
 import { PageLayout } from './PageLayout'
 
@@ -30,7 +32,7 @@ export const AdminPageLayout: React.FC<AdminPageLayoutProps> = observer(props =>
                                 <ul className='nav flex-column'>
                                     <p className='text-muted mt-5 mb-2 ml-1'>Přehled</p>
                                     <li className='nav flex-column'>
-                                        <Link className='nav-link' to={'#'}>
+                                        <Link className='nav-link' to={navigationStore.href.adminIndex()}>
                                             Úvodní stránka
                                         </Link>
                                     </li>
@@ -47,24 +49,36 @@ export const AdminPageLayout: React.FC<AdminPageLayoutProps> = observer(props =>
 
                                     <p className='text-muted mt-5 mb-2 ml-1'>Servisní případy</p>
                                     <li className='nav flex-column'>
-                                        <Link className='nav-link' to={'#'}>
+                                        <Link
+                                            className='nav-link'
+                                            to={navigationStore.href.adminServiceCases('', '', ServiceCaseListSorting[0].code)}>
                                             Všechny
                                         </Link>
                                     </li>
                                     <li className='nav flex-column'>
-                                        <Link className='nav-link' to={'#'}>
+                                        <Link
+                                            className='nav-link'
+                                            to={navigationStore.href.adminServiceCases(
+                                                authService.authUser?.id,
+                                                '',
+                                                ServiceCaseListSorting[0].code
+                                            )}>
                                             Moje
                                         </Link>
                                     </li>
 
                                     <p className='text-muted mt-5 mb-2 ml-1'>Uživatelé</p>
                                     <li className='nav flex-column'>
-                                        <Link className='nav-link' to={'#'}>
+                                        <Link
+                                            className='nav-link'
+                                            to={navigationStore.href.adminUsers(UserType.CLIENT.toLocaleLowerCase())}>
                                             Klienti
                                         </Link>
                                     </li>
                                     <li className='nav flex-column'>
-                                        <Link className='nav-link' to={'#'}>
+                                        <Link
+                                            className='nav-link'
+                                            to={navigationStore.href.adminUsers(UserType.OPERATOR.toLocaleLowerCase())}>
                                             Operátoři
                                         </Link>
                                     </li>

@@ -50,4 +50,24 @@ export class ApiService {
 
         return result as T
     }
+
+    static async delete<T>(url: string): Promise<T | ApiError> {
+        const response = await fetch(url, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+
+        const result = await response.json()
+
+        if (!response.ok) {
+            return {
+                message: `HTTP error! Status: ${response.status}`,
+                cause: `${result.body.detail}`,
+            }
+        }
+
+        return result as T
+    }
 }

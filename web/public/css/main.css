@@ -239,6 +239,10 @@ body {
     max-width: 1140px;
 }
 
+.modal-dialog .modal-footer .btn {
+    min-width: 70px;
+}
+
 .pagination {
     margin: 0 auto;
 }
@@ -323,7 +327,7 @@ body {
     width: 0;
     height: 0;
     border-style: solid;
-    left: 25px;
+    left: 10px;
 }
 
 #filter-box:after {
@@ -391,4 +395,79 @@ span.tagx-icon {
 .input-group .form-feedback {
     order: 1;
     width: 100%;
+}
+
+.loader-svg svg {
+    position: relative;
+    display: -ms-flexbox;
+    display: flex;
+    width: 16px;
+    height: 16px;
+    color: #fff;
+    transform-origin: 50% 50%;
+    transition-timing-function: ease;
+    transition-property: opacity, transform;
+    animation: SpinnerAnimationShow 0.25s ease normal, SpinnerAnimationRotation 0.6s linear infinite;
+}
+
+.loader-svg.loader-fullscreen {
+    z-index: 1050;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+}
+
+.loader-svg.loader-fullscreen + .modal-backdrop {
+    background-color: #f5f5f5;
+    opacity: 0.7;
+}
+
+.loader-svg.loader-center svg {
+    margin: auto;
+}
+
+.loader-svg.loader-dark svg {
+    color: #3c4257;
+}
+.loader-svg.loader-light svg {
+    color: #fff;
+}
+.loader-svg.loader-primary svg {
+    color: #007bff;
+}
+
+.loader-svg.loader-sm svg {
+    width: 10px;
+    height: 10px;
+}
+.loader-svg.loader-md svg {
+    width: 20px;
+    height: 20px;
+}
+.loader-svg.loader-lg svg {
+    width: 35px;
+    height: 35px;
+}
+.loader-svg.loader-xl svg {
+    width: 50px;
+    height: 50px;
+}
+
+@keyframes SpinnerAnimationShow {
+    0% {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+@keyframes SpinnerAnimationRotation {
+    to {
+        transform: rotate(1turn);
+    }
+}
+
+table td {
+    vertical-align: middle;
 }

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { navigationStore } from '../App'
+import { navigationStore } from '../../../App'
 import { HomeStore } from './HomeStore'
 
 interface HomePageProps {

@@ -1,19 +1,13 @@
 import * as React from 'react'
 import { observer } from 'mobx-react'
 import { action, makeObservable, observable } from 'mobx'
+import { AlertDialogType } from './AlertDialog'
 
-export enum AlertDialogType {
-    Default = 'secondary',
-    Success = 'success',
-    Warning = 'warning',
-    Danger = 'danger',
+export interface YesNoDialogProps {
+    store: YesNoDialogStore
 }
 
-export interface AlertDialogProps {
-    store: AlertDialogStore
-}
-
-export const AlertDialog: React.FC<AlertDialogProps> = observer(props => {
+export const YesNoDialog: React.FC<YesNoDialogProps> = observer(props => {
     const store = props.store
 
     React.useEffect(() => {
@@ -41,8 +35,25 @@ export const AlertDialog: React.FC<AlertDialogProps> = observer(props => {
                                 </div>
                                 <div className='modal-body'>{store.content}</div>
                                 <div className='modal-footer'>
-                                    <button type='button' className={`btn btn-sm btn-${store.type}`} onClick={store.hide}>
-                                        Zavřít
+                                    <button
+                                        type='button'
+                                        className={`btn btn-sm btn-default`}
+                                        onClick={() => {
+                                            if (store.onNoAction) {
+                                                store.onNoAction()
+                                            }
+                                            store.hide()
+                                        }}>
+                                        Ne
+                                    </button>
+                                    <button
+                                        type='button'
+                                        className={`btn btn-sm btn-${store.type}`}
+                                        onClick={() => {
+                                            store.onYesAction()
+                                            store.hide()
+                                        }}>
+                                        Ano
                                     </button>
                                 </div>
                             </div>
@@ -55,7 +66,7 @@ export const AlertDialog: React.FC<AlertDialogProps> = observer(props => {
     )
 })
 
-export class AlertDialogStore {
+export class YesNoDialogStore {
     visible = false
 
     title = ''
@@ -63,6 +74,9 @@ export class AlertDialogStore {
     type = AlertDialogType.Default
 
     content?: JSX.Element | string
+
+    onYesAction: () => void = () => {}
+    onNoAction?: () => void
 
     constructor() {
         makeObservable(this, {
@@ -75,12 +89,14 @@ export class AlertDialogStore {
         })
     }
 
-    show = (title?: string, type?: AlertDialogType, content?: JSX.Element | string) => {
+    show = (onYesAction: () => void, onNoAction?: () => void, title?: string, type?: AlertDialogType, content?: JSX.Element | string) => {
         this.visible = true
 
         this.title = title ?? ''
         this.type = type ?? AlertDialogType.Default
         this.content = content
+        this.onYesAction = onYesAction
+        this.onNoAction = onNoAction
     }
 
     hide = () => {
@@ -92,12 +108,18 @@ export class AlertDialogStore {
     }
 }
 
-export const defaultAlertDialogStore = new AlertDialogStore()
+export const defaultYesNoDialogStore = new YesNoDialogStore()
 
-export function showAlertDialog(title?: string, content?: JSX.Element | string, type?: AlertDialogType) {
-    defaultAlertDialogStore.show(title, type, content)
+export function showYesNoDialog(
+    onYesAction: () => void,
+    onNoAction?: () => void,
+    title?: string,
+    content?: string,
+    type?: AlertDialogType
+) {
+    defaultYesNoDialogStore.show(onYesAction, onNoAction, title, type, content)
 }
 
-export function hideAlertDialog() {
-    defaultAlertDialogStore.hide()
+export function hideYesNoDialog() {
+    defaultYesNoDialogStore.hide()
 }
