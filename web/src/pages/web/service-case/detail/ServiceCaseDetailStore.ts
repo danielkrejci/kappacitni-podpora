@@ -108,18 +108,6 @@ export class ServiceCaseDetailStore {
                 .finally(() => {
                     this.isLoading = false
                 })
-
-            Promise.resolve(true)
-                .then(data =>
-                    runInAction(() => {
-                        console.log('Message saved')
-                    })
-                )
-                .finally(() => {
-                    runInAction(() => {
-                        this.isLoading = false
-                    })
-                })
         }
     }
 
