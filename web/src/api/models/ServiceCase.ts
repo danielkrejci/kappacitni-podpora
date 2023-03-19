@@ -9,12 +9,30 @@ export const ServiceCaseListSorting: SelectField[] = [
 ]
 
 export type ServiceCaseList = {
+    hasNext: boolean
+    hasPrev: boolean
+    data: ServiceCaseListItem[]
+    page: number
+    totalPages: number
+}
+
+export type ServiceCaseListItem = {
     id: number
+    dateBegin: string
+    dateEnd: string
     client: string
     message: string
     newMessagesCount: number
     stateId: number
     operators: string[]
+}
+
+export const EMPTY_SERVICE_CASE_LIST: ServiceCaseList = {
+    hasNext: false,
+    hasPrev: false,
+    page: 1,
+    totalPages: 1,
+    data: [],
 }
 
 export type ServiceCaseForm = {

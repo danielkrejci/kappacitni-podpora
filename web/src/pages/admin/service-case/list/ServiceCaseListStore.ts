@@ -1,5 +1,5 @@
 import { action, computed, makeObservable, observable, runInAction } from 'mobx'
-import { ServiceCaseList, ServiceCaseListSorting, ServiceCaseState } from '../../../../api/models/ServiceCase'
+import { EMPTY_SERVICE_CASE_LIST, ServiceCaseList, ServiceCaseListSorting, ServiceCaseState } from '../../../../api/models/ServiceCase'
 import { User } from '../../../../api/models/User'
 import { isApiError } from '../../../../api/services/ApiService'
 import { ServiceCaseService } from '../../../../api/services/ServiceCaseService'
@@ -13,15 +13,15 @@ export class ServiceCaseListStore {
 
     initDone = false
 
-    serviceCases: ServiceCaseList[] = []
-
-    showFilter = false
+    serviceCases: ServiceCaseList = EMPTY_SERVICE_CASE_LIST
 
     codetables = {
         operators: [] as User[],
         states: [] as ServiceCaseState[],
         sort: ServiceCaseListSorting,
     }
+
+    currentPage = 1
 
     filter = {
         sort: Field.select('sort', this.codetables.sort[0], () => this.codetables.sort),
@@ -35,10 +35,9 @@ export class ServiceCaseListStore {
             initDone: observable,
             codetables: observable,
             serviceCases: observable,
-            showFilter: observable,
+            currentPage: observable,
             init: action,
             load: action,
-            toggleFilter: action,
             isFilterActive: computed,
         })
     }
@@ -56,11 +55,28 @@ export class ServiceCaseListStore {
         const state = query.get('state') ?? ''
         const sort = ServiceCaseListSorting.find(s => s.code === query.get('sort') ?? '')?.code ?? ServiceCaseListSorting[0].code
 
-        console.log('operatorId: ', operatorId)
-        console.log('state: ', state)
-        console.log('sort: ', JSON.stringify(this.filter.sort.value))
+        this.currentPage = Number(query.get('page')) ?? 1
 
         this.isLoading = true
+
+        this.serviceCases = {
+            hasNext: false,
+            hasPrev: false,
+            page: 1,
+            totalPages: 1,
+            data: [
+                {
+                    id: 1,
+                    dateBegin: '2023-03-17 11:12:40',
+                    dateEnd: '',
+                    client: 'Daniel Krejčí',
+                    message: 'string',
+                    newMessagesCount: 1,
+                    stateId: 1,
+                    operators: ['Daniel Krejčí', 'Jan Chaloupka'],
+                },
+            ],
+        }
 
         Promise.all([
             ServiceCaseService.getServiceCaseStates(),
@@ -91,9 +107,6 @@ export class ServiceCaseListStore {
 
                     this.filter.sort.value = ServiceCaseListSorting.find(s => s.code === sort) ?? ServiceCaseListSorting[0]
                     this.filter.state.value = this.codetables.states.find(s => s.code.toString() === state) ?? SelectFieldUtils.optionAll()
-
-                    this.showFilter =
-                        SelectFieldUtils.isSelected(this.filter.state.value) || SelectFieldUtils.isSelected(this.filter.operators.value)
 
                     this.isLoading = false
                 })
@@ -127,16 +140,21 @@ export class ServiceCaseListStore {
             })
     }
 
-    toggleFilter() {
-        this.showFilter = !this.showFilter
+    nextPage() {
+        if (this.serviceCases.hasNext) {
+            this.currentPage = this.currentPage + 1
+        }
+        this.reload()
+    }
+
+    prevPage() {
+        if (this.serviceCases.hasPrev) {
+            this.currentPage = this.currentPage - 1
+        }
+        this.reload()
     }
 
     get isFilterActive(): boolean {
-        return (
-            this.showFilter &&
-            (this.showFilter ||
-                SelectFieldUtils.isSelected(this.filter.operators.value) ||
-                SelectFieldUtils.isSelected(this.filter.state.value))
-        )
+        return SelectFieldUtils.isSelected(this.filter.operators.value) || SelectFieldUtils.isSelected(this.filter.state.value)
     }
 }

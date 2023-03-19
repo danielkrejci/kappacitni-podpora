@@ -10,7 +10,7 @@ import { ApiService } from './ApiService'
 
 export class ServiceCaseService {
     static async getServiceCases(operatorId?: string, state?: string, sort?: string) {
-        return await ApiService.get<ServiceCaseList[]>(
+        return await ApiService.get<ServiceCaseList>(
             `http://localhost:8081/service-cases?operatorId=${operatorId ?? ''}&state=${state ?? ''}&sort=${sort ?? ''}`
         )
     }
