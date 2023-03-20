@@ -5,4 +5,8 @@ spring:
     password: postgres
   webflux:
     base-path: /admin
-
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: accounts.google.com
