@@ -98,14 +98,16 @@ export const UserListPage: React.FC<UserListPageProps> = observer(props => {
                                             <Button className='mr-1' size='sm' onClick={() => store.showDetailDialog(user, true)}>
                                                 Upravit
                                             </Button>
-                                            <Button
-                                                size='sm'
-                                                type='danger'
-                                                onClick={() =>
-                                                    store.showDeleteDialog(user, <UserDeleteDialog store={store.deleteDialogStore} />)
-                                                }>
-                                                Odstranit
-                                            </Button>
+                                            {store.usersType === UserType.OPERATOR.toLocaleLowerCase() && (
+                                                <Button
+                                                    size='sm'
+                                                    type='danger'
+                                                    onClick={() =>
+                                                        store.showDeleteDialog(user, <UserDeleteDialog store={store.deleteDialogStore} />)
+                                                    }>
+                                                    Odstranit
+                                                </Button>
+                                            )}
                                         </td>
                                     </tr>
                                 ))
