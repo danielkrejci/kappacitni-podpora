@@ -46,7 +46,7 @@ CREATE TABLE service_cases
 CREATE TABLE service_case_messages
 (
     id            SERIAL PRIMARY KEY,
-    userId        BIGINT NOT NULL,
+    userId        BIGINT,
     serviceCaseId BIGINT NOT NULL,
     stateId       BIGINT NOT NULL,
     message       TEXT NOT NULL,

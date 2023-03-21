@@ -10,7 +10,9 @@ import java.util.*
 
 
 @Service
-class JwtService {
+class JwtService(
+    private val userService: UserService
+) {
 
     fun getEmailFromToken(token: String): Mono<String> {
         return getClaimsFromToken(token).flatMap {
@@ -39,7 +41,15 @@ class JwtService {
         if (aud != "440750977540-89l2ll74t5bqlj5cjh8q4rktmvd0igo2.apps.googleusercontent.com") {
             return Mono.error(JWTException("Invalid audience"))
         }
-        return Mono.just(jwt)
+
+        var userEmail = jwt.claims["email"]?.asString() ?: return Mono.error(JWTException("There is no email in token"))
+        return userService.findByEmail(userEmail).flatMap { user ->
+            if (!user.isOperator) {
+                Mono.error(JWTException("Email from token does not belong to opearotr"))
+            } else {
+                Mono.just(jwt)
+            }
+        }
     }
 
 

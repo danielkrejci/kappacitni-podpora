@@ -17,5 +17,9 @@ class AddressService(
         return addressRepository.findById(id)
     }
 
+    fun save(address: Address): Mono<Address> {
+        return addressRepository.save(address)
+    }
+
 
 }
