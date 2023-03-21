@@ -59,6 +59,8 @@ class ValidationService(
         sc.postalCode = sc.postalCode?.let { sanitizePostalCode(it) }
 
         //TODO refactor
+        if (sc.name.isBlank()) exceptions.add("Username is mandatory")
+        if (sc.surname.isBlank()) exceptions.add("Surname is mandatory")
         if (sc.phone == INVALID) exceptions.add("Invalid phone number")
         if (sc.postalCode == INVALID) exceptions.add("Invalid postal code")
 
@@ -117,7 +119,7 @@ class ValidationService(
         if (pc.isNullOrEmpty() || pc.isNullOrBlank()) return null
         val trimmedInput = pc.replace("\\s".toRegex(), "")
         return if (POSTAL_CODE_REGEX.matches(trimmedInput)) {
-            pc
+            trimmedInput
         } else INVALID
     }
 

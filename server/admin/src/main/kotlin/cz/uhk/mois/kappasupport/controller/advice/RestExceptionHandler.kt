@@ -23,8 +23,32 @@ class RestExceptionHandler {
         return ResponseEntity<ErrorResponse?>(error, HttpStatus.NOT_FOUND)
     }
 
+    @ExceptionHandler(value = [AddressNotCompleteException::class])
+    fun handleUserNotFound(ex: AddressNotCompleteException): ResponseEntity<ErrorResponse?>? {
+        val error: ErrorResponse = ErrorResponse.create(ex, HttpStatus.NOT_FOUND, ex.message!!)
+        return ResponseEntity<ErrorResponse?>(error, HttpStatus.NOT_FOUND)
+    }
+
     @ExceptionHandler(value = [JWTException::class])
     fun handleUserNotFound(ex: JWTException): ResponseEntity<ErrorResponse?>? {
+        val error: ErrorResponse = ErrorResponse.create(ex, HttpStatus.BAD_REQUEST, ex.message!!)
+        return ResponseEntity<ErrorResponse?>(error, HttpStatus.BAD_REQUEST)
+    }
+
+    @ExceptionHandler(value = [UserIsOperatorException::class])
+    fun handleUserNotFound(ex: UserIsOperatorException): ResponseEntity<ErrorResponse?>? {
+        val error: ErrorResponse = ErrorResponse.create(ex, HttpStatus.BAD_REQUEST, ex.message!!)
+        return ResponseEntity<ErrorResponse?>(error, HttpStatus.BAD_REQUEST)
+    }
+
+    @ExceptionHandler(value = [UserIsClientException::class])
+    fun handleUserNotFound(ex: UserIsClientException): ResponseEntity<ErrorResponse?>? {
+        val error: ErrorResponse = ErrorResponse.create(ex, HttpStatus.BAD_REQUEST, ex.message!!)
+        return ResponseEntity<ErrorResponse?>(error, HttpStatus.BAD_REQUEST)
+    }
+
+    @ExceptionHandler(value = [GenericException::class])
+    fun handleUserNotFound(ex: GenericException): ResponseEntity<ErrorResponse?>? {
         val error: ErrorResponse = ErrorResponse.create(ex, HttpStatus.BAD_REQUEST, ex.message!!)
         return ResponseEntity<ErrorResponse?>(error, HttpStatus.BAD_REQUEST)
     }
@@ -38,6 +62,12 @@ class RestExceptionHandler {
 
     @ExceptionHandler(value = [ServiceCaseNotFoundException::class])
     fun handleUserNotFound(ex: ServiceCaseNotFoundException): ResponseEntity<ErrorResponse?>? {
+        val error: ErrorResponse = ErrorResponse.create(ex, HttpStatus.NOT_FOUND, ex.message!!)
+        return ResponseEntity<ErrorResponse?>(error, HttpStatus.NOT_FOUND)
+    }
+
+    @ExceptionHandler(value = [ValidationFailedException::class])
+    fun handleUserNotFound(ex: ValidationFailedException): ResponseEntity<ErrorResponse?>? {
         val error: ErrorResponse = ErrorResponse.create(ex, HttpStatus.NOT_FOUND, ex.message!!)
         return ResponseEntity<ErrorResponse?>(error, HttpStatus.NOT_FOUND)
     }

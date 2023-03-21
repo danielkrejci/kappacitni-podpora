@@ -20,6 +20,8 @@ interface DomainMapper {
 
     @Mapping(source = "userDto.id", target = "id")
     fun toUserLoser(userDto: UserDto, addressDto: AddressDto): UserLoser
+    fun fromUserLoserToAddress(userLoser: UserLoser): AddressDto
+    fun userLoserToUser(userLoser: UserLoser): User
     fun toUserLoser(userDto: UserDto): UserLoser
     fun toDto(address: Address): AddressDto
     fun fromDto(address: AddressDto): Address

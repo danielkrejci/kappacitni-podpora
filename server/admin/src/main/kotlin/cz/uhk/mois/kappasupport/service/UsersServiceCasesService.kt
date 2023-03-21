@@ -5,6 +5,7 @@ import cz.uhk.mois.kappasupport.controller.model.UsersServiceCasesDto
 import cz.uhk.mois.kappasupport.domain.UsersServiceCases
 import cz.uhk.mois.kappasupport.mapper.DomainMapper
 import cz.uhk.mois.kappasupport.repository.UsersServiceCasesRepository
+import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -12,7 +13,7 @@ import reactor.core.publisher.Mono
 @Service
 class UsersServiceCasesService(
     private val repository: UsersServiceCasesRepository,
-    private val userService: UserService,
+    @Lazy private val userService: UserService,
     private val mapper: DomainMapper
 ) {
     fun getOperatorIdsFromServiceCase(serviceCaseId: Long): Flux<UserDto> {

@@ -2,6 +2,7 @@ import { action, makeObservable, observable, runInAction } from 'mobx'
 import { User, UserEdit } from '../../../../api/models/User'
 import { isApiError } from '../../../../api/services/ApiService'
 import { UserService } from '../../../../api/services/UserService'
+import { AlertDialogType, showAlertDialog } from '../../../../common/components/AlertDialog'
 import { DialogStore } from '../../../../common/components/Dialog'
 import { Field } from '../../../../common/forms/Field'
 import { Form } from '../../../../common/forms/Form'
@@ -15,14 +16,16 @@ export class UserDetailDialogStore extends DialogStore {
 
     parentStore: UserListStore
 
+    prefixCodetable = [
+        { code: '+420', value: '+420' },
+        { code: '+421', value: '+421' },
+    ]
+
     form = {
         name: Field.text('name'),
         surname: Field.text('surname'),
         email: Field.text('email'),
-        phonePrefix: Field.select('phonePrefix', { code: '+420', value: '+420' }, () => [
-            { code: '+420', value: '+420' },
-            { code: '+421', value: '+421' },
-        ]),
+        phonePrefix: Field.select('phonePrefix', { code: '+420', value: '+420' }, () => this.prefixCodetable),
         phone: Field.text('phone'),
         street: Field.text('street'),
         houseNumber: Field.text('houseNumber'),
@@ -47,14 +50,21 @@ export class UserDetailDialogStore extends DialogStore {
         this.editMode = editMode
         this.selectedUser = selectedUser
 
-        this.form.name.value = selectedUser.name
-        this.form.surname.value = selectedUser.surname
-        this.form.email.value = selectedUser.email
-        this.form.phone.value = selectedUser.phone
-        this.form.street.value = selectedUser.street
-        this.form.houseNumber.value = selectedUser.houseNumber
-        this.form.city.value = selectedUser.city
-        this.form.postalCode.value = selectedUser.postalCode
+        this.form.name.value = selectedUser.name ?? ''
+        this.form.surname.value = selectedUser.surname ?? ''
+        this.form.email.value = selectedUser.email ?? ''
+        this.form.street.value = selectedUser.street ?? ''
+        this.form.houseNumber.value = selectedUser.houseNumber ?? ''
+        this.form.city.value = selectedUser.city ?? ''
+        this.form.postalCode.value = selectedUser.postalCode ?? ''
+
+        if (selectedUser.phone) {
+            this.form.phonePrefix.value =
+                this.prefixCodetable.find(prefix => prefix.code === selectedUser.phone.slice(0, 4)) ?? this.prefixCodetable[1]
+            this.form.phone.value = selectedUser.phone.slice(5, selectedUser.phone.length)
+        } else {
+            this.form.phone.value = ''
+        }
     }
 
     save() {
@@ -64,7 +74,7 @@ export class UserDetailDialogStore extends DialogStore {
             const data: UserEdit = {
                 name: this.form.name.value,
                 surname: this.form.surname.value,
-                phone: `${this.form.phonePrefix.value.value}${this.form.phone.value}`,
+                phone: this.form.phone.value ? `${this.form.phonePrefix.value.value}${this.form.phone.value}` : '',
                 street: this.form.street.value,
                 houseNumber: this.form.houseNumber.value,
                 city: this.form.city.value,
@@ -76,11 +86,15 @@ export class UserDetailDialogStore extends DialogStore {
                     runInAction(() => {
                         this.parentStore.isLoading = false
 
-                        if (!isApiError(data)) {
+                        this.reset()
+                        this.hide()
+
+                        if (isApiError(data)) {
+                            showAlertDialog('Chyba', data.cause, AlertDialogType.Danger)
+                        } else {
                             this.editMode = false
                             this.selectedUser = undefined
-                            this.reset()
-                            this.hide()
+                            this.parentStore.load()
                         }
                     })
                 )

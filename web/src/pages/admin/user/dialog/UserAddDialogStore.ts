@@ -2,6 +2,7 @@ import { action, makeObservable, runInAction } from 'mobx'
 import { UserCreate } from '../../../../api/models/User'
 import { isApiError } from '../../../../api/services/ApiService'
 import { UserService } from '../../../../api/services/UserService'
+import { AlertDialogType, showAlertDialog } from '../../../../common/components/AlertDialog'
 import { DialogStore } from '../../../../common/components/Dialog'
 import { Field } from '../../../../common/forms/Field'
 import { Form } from '../../../../common/forms/Form'
@@ -44,7 +45,7 @@ export class UserAddDialogStore extends DialogStore {
                 name: this.form.name.value,
                 surname: this.form.surname.value,
                 email: this.form.email.value,
-                phone: `${this.form.phonePrefix.value.value}${this.form.phone.value}`,
+                phone: this.form.phone.value ? `${this.form.phonePrefix.value.value}${this.form.phone.value}` : '',
                 street: this.form.street.value,
                 houseNumber: this.form.houseNumber.value,
                 city: this.form.city.value,
@@ -56,9 +57,13 @@ export class UserAddDialogStore extends DialogStore {
                     runInAction(() => {
                         this.parentStore.isLoading = false
 
-                        if (!isApiError(data)) {
-                            this.reset()
-                            this.hide()
+                        this.reset()
+                        this.hide()
+
+                        if (isApiError(data)) {
+                            showAlertDialog('Chyba', data.cause, AlertDialogType.Danger)
+                        } else {
+                            this.parentStore.load()
                         }
                     })
                 )

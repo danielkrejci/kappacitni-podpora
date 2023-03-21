@@ -2,6 +2,7 @@ import { action, makeObservable, observable, runInAction } from 'mobx'
 import { User } from '../../../../api/models/User'
 import { isApiError } from '../../../../api/services/ApiService'
 import { UserService } from '../../../../api/services/UserService'
+import { AlertDialogType, showAlertDialog } from '../../../../common/components/AlertDialog'
 import { YesNoDialogStore } from '../../../../common/components/YesNoDialog'
 import { UserListStore } from '../UserListStore'
 
@@ -34,9 +35,12 @@ export class UserDeleteDialogStore extends YesNoDialogStore {
                     runInAction(() => {
                         this.parentStore.isLoading = false
 
-                        if (!isApiError(data)) {
-                            this.reset()
-                            this.hide()
+                        this.parentStore.load()
+                        this.reset()
+                        this.hide()
+
+                        if (isApiError(data)) {
+                            showAlertDialog('Chyba', data.cause, AlertDialogType.Danger)
                         }
                     })
                 )
