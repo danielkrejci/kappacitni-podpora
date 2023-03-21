@@ -12,7 +12,7 @@ import org.springframework.security.config.web.server.SecurityWebFiltersOrder
 import org.springframework.security.config.web.server.ServerHttpSecurity
 import org.springframework.security.web.server.SecurityWebFilterChain
 import org.springframework.web.cors.CorsConfiguration
-import org.springframework.web.cors.reactive.CorsWebFilter
+import org.springframework.web.cors.reactive.CorsConfigurationSource
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource
 import org.springframework.web.server.ServerWebExchange
 import org.springframework.web.server.WebFilter
@@ -28,8 +28,23 @@ class SecurityConfiguration(
     @Bean
     fun securityWebFilterChain(http: ServerHttpSecurity): SecurityWebFilterChain {
         http.addFilterAfter(JWTWebFilterChain(jwtService), SecurityWebFiltersOrder.AUTHENTICATION)
+        return http.cors().configurationSource(corsFilter()).and().build()
+    }
 
-        return http.cors().and().build()
+    @Bean
+    fun corsFilter(): CorsConfigurationSource {
+        val corsConfig = CorsConfiguration()
+
+        corsConfig.applyPermitDefaultValues()
+
+        corsConfig.addAllowedOrigin("http://localhost:3000")
+        corsConfig.addAllowedHeader("Authorization")
+        corsConfig.addAllowedMethod("*")
+
+        val source = UrlBasedCorsConfigurationSource()
+        source.registerCorsConfiguration("/**", corsConfig)
+
+        return source
     }
 }
 
@@ -40,21 +55,7 @@ class JWTWebFilterChain(private var jwtService: JwtService) : WebFilter {
         val jwtToken = tokenosFromHeader.substring(7)
         return jwtService.checkToken(jwtToken).doOnError {
             exchange.response.statusCode = HttpStatus.UNAUTHORIZED
-
         }.then(chain.filter(exchange))
     }
 
-    @Bean
-    fun corsFilter(): CorsWebFilter {
-        val corsConfig = CorsConfiguration()
-        corsConfig.allowedOrigins = listOf("*") // Allow all origins
-        corsConfig.allowedMethods = listOf("*") // Allow all HTTP methods
-        corsConfig.allowedHeaders = listOf("*") // Allow all headers
-        corsConfig.maxAge = 3600L // Cache preflight response for 1 hour
-
-        val source = UrlBasedCorsConfigurationSource()
-        source.registerCorsConfiguration("/**", corsConfig)
-
-        return CorsWebFilter(source)
-    }
 }
