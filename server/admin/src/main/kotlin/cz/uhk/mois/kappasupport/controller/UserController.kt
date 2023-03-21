@@ -33,7 +33,7 @@ class UserController(
         return ResponseEntity.ok(userService.findAllClients())
     }
 
-    @PutMapping("/{userId}")
+    @PostMapping("/{userId}")
     fun editUser(@RequestBody user: UserLoser, @PathVariable userId: Long): ResponseEntity<Mono<Boolean>> {
         return ResponseEntity.ok(userService.editUser(user, userId))
     }

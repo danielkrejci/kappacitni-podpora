@@ -47,9 +47,11 @@ class UserService(
                     it.postalCode = user.postalCode
                     addressService.save(it).flatMap {
                         userToSave.addressId = it.id
-                        userRepository.save(userToSave).flatMap { Mono.just(true) }
+                        userRepository.save(userToSave).flatMap {
+                            Mono.just(true)
+                        }
                     }
-                }
+                }.switchIfEmpty(userRepository.save(userToSave).flatMap { Mono.just(true) })
             }
         }
     }
@@ -92,7 +94,6 @@ class UserService(
 
     fun create(user: UserLoser): Mono<Boolean> {
         if (user.email.isNullOrBlank() || user.email.isNullOrEmpty()) return Mono.error(ValidationFailedException("Email is mandatory for user creation"))
-
         return findByEmail(user.email!!).flatMap {
             if (it.isOperator) {
                 Mono.error(UserIsOperatorException("User is already operator"))
@@ -121,7 +122,6 @@ class UserService(
                     }
                 }
             } else if (foundedUser.isOperator && foundedUser.isClient) {
-                // JE OPERATOR A KLIENT
                 assignedCases.flatMap { assignedServiceCases ->
                     if (assignedServiceCases.isEmpty()) {
                         foundedUser.isOperator = false
@@ -196,13 +196,12 @@ class UserService(
 
     fun findByEmail(email: String): Mono<UserDto> {
         return userRepository.findByEmail(email)
-            .switchIfEmpty(Mono.error(UserNotFoundException("There is no user with email: $email")))
             .map { mapper.toDto(it) }
     }
 
     fun findByUserId(id: Long): Mono<UserDto> {
         return userRepository.findById(id)
-            .switchIfEmpty(Mono.error(UserNotFoundException("there is no user with id: $id"))).map { mapper.toDto(it) }
+            .map { mapper.toDto(it) }
     }
 
     fun getUsersByIdIn(ids: List<Long>): Flux<UserDto> {
