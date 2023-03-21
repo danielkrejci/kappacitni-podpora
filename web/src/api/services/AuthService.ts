@@ -40,6 +40,7 @@ export class AuthService {
 
                     return true
                 } else {
+                    this.logout()
                     showAlertDialog('Chyba', result.cause, AlertDialogType.Danger)
                 }
                 return false

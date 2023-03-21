@@ -69,7 +69,7 @@ export class ApiService {
         }
     }
 
-    static async delete<T>(url: string): Promise<T | ApiError> {
+    static async delete<T>(url: string, data?: string): Promise<T | ApiError> {
         try {
             const response = await fetch(url, {
                 method: 'DELETE',
@@ -77,6 +77,7 @@ export class ApiService {
                     ...(authService.token ? { Authorization: `Bearer ${authService.token}` } : {}),
                     ...{ 'Content-Type': 'application/json' },
                 },
+                body: data,
             })
 
             const result = await response.json()

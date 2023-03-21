@@ -12,6 +12,7 @@ import { DateUtils } from '../../../../common/utils/DateUtils'
 import { Link } from 'react-router-dom'
 import { GroupAlign } from '../../../../common/components/GroupAlign'
 import { Paging } from '../../../../common/components/Paging'
+import { navigationStore } from '../../../../App'
 
 interface ServiceCaseListPageProps {
     store: ServiceCaseListStore
@@ -31,13 +32,13 @@ export const ServiceCaseListPage: React.FC<ServiceCaseListPageProps> = observer(
         <>
             {store.isLoading && <Loader color='primary' size='lg' fullScreen={true} />}
 
-            <Row>
+            <Row mb={5}>
                 <Col xs={12}>
-                    <h1 className='mb-5'>Servisní případy</h1>
+                    <h1 className='mb-0'>Servisní případy</h1>
                 </Col>
             </Row>
 
-            <Row>
+            <Row mb={3}>
                 <Col xs={12}>
                     <Row horizontal='between'>
                         <Col xs={6}>
@@ -70,8 +71,8 @@ export const ServiceCaseListPage: React.FC<ServiceCaseListPageProps> = observer(
                 <Col xs={12} mb={4}>
                     {store.serviceCases.data.length > 0 ? (
                         <>
-                            {store.serviceCases.data.map(serviceCase => (
-                                <div className='p-3 service-case-item'>
+                            {store.serviceCases.data.map((serviceCase, idx) => (
+                                <div className='p-3 service-case-item' key={`${serviceCase.id}_${idx}`}>
                                     <h3>
                                         #{serviceCase.id}
                                         <span className='text-muted float-right mt-2'>{DateUtils.toUIDateTime(serviceCase.dateBegin)}</span>
@@ -96,13 +97,13 @@ export const ServiceCaseListPage: React.FC<ServiceCaseListPageProps> = observer(
                                     <p>
                                         Případ řeší:&nbsp;
                                         {serviceCase.operators.map((operator, idx) => (
-                                            <span key={idx}>
+                                            <span key={`${idx}`}>
                                                 <strong>{operator}</strong>
                                                 {idx !== serviceCase.operators.length - 1 ? ', ' : ''}
                                             </span>
                                         ))}
                                     </p>
-                                    <Link className='btn btn-primary' to={`#`}>
+                                    <Link className='btn btn-primary' to={navigationStore.href.adminServiceCaseDetail(serviceCase.id)}>
                                         Otevřít
                                     </Link>
                                 </div>
@@ -122,7 +123,6 @@ export const ServiceCaseListPage: React.FC<ServiceCaseListPageProps> = observer(
                     ) : (
                         <p className='mt-5 text-center'>Zatím nemáš žádné servisní případy.</p>
                     )}
-                    {store.isFilterActive}
                 </Col>
             </Row>
         </>

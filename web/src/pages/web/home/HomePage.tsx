@@ -22,45 +22,45 @@ export const HomePage = (props: HomePageProps): JSX.Element => {
 
                             <div className='row clearfix mt-5' id='devices'>
                                 <div className='col-6 col-md-4 col-lg-2 mb-5 mb-md-4 mb-lg-0'>
-                                    <a href={navigationStore.href.serviceCaseForm('myphone')}>
+                                    <Link to={navigationStore.href.serviceCaseForm('myphone')}>
                                         <img style={{ width: '40px', height: '80px' }} src='img/devices/myphone.png' alt='myPhone' />
                                         <p>myPhone</p>
-                                    </a>
+                                    </Link>
                                 </div>
 
                                 <div className='col-6 col-md-4 col-lg-2 mb-5 mb-md-0'>
-                                    <a href={navigationStore.href.serviceCaseForm('mypad')}>
+                                    <Link to={navigationStore.href.serviceCaseForm('mypad')}>
                                         <img style={{ width: '50px', height: '80px' }} src='img/devices/mypad.png' alt='myPad' />
                                         <p>myPad</p>
-                                    </a>
+                                    </Link>
                                 </div>
 
                                 <div className='col-6 col-md-4 col-lg-2 mb-5 mb-md-4 mb-lg-0'>
-                                    <a href={navigationStore.href.serviceCaseForm('mybook')}>
+                                    <Link to={navigationStore.href.serviceCaseForm('mybook')}>
                                         <img style={{ width: '100px', height: '60px' }} src='img/devices/mybook.png' alt='myBook' />
                                         <p>myBook</p>
-                                    </a>
+                                    </Link>
                                 </div>
 
                                 <div className='col-6 col-md-4 col-lg-2 mb-5 mb-md-4 mb-lg-0'>
-                                    <a href={navigationStore.href.serviceCaseForm('mystudio')}>
+                                    <Link to={navigationStore.href.serviceCaseForm('mystudio')}>
                                         <img style={{ width: '85px', height: '75px' }} src='img/devices/mystudio.png' alt='myStudio' />
                                         <p>myStudio</p>
-                                    </a>
+                                    </Link>
                                 </div>
 
                                 <div className='col-6 col-md-4 col-lg-2'>
-                                    <a href={navigationStore.href.serviceCaseForm('mywatch')}>
+                                    <Link to={navigationStore.href.serviceCaseForm('mywatch')}>
                                         <img style={{ width: '90px', height: '75px' }} src='img/devices/mywatch.png' alt='myWatch' />
                                         <p>myWatch</p>
-                                    </a>
+                                    </Link>
                                 </div>
 
                                 <div className='col-6 col-md-4 col-lg-2'>
-                                    <a href={navigationStore.href.serviceCaseForm('mypods')}>
+                                    <Link to={navigationStore.href.serviceCaseForm('mypods')}>
                                         <img style={{ width: '95px', height: '85px' }} src='img/devices/mypods.png' alt='myPods' />
                                         <p>myPods</p>
-                                    </a>
+                                    </Link>
                                 </div>
                             </div>
                         </div>

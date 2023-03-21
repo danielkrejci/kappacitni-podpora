@@ -20,6 +20,8 @@ import { ServiceCaseFormPage } from './pages/web/service-case/form/ServiceCaseFo
 import { ServiceCaseFormStore } from './pages/web/service-case/form/ServiceCaseFormStore'
 import { ServiceCaseListPage } from './pages/admin/service-case/list/ServiceCaseListPage'
 import { ServiceCaseListStore } from './pages/admin/service-case/list/ServiceCaseListStore'
+import { AdminServiceCaseDetailStore } from './pages/admin/service-case/detail/AdminServiceCaseDetailStore'
+import { AdminServiceCaseDetailPage } from './pages/admin/service-case/detail/AdminServiceCaseDetailPage'
 
 // Global navigation store instance
 export const navigationStore = new NavigationStore(browserHistory)
@@ -32,6 +34,7 @@ const rootStore = {
     adminIndexStore: new AdminIndexStore(),
     adminUsersStore: new UserListStore(),
     adminServiceCasesListStore: new ServiceCaseListStore(),
+    adminServiceCasesDetailStore: new AdminServiceCaseDetailStore(),
 }
 
 export const authService = new AuthService()
@@ -115,11 +118,27 @@ export const App = observer((props: any) => {
 
                     <Route
                         exact
-                        path={navigation.href.adminServiceCases()}
+                        path={navigation.href.adminServiceCaseList()}
                         render={() =>
                             authService.isLoggedIn ? (
                                 <AdminPageLayout>
                                     <ServiceCaseListPage store={rootStore.adminServiceCasesListStore} />
+                                </AdminPageLayout>
+                            ) : (
+                                <PageLayout>
+                                    <LoginPage store={rootStore.loginStore} />
+                                </PageLayout>
+                            )
+                        }
+                    />
+
+                    <Route
+                        exact
+                        path={navigation.href.adminServiceCaseDetail()}
+                        render={() =>
+                            authService.isLoggedIn ? (
+                                <AdminPageLayout>
+                                    <AdminServiceCaseDetailPage store={rootStore.adminServiceCasesDetailStore} />
                                 </AdminPageLayout>
                             ) : (
                                 <PageLayout>

@@ -8,6 +8,13 @@ export const ServiceCaseListSorting: SelectField[] = [
     { code: 'date-asc', value: 'Nestarší' },
 ]
 
+export const ServiceCaseStates: SelectField[] = [
+    { code: '1', value: 'Nový' },
+    { code: '2', value: 'Aktivní' },
+    { code: '3', value: 'Čekající' },
+    { code: '4', value: 'Uzavřený' },
+]
+
 export type ServiceCaseList = {
     hasNext: boolean
     hasPrev: boolean
@@ -102,4 +109,16 @@ export type ServiceCaseType = {
 export type ServiceCaseState = {
     code: string
     value: string
+}
+
+export type ServiceCaseStateChange = {
+    stateId: string
+}
+
+export type ServiceCaseCategoryChange = {
+    categoryId: string
+}
+
+export type ServiceCaseCaseOperatorChange = {
+    userId: string
 }

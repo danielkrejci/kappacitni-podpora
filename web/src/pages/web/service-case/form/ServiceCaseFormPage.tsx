@@ -52,7 +52,7 @@ export const ServiceCaseFormPageCreated: React.FC<ServiceCaseFormPageCreatedProp
                     <i className='fa fa-check'></i>
                 </h1>
                 <h2 className='text-success text-uppercase'>Žádost byla odeslána</h2>
-                <p className='mt-2 restricted'>
+                <p className='mt-2'>
                     Zkontroluj svou e-mailovou schránku
                     {store.saved.email ? (
                         <>

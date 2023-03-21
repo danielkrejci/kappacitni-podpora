@@ -15,7 +15,7 @@ export const AdminPageLayout: React.FC<AdminPageLayoutProps> = observer(props =>
         <>
             <div className='content admin-page'>
                 <div className='row clearfix m-0'>
-                    <div className='col-4 col-xl-3 sidebar'>
+                    <div className='sidebar'>
                         <div className='p-5 position-fixed'>
                             <div>
                                 <div className='d-flex align-items-center'>
@@ -51,14 +51,14 @@ export const AdminPageLayout: React.FC<AdminPageLayoutProps> = observer(props =>
                                     <li className='nav flex-column'>
                                         <Link
                                             className='nav-link'
-                                            to={navigationStore.href.adminServiceCases('', '', ServiceCaseListSorting[0].code)}>
+                                            to={navigationStore.href.adminServiceCaseList('', '', ServiceCaseListSorting[0].code)}>
                                             Všechny
                                         </Link>
                                     </li>
                                     <li className='nav flex-column'>
                                         <Link
                                             className='nav-link'
-                                            to={navigationStore.href.adminServiceCases(
+                                            to={navigationStore.href.adminServiceCaseList(
                                                 authService.authUser?.id,
                                                 '',
                                                 ServiceCaseListSorting[0].code
@@ -98,10 +98,8 @@ export const AdminPageLayout: React.FC<AdminPageLayoutProps> = observer(props =>
                             </div>
                         </div>
                     </div>
-                    <div className='col-8 col-xl-9'>
-                        <div className='p-5'>
-                            <PageLayout>{props.children}</PageLayout>
-                        </div>
+                    <div className='p-5'>
+                        <PageLayout>{props.children}</PageLayout>
                     </div>
                 </div>
             </div>

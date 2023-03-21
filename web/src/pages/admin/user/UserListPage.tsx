@@ -11,6 +11,8 @@ import { UserListStore } from './UserListStore'
 import { UserAddDialog } from './dialog/UserAddDialog'
 import { UserDeleteDialog } from './dialog/UserDeleteDialog'
 import { UserDetailDialog } from './dialog/UserDetailDialog'
+import { Row } from '../../../common/components/Row'
+import { Col } from '../../../common/components/Col'
 
 interface UserListPageProps {
     store: UserListStore
@@ -58,21 +60,21 @@ export const UserListPage: React.FC<UserListPageProps> = observer(props => {
 
             <YesNoDialog store={store.deleteDialogStore} />
 
-            <div className='row clearfix'>
-                <div className='col-6'>
-                    <h1 className='mb-5'>{store.usersType === UserType.CLIENT.toLocaleLowerCase() ? 'Klienti' : 'Operátoři'}</h1>
-                </div>
+            <Row mb={5}>
+                <Col xs={6}>
+                    <h1 className='mb-0'>{store.usersType === UserType.CLIENT.toLocaleLowerCase() ? 'Klienti' : 'Operátoři'}</h1>
+                </Col>
                 {store.usersType === UserType.OPERATOR.toLocaleLowerCase() && (
-                    <div className='col-6 text-right'>
+                    <Col xs={6} className='text-right'>
                         <Button size='sm' onClick={() => store.showAddDialog()}>
                             Přidat operátora
                         </Button>
-                    </div>
+                    </Col>
                 )}
-            </div>
+            </Row>
 
-            <div className='row clearfix'>
-                <div className='col-12'>
+            <Row>
+                <Col xs={12}>
                     <table className='table table-bordered'>
                         <thead>
                             <tr>
@@ -116,8 +118,8 @@ export const UserListPage: React.FC<UserListPageProps> = observer(props => {
                             )}
                         </tbody>
                     </table>
-                </div>
-            </div>
+                </Col>
+            </Row>
         </>
     )
 })

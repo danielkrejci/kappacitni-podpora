@@ -47,7 +47,7 @@ export const Row: React.FC<RowProps> = observer(props => {
     return (
         <div
             id={props.id ?? ''}
-            className={`row clearfix ${props.className ?? ''} ${marginSize} ${gapSize} ${alignVertical} ${alignHorizontal}`}
+            className={`row ${props.className ?? ''} ${marginSize} ${gapSize} ${alignVertical} ${alignHorizontal}`}
             style={props.style}>
             {props.children}
         </div>

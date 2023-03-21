@@ -1,12 +1,13 @@
 import { action, makeObservable, observable, runInAction } from 'mobx'
 import { DeviceType } from '../../../../api/models/DeviceType'
-import { ServiceCaseDetail, EMPTY_SERVICE_CASE_DETAIL, ServiceCaseType } from '../../../../api/models/ServiceCase'
+import { ServiceCaseDetail, EMPTY_SERVICE_CASE_DETAIL, ServiceCaseType, ServiceCaseStates } from '../../../../api/models/ServiceCase'
 import { ServiceCaseMessageForm } from '../../../../api/models/ServiceCaseMessage'
 import { isApiError } from '../../../../api/services/ApiService'
 import { DeviceService } from '../../../../api/services/DeviceService'
 import { ServiceCaseService } from '../../../../api/services/ServiceCaseService'
 import { Field } from '../../../../common/forms/Field'
 import { Form } from '../../../../common/forms/Form'
+import { SelectField } from '../../../../common/forms/SelectField'
 import { ListUtils } from '../../../../common/utils/ListUtils'
 import { ValidationUtils } from '../../../../common/utils/ValidationUtils'
 
@@ -20,6 +21,7 @@ export class ServiceCaseDetailStore {
     codetables = {
         deviceTypes: [] as DeviceType[],
         caseTypes: [] as ServiceCaseType[],
+        caseStates: [] as SelectField[],
     }
 
     form = {
@@ -61,6 +63,8 @@ export class ServiceCaseDetailStore {
                     if (!isApiError(data[2])) {
                         this.serviceCase = data[2]
                     }
+
+                    this.codetables.caseStates = ServiceCaseStates
                 })
             )
             .finally(() => {
@@ -95,7 +99,7 @@ export class ServiceCaseDetailStore {
                 message: this.form.message.value,
             }
 
-            ServiceCaseService.createServiceCaseMessage(this.serviceCase.serviceCase.id, message)
+            ServiceCaseService.createMessage(this.serviceCase.serviceCase.id, message)
                 .then(data =>
                     runInAction(() => {
                         this.isLoading = false
@@ -122,5 +126,21 @@ export class ServiceCaseDetailStore {
 
     reset() {
         this.form.message.value = ''
+    }
+
+    get getState(): string {
+        const state = this.serviceCase.serviceCase.stateId
+        if (state && Number(state) > 0) {
+            return this.codetables.caseStates[Number(state)]?.value ?? ''
+        }
+        return ''
+    }
+
+    get getCategory(): string {
+        const category = this.serviceCase.serviceCase.caseTypeId
+        if (category && Number(category) > 0) {
+            return this.codetables.caseTypes[Number(category)]?.value ?? ''
+        }
+        return ''
     }
 }

@@ -47,7 +47,7 @@ export const ServiceCaseDetailPage: React.FC<ServiceCaseDetailPageProps> = obser
                                         <i className='fa fa-times'></i>
                                     </h1>
                                     <h2 className='text-danger text-uppercase'>Servisní případ nebyl nalezen</h2>
-                                    <p className='mt-2 restricted'>
+                                    <p className='mt-2'>
                                         Zkontroluj odkaz, který jsme ti odeslali do tvé e-mailové schránky,
                                         <br />
                                         případně nás kontaktuj prostřednictvím zprávy.
@@ -140,17 +140,11 @@ export const ServiceCaseDetailPage: React.FC<ServiceCaseDetailPageProps> = obser
                                         <h2>Případ</h2>
                                         <p className='mb-0'>
                                             Stav:&nbsp;
-                                            <strong>
-                                                {store.codetables.caseTypes.find(t => t.code === serviceCase.serviceCase.caseTypeId)
-                                                    ?.value ?? ''}
-                                            </strong>
+                                            <strong>{store.getState}</strong>
                                         </p>
                                         <p className='mb-0'>
                                             Kategorie:&nbsp;
-                                            <strong>
-                                                {store.codetables.caseTypes.find(t => t.code === serviceCase.serviceCase.caseTypeId)
-                                                    ?.value ?? ''}
-                                            </strong>
+                                            <strong>{store.getCategory}</strong>
                                         </p>
                                         <p className='mb-0'>
                                             Datum vytvoření:&nbsp;

@@ -105,7 +105,7 @@ export class ServiceCaseFormStore {
                 name: this.form.name.value,
                 surname: this.form.surname.value,
                 email: this.form.email.value,
-                phone: `${this.form.phonePrefix.value.value}${this.form.phone.value}`,
+                phone: this.form.phone.value ? `${this.form.phonePrefix.value.value}${this.form.phone.value}` : '',
                 street: this.form.street.value,
                 houseNumber: this.form.houseNumber.value,
                 city: this.form.city.value,

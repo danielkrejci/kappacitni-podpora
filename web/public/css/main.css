@@ -223,11 +223,18 @@ body {
 
 .admin-page.content > div {
     flex: 1;
+    display: flex;
+    flex-wrap: nowrap;
 }
 
 .sidebar {
+    flex: 0 0 250px;
     background-color: #f7f7f7;
     box-shadow: 1px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar + div {
+    flex: 1;
 }
 
 .service-case-item {

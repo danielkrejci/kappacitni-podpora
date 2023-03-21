@@ -121,7 +121,7 @@ export class ServiceCaseListStore {
     reload() {
         this.isLoading = true
 
-        navigationStore.adminServiceCases(this.filter.operators.value.code, this.filter.state.value.code, this.filter.sort.value.code)
+        navigationStore.adminServiceCaseList(this.filter.operators.value.code, this.filter.state.value.code, this.filter.sort.value.code)
 
         ServiceCaseService.getServiceCases(this.filter.operators.value.code, this.filter.state.value.code, this.filter.sort.value.code)
             .then(data =>
