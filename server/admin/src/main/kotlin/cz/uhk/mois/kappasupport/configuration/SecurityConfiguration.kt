@@ -28,6 +28,7 @@ class SecurityConfiguration(
     @Bean
     fun securityWebFilterChain(http: ServerHttpSecurity): SecurityWebFilterChain {
         http.addFilterAfter(JWTWebFilterChain(jwtService), SecurityWebFiltersOrder.AUTHENTICATION)
+        http.csrf().disable()
         return http.cors().configurationSource(corsFilter()).and().build()
     }
 
