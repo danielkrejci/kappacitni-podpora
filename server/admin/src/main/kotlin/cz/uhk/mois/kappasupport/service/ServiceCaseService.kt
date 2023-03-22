@@ -14,6 +14,7 @@ import cz.uhk.mois.kappasupport.repository.ServiceCaseRepository
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import java.time.Instant
 import kotlin.math.ceil
 import kotlin.math.min
 
@@ -22,6 +23,7 @@ class ServiceCaseService(
     private val serviceCaseRepository: ServiceCaseRepository,
     private val usersServiceCasesService: UsersServiceCasesService,
     private val userService: UserService,
+    private val messageService: MessageService,
     private val mapper: DomainMapper,
 ) {
     fun getAllServiceCases(
@@ -60,15 +62,20 @@ class ServiceCaseService(
                     }
                     .collectList()
                     .flatMap { data ->
-                        Mono.just(
-                            PaginatedObject(
-                                hasNext = page < totalPages,
-                                hasPrev = page > 1,
-                                data = sortEnhancedServiceCasesByDateBegin(data, sort == "date-desc"),
-                                page = page,
-                                totalPages = totalPages
+
+                        convertToServiceCaseData(data).collectList().flatMap { convertedData ->
+                            val sorted = sortData(convertedData, sort == "date-desc")
+                            Mono.just(
+                                PaginatedObject(
+                                    hasNext = page < totalPages,
+                                    hasPrev = page > 1,
+                                    data = sorted,
+                                    page = page,
+                                    totalPages = totalPages
+                                )
                             )
-                        )
+
+                        }
                     }
             }
     }
@@ -116,14 +123,50 @@ class ServiceCaseService(
             }
     }
 
-    fun sortEnhancedServiceCasesByDateBegin(
-        cases: List<EnhancedServiceCaseDto>,
-        ascending: Boolean
-    ): List<EnhancedServiceCaseDto> {
+    fun sortData(cases: List<ServiceCaseData>, ascending: Boolean): List<ServiceCaseData> {
         val sortOrder = if (ascending) 1 else -1
-        val sortedCases = cases.sortedWith(compareBy { it.serviceCase.dateBegin })
-        return sortedCases.sortedWith(compareBy { it.serviceCase.dateBegin!!.toEpochMilli() * sortOrder })
+        val sortedCases = cases.sortedWith(compareBy { it.dateBegin })
+        return sortedCases.sortedWith(compareBy { it.dateBegin!!.toEpochMilli() * sortOrder })
     }
+
+    fun convertToServiceCaseData(cases: List<EnhancedServiceCaseDto>): Flux<ServiceCaseData> {
+        return Flux.fromIterable(cases).flatMap {
+            val id = it.serviceCase.id!!
+            val dateBegin = it.serviceCase.dateBegin
+            val dateEnd = it.serviceCase.dateEnd
+            val clientMono = userService.findByUserId(it.serviceCase.userId!!)
+                .switchIfEmpty(Mono.error(UserNotFoundException("User with serviceCaseId: ${it.serviceCase.userId} not found")))
+            val messageMono = messageService.findFirstFromClient(it.serviceCase.id!!)
+            val messageCountMono = messageService.getMessagesCount(it.serviceCase.userId!!, it.serviceCase.id!!)
+            val stateId = it.serviceCase.stateId
+            val operators = it.operators.map { "${it.name} ${it.surname}" }
+            Mono.zip(clientMono, messageMono, messageCountMono).flatMap {
+                Mono.just(
+                    ServiceCaseData(
+                        id,
+                        dateBegin,
+                        dateEnd,
+                        "${it.t1.name} ${it.t1.surname}",
+                        it.t2.message,
+                        it.t3,
+                        stateId,
+                        operators
+                    )
+                )
+            }
+        }
+    }
+
+    data class ServiceCaseData(
+        var id: Long,
+        var dateBegin: Instant?,
+        var dateEnd: Instant?,
+        var client: String,
+        var message: String,
+        var newMessagesCount: Long,
+        var stateId: Long,
+        var operators: List<String>
+    )
 
     data class EnhancedServiceCaseDto(
         var serviceCase: ServiceCase,
@@ -133,7 +176,7 @@ class ServiceCaseService(
     data class PaginatedObject(
         var hasNext: Boolean,
         var hasPrev: Boolean,
-        var data: List<EnhancedServiceCaseDto>,
+        var data: List<ServiceCaseData>,
         var page: Int,
         var totalPages: Int
     )
