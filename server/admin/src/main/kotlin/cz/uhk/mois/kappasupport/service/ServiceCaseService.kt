@@ -50,7 +50,6 @@ class ServiceCaseService(
         return serviceCasesMono.collectList()
             .flatMap { serviceCases ->
                 val totalPages = ceil(serviceCases.size.toDouble() / pageSize).toInt()
-                if (totalPages < page) return@flatMap Mono.error((GenericException("Last page is $totalPages")))
 
                 Flux.fromIterable(serviceCases.subList(offset, min(offset + pageSize, serviceCases.size)))
                     .flatMap { serviceCase ->
