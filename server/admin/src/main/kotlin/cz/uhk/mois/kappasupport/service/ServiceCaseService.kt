@@ -61,7 +61,7 @@ class ServiceCaseService(
         return serviceCasesMono.collectList()
             .flatMap { serviceCases ->
                 val totalPages = ceil(serviceCases.size.toDouble() / pageSize).toInt()
-                if (page > totalPages || page < 0) {
+                if (page > totalPages || page <= 0) {
                     return@flatMap EMPTY_RESULT.flatMap {
                         it.page = page
                         it.totalPages = totalPages
