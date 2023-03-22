@@ -26,7 +26,14 @@ export class ServiceCaseListStore {
 
     filter = {
         sort: Field.select('sort', this.codetables.sort[0], () => this.codetables.sort),
-        operators: Field.select('operators', SelectFieldUtils.optionAll(), () => [SelectFieldUtils.optionAll()]),
+        operators: Field.select('operators', SelectFieldUtils.optionAll(), () =>
+            SelectFieldUtils.withAllOption(
+                this.codetables.operators.map(operator => ({
+                    code: `${operator.id}`,
+                    value: `${operator.name} ${operator.surname}`,
+                }))
+            )
+        ),
         state: Field.select('state', SelectFieldUtils.optionAll(), () => [SelectFieldUtils.optionAll()]),
     }
 
