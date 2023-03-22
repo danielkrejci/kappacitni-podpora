@@ -14,8 +14,13 @@ import reactor.core.publisher.Mono
 class ServiceCaseController(private val serviceCaseService: ServiceCaseService) {
 
     @GetMapping
-    fun getAllServiceCases(): ResponseEntity<Flux<ServiceCaseService.EnhancedServiceCaseDto>> {
-        return ResponseEntity.ok(serviceCaseService.getAllServiceCases())
+    fun getAllServiceCases(
+        @RequestParam(required = false) operatorId: Long?,
+        @RequestParam(required = false) state: Long?,
+        @RequestParam(required = false, defaultValue = "date-desc") sort: String,
+        @RequestParam(required = false, defaultValue = "1") page: Int,
+    ): ResponseEntity<Mono<ServiceCaseService.PaginatedObject>> {
+        return ResponseEntity.ok(serviceCaseService.getAllServiceCases(operatorId, state, sort, page))
     }
 
     @GetMapping("/operator/{operatorId}")

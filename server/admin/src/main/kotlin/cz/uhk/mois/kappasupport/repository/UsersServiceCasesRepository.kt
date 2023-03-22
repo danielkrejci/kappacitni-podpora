@@ -8,6 +8,5 @@ interface UsersServiceCasesRepository : ReactiveCrudRepository<UsersServiceCases
 
     fun findAllByServiceCaseId(serviceCaseId: Long): Flux<UsersServiceCases>
 
-
     fun findAllByUserId(userId: Long): Flux<UsersServiceCases>
 }

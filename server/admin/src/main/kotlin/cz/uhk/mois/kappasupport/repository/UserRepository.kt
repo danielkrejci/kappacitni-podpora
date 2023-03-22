@@ -12,6 +12,8 @@ interface UserRepository : ReactiveCrudRepository<User, Long> {
 
     fun findByEmail(email: String): Mono<User>
 
+    fun findAllByIdIn(ids: List<Long>): Flux<User>
+
     @Query("select * from users where isOperator = true")
     fun findAllOperators(): Flux<User>
 

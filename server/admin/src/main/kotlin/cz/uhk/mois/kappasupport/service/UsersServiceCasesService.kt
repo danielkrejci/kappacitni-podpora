@@ -16,7 +16,7 @@ class UsersServiceCasesService(
     @Lazy private val userService: UserService,
     private val mapper: DomainMapper
 ) {
-    fun getOperatorIdsFromServiceCase(serviceCaseId: Long): Flux<UserDto> {
+    fun getOperatorsFromServiceCase(serviceCaseId: Long): Flux<UserDto> {
         return repository.findAllByServiceCaseId(serviceCaseId)
             .map { mapper.toDto(it) }.map { it.userId }.collectList()
             .flatMapMany {

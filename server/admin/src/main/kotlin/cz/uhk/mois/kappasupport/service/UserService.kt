@@ -20,6 +20,11 @@ class UserService(
     private val serviceCasesService: UsersServiceCasesService
 ) {
 
+
+    fun findAllByIds(ids: List<Long>): Flux<UserDto> {
+        return userRepository.findAllByIdIn(ids).map { mapper.toDto(it) }
+    }
+
     fun getCurrentUser(email: String): Mono<UserLoser> = userRepository.findByEmail(email)
         .flatMap(this::mapUserToUserLoser)
         .switchIfEmpty(Mono.error(UserNotFoundException("User with email $email not found")))
@@ -111,10 +116,8 @@ class UserService(
             } else if (foundedUser.isOperator && !foundedUser.isClient) {
                 assignedCases.flatMap { assignedServiceCases ->
                     if (assignedServiceCases.isEmpty()) {
-
                         userRepository.delete(foundedUser).thenReturn(Mono.just(true))
                             .flatMap {
-
                                 Mono.just(true)
                             }
                     } else {
