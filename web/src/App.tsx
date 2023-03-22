@@ -110,15 +110,21 @@ export const App = observer((props: any) => {
                                 </AdminPageLayout>
                             ) : (
                                 <PageLayout>
-                                    <LoginPage store={rootStore.loginStore} />
+                                    <LoginPage
+                                        store={rootStore.loginStore}
+                                        loginRedirect={() => {
+                                            const split = window.location.pathname.split('/')
+                                            const type = split[split.length - 1]
+                                            navigation.adminUsers(type ?? '')
+                                        }}
+                                    />
                                 </PageLayout>
                             )
                         }
                     />
 
                     <Route
-                        exact
-                        path={navigation.href.adminServiceCaseList()}
+                        path='/admin/service-cases'
                         render={() =>
                             authService.isLoggedIn ? (
                                 <AdminPageLayout>
@@ -126,14 +132,25 @@ export const App = observer((props: any) => {
                                 </AdminPageLayout>
                             ) : (
                                 <PageLayout>
-                                    <LoginPage store={rootStore.loginStore} />
+                                    <LoginPage
+                                        store={rootStore.loginStore}
+                                        loginRedirect={() => {
+                                            const query = new URLSearchParams(window.location.search)
+                                            navigation.adminServiceCaseList(
+                                                query.get('operatorId') ?? '',
+                                                query.get('clientId') ?? '',
+                                                query.get('state') ?? '',
+                                                query.get('page') ?? '',
+                                                query.get('sort') ?? ''
+                                            )
+                                        }}
+                                    />
                                 </PageLayout>
                             )
                         }
                     />
 
                     <Route
-                        exact
                         path={navigation.href.adminServiceCaseDetail()}
                         render={() =>
                             authService.isLoggedIn ? (
@@ -142,7 +159,14 @@ export const App = observer((props: any) => {
                                 </AdminPageLayout>
                             ) : (
                                 <PageLayout>
-                                    <LoginPage store={rootStore.loginStore} />
+                                    <LoginPage
+                                        store={rootStore.loginStore}
+                                        loginRedirect={() => {
+                                            const split = window.location.pathname.split('/')
+                                            const id = split[split.length - 1]
+                                            navigation.adminServiceCaseDetail(id ?? '')
+                                        }}
+                                    />
                                 </PageLayout>
                             )
                         }

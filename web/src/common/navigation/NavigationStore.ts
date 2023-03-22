@@ -1,4 +1,5 @@
 import { History } from 'history'
+import { ServiceCaseListSorting } from '../../api/models/ServiceCase'
 
 type AnyParam = number | string | undefined
 
@@ -20,10 +21,10 @@ export class NavigationStore {
 
     adminUsers = (type: AnyParam) => this.history.push(this.href.adminUsers(type))
 
-    adminServiceCaseList = (operatorId: AnyParam, state: AnyParam, sort: AnyParam) =>
-        this.history.push(this.href.adminServiceCaseList(operatorId, state, sort))
+    adminServiceCaseList = (operatorId?: AnyParam, clientId?: AnyParam, state?: AnyParam, page?: AnyParam, sort?: AnyParam) =>
+        this.history.push(this.href.adminServiceCaseList(operatorId, clientId, state, page, sort))
 
-    adminServiceCaseDetail = (serviceCaseId: AnyParam) => this.history.push(this.href.adminServiceCaseList(serviceCaseId))
+    adminServiceCaseDetail = (serviceCaseId: AnyParam) => this.history.push(this.href.adminServiceCaseDetail(serviceCaseId))
 
     back = () => this.history.goBack()
 
@@ -34,10 +35,12 @@ export class NavigationStore {
         login: () => '/admin/login',
         adminIndex: () => '/admin/index',
         adminUsers: (type?: AnyParam) => `/admin/users/${type ?? ':type'}`,
-        adminServiceCaseList: (operatorId?: AnyParam, state?: AnyParam, sort?: AnyParam) =>
-            `/admin/service-cases${operatorId || state || sort ? '?' : ''}${operatorId ? `&operatorId=${operatorId}` : ''}${
+        adminServiceCaseList: (operatorId?: AnyParam, clientId?: AnyParam, state?: AnyParam, page?: AnyParam, sort?: AnyParam) => {
+            sort = typeof sort !== 'undefined' ? sort : ServiceCaseListSorting[0].code
+            return `/admin/service-cases?${operatorId ? `&operatorId=${operatorId}` : ''}${clientId ? `&clientId=${clientId}` : ''}${
                 state ? `&state=${state}` : ''
-            }${sort ? `&sort=${sort}` : ''}`,
+            }${page ? `&page=${page}` : ''}${sort ? `&sort=${sort}` : ''}`
+        },
         adminServiceCaseDetail: (id?: AnyParam) => `/admin/service-cases/${id ?? ':id'}`,
     }
 }

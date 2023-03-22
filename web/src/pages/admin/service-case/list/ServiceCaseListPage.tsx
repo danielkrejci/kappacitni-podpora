@@ -24,9 +24,7 @@ export const ServiceCaseListPage: React.FC<ServiceCaseListPageProps> = observer(
     const { search } = useLocation()
 
     useEffect(() => {
-        if (!store.initDone) {
-            store.init(search)
-        }
+        store.init(search)
     }, [search, store])
 
     return (
@@ -42,23 +40,29 @@ export const ServiceCaseListPage: React.FC<ServiceCaseListPageProps> = observer(
             <Row mb={3}>
                 <Col xs={12}>
                     <Row horizontal='between'>
-                        <Col xs={6}>
+                        <Col xs={8}>
                             <Row>
-                                <Col xs={6}>
+                                <Col xs={4}>
                                     <FormGroup>
                                         <Label id='state'>Stav případu:</Label>
                                         <Select name='state' onFieldChange={() => store.reload()} field={store.filter.state} />
                                     </FormGroup>
                                 </Col>
-                                <Col xs={6}>
+                                <Col xs={4}>
                                     <FormGroup>
                                         <Label id='operator'>Operátor:</Label>
                                         <Select name='operator' onFieldChange={() => store.reload()} field={store.filter.operators} />
                                     </FormGroup>
                                 </Col>
+                                <Col xs={4}>
+                                    <FormGroup>
+                                        <Label id='client'>Klient:</Label>
+                                        <Select name='client' onFieldChange={() => store.reload()} field={store.filter.clients} />
+                                    </FormGroup>
+                                </Col>
                             </Row>
                         </Col>
-                        <Col xs={2}>
+                        <Col xs={3} md={3} xl={2}>
                             <FormGroup>
                                 <Label id='operator'>Seřadit podle:</Label>
                                 <Select name='sort' onFieldChange={() => store.reload()} field={store.filter.sort} />
@@ -73,7 +77,7 @@ export const ServiceCaseListPage: React.FC<ServiceCaseListPageProps> = observer(
                     {store.serviceCases.data.length > 0 ? (
                         <>
                             {ListUtils.asList(store.serviceCases.data).map((serviceCase, idx) => (
-                                <div className='p-3 service-case-item' key={`${serviceCase.id}_${idx}`}>
+                                <div className='p-3 service-case-item mb-4' key={`${serviceCase.id}_${idx}`}>
                                     <h3>
                                         #{serviceCase.id}
                                         <span className='text-muted float-right mt-2'>{DateUtils.toUIDateTime(serviceCase.dateBegin)}</span>
@@ -110,7 +114,7 @@ export const ServiceCaseListPage: React.FC<ServiceCaseListPageProps> = observer(
                                 </div>
                             ))}
 
-                            <GroupAlign horizontal='end' mt={5}>
+                            <GroupAlign horizontal='end' mt={4}>
                                 <Paging
                                     hasNext={store.serviceCases.hasNext}
                                     hasPrev={store.serviceCases.hasPrev}

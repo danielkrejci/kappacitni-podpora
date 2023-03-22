@@ -13,9 +13,11 @@ import { ServiceCaseMessageForm } from '../models/ServiceCaseMessage'
 import { ADMIN_API_URL, ApiService, CLIENT_API_URL } from './ApiService'
 
 export class ServiceCaseService {
-    static async getServiceCases(operatorId?: string, state?: string, sort?: string) {
+    static async getServiceCases(operatorId?: string, clientId?: string, state?: string, page?: string, sort?: string) {
         return await ApiService.get<ServiceCaseList>(
-            `${ADMIN_API_URL}/admin/service-cases?operatorId=${operatorId ?? ''}&state=${state ?? ''}&sort=${sort ?? ''}`
+            `${ADMIN_API_URL}/admin/service-cases?operatorId=${operatorId ?? ''}&clientId=${clientId ?? ''}&state=${state ?? ''}&page=${
+                page ?? ''
+            }&sort=${sort ?? ''}`
         )
     }
 
