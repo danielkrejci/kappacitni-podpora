@@ -13,6 +13,7 @@ import { Link } from 'react-router-dom'
 import { GroupAlign } from '../../../../common/components/GroupAlign'
 import { Paging } from '../../../../common/components/Paging'
 import { navigationStore } from '../../../../App'
+import { ListUtils } from '../../../../common/utils/ListUtils'
 
 interface ServiceCaseListPageProps {
     store: ServiceCaseListStore
@@ -71,7 +72,7 @@ export const ServiceCaseListPage: React.FC<ServiceCaseListPageProps> = observer(
                 <Col xs={12} mb={4}>
                     {store.serviceCases.data.length > 0 ? (
                         <>
-                            {store.serviceCases.data.map((serviceCase, idx) => (
+                            {ListUtils.asList(store.serviceCases.data).map((serviceCase, idx) => (
                                 <div className='p-3 service-case-item' key={`${serviceCase.id}_${idx}`}>
                                     <h3>
                                         #{serviceCase.id}

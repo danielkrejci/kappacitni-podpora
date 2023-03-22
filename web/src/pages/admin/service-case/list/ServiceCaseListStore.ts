@@ -1,8 +1,9 @@
 import { action, computed, makeObservable, observable, runInAction } from 'mobx'
 import { EMPTY_SERVICE_CASE_LIST, ServiceCaseList, ServiceCaseListSorting, ServiceCaseState } from '../../../../api/models/ServiceCase'
-import { User } from '../../../../api/models/User'
+import { User, UserType } from '../../../../api/models/User'
 import { isApiError } from '../../../../api/services/ApiService'
 import { ServiceCaseService } from '../../../../api/services/ServiceCaseService'
+import { UserService } from '../../../../api/services/UserService'
 import { navigationStore } from '../../../../App'
 import { Field } from '../../../../common/forms/Field'
 import { ListUtils } from '../../../../common/utils/ListUtils'
@@ -59,29 +60,29 @@ export class ServiceCaseListStore {
 
         this.isLoading = true
 
-        this.serviceCases = {
-            hasNext: false,
-            hasPrev: false,
-            page: 1,
-            totalPages: 1,
-            data: [
-                {
-                    id: 1,
-                    dateBegin: '2023-03-17 11:12:40',
-                    dateEnd: '',
-                    client: 'Daniel Krejčí',
-                    message: 'string',
-                    newMessagesCount: 1,
-                    stateId: 1,
-                    operators: ['Daniel Krejčí', 'Jan Chaloupka'],
-                },
-            ],
-        }
+        // this.serviceCases = {
+        //     hasNext: false,
+        //     hasPrev: false,
+        //     page: 1,
+        //     totalPages: 1,
+        //     data: [
+        //         {
+        //             id: 1,
+        //             dateBegin: '2023-03-17 11:12:40',
+        //             dateEnd: '',
+        //             client: 'Daniel Krejčí',
+        //             message: 'string',
+        //             newMessagesCount: 1,
+        //             stateId: 1,
+        //             operators: ['Daniel Krejčí', 'Jan Chaloupka'],
+        //         },
+        //     ],
+        // }
 
         Promise.all([
             ServiceCaseService.getServiceCaseStates(),
-            // ServiceCaseService.getServiceCases(operatorId, state, sort),
-            // UserService.getUsers(UserType.OPERATOR)
+            ServiceCaseService.getServiceCases(operatorId, state, sort),
+            UserService.getUsers(UserType.OPERATOR),
         ])
             .then(data =>
                 runInAction(() => {
@@ -89,13 +90,13 @@ export class ServiceCaseListStore {
                         this.codetables.states = ListUtils.asList(data[0])
                     }
 
-                    // if (!isApiError(data[1])) {
-                    //     this.serviceCases = ListUtils.asList(data[1])
-                    // }
+                    if (!isApiError(data[1])) {
+                        this.serviceCases = data[1]
+                    }
 
-                    // if (!isApiError(data[2])) {
-                    //     this.codetables.operators = ListUtils.asList(data[2])
-                    // }
+                    if (!isApiError(data[2])) {
+                        this.codetables.operators = ListUtils.asList(data[2])
+                    }
 
                     SelectFieldUtils.initFieldSelect(
                         this.filter.state,
