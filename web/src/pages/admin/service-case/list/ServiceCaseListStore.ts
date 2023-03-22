@@ -57,6 +57,9 @@ export class ServiceCaseListStore {
             currentPage: observable,
             init: action,
             load: action,
+            nextPage: action,
+            prevPage: action,
+            pageChange: action,
             isFilterActive: computed,
         })
     }
@@ -193,6 +196,11 @@ export class ServiceCaseListStore {
         if (this.serviceCases.hasPrev) {
             this.currentPage = this.currentPage - 1
         }
+        this.reload(false)
+    }
+
+    pageChange(page: number) {
+        this.currentPage = page
         this.reload(false)
     }
 

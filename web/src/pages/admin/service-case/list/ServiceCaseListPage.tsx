@@ -11,9 +11,9 @@ import { Loader } from '../../../../common/components/Loader'
 import { DateUtils } from '../../../../common/utils/DateUtils'
 import { Link } from 'react-router-dom'
 import { GroupAlign } from '../../../../common/components/GroupAlign'
-import { Paging } from '../../../../common/components/Paging'
 import { navigationStore } from '../../../../App'
 import { ListUtils } from '../../../../common/utils/ListUtils'
+import Pagination from '../../../../common/components/Pagination'
 
 interface ServiceCaseListPageProps {
     store: ServiceCaseListStore
@@ -86,7 +86,7 @@ export const ServiceCaseListPage: React.FC<ServiceCaseListPageProps> = observer(
                                         <strong>{serviceCase.client}</strong>&nbsp;
                                         {serviceCase.message}
                                     </p>
-                                    {serviceCase.newMessagesCount && (
+                                    {serviceCase.newMessagesCount > 0 && (
                                         <p className='mb-1'>
                                             Nové zprávy:&nbsp;<strong>{serviceCase.newMessagesCount}</strong>
                                         </p>
@@ -115,11 +115,14 @@ export const ServiceCaseListPage: React.FC<ServiceCaseListPageProps> = observer(
                             ))}
 
                             <GroupAlign horizontal='end' mt={4}>
-                                <Paging
+                                <Pagination
+                                    page={store.currentPage}
+                                    totalPages={store.serviceCases.totalPages}
                                     hasNext={store.serviceCases.hasNext}
                                     hasPrev={store.serviceCases.hasPrev}
                                     onNextClick={() => store.nextPage()}
                                     onPrevClick={() => store.prevPage()}
+                                    onPageChangeClick={page => store.pageChange(page)}
                                 />
                             </GroupAlign>
                         </>
