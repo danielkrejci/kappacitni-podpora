@@ -5,7 +5,6 @@ import cz.uhk.mois.kappasupport.controller.model.UserDto
 import cz.uhk.mois.kappasupport.controller.model.UsersServiceCasesDto
 import cz.uhk.mois.kappasupport.domain.ServiceCase
 import cz.uhk.mois.kappasupport.domain.UsersServiceCases
-import cz.uhk.mois.kappasupport.exception.GenericException
 import cz.uhk.mois.kappasupport.exception.ServiceCaseNotFoundException
 import cz.uhk.mois.kappasupport.exception.UserIsNotOperatorException
 import cz.uhk.mois.kappasupport.exception.UserNotFoundException
@@ -62,8 +61,12 @@ class ServiceCaseService(
         return serviceCasesMono.collectList()
             .flatMap { serviceCases ->
                 val totalPages = ceil(serviceCases.size.toDouble() / pageSize).toInt()
-                if (page > totalPages) {
-                    return@flatMap EMPTY_RESULT
+                if (page > totalPages || page < 0) {
+                    return@flatMap EMPTY_RESULT.flatMap {
+                        it.page = page
+                        it.totalPages = totalPages
+                        Mono.just(it)
+                    }
                 }
                 Flux.fromIterable(serviceCases.subList(offset, min(offset + pageSize, serviceCases.size)))
                     .flatMap { serviceCase ->
@@ -96,7 +99,7 @@ class ServiceCaseService(
     private fun findAllByOperatorId(operatorId: Long): Flux<ServiceCase> {
         return userService.findByUserId(operatorId).flatMapMany {
             if (!it.isOperator) {
-                Mono.error(GenericException("User with $operatorId is not operator"))
+                Flux.empty()
             } else {
                 usersServiceCasesService.getServiceCasesForOperator(operatorId)
                     .flatMap { serviceCaseRepository.findById(it) }
