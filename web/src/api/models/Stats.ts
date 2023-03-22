@@ -36,11 +36,6 @@ export const EMPTY_STATS: Stats = {
     },
     closed: {
         total: 0,
-        operators: [
-            {
-                name: 'danielkrejci',
-                closed: 1,
-            },
-        ],
+        operators: [],
     },
 }
