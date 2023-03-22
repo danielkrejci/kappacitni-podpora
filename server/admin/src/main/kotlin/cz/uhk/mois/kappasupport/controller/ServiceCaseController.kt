@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
-@CrossOrigin("*")
 @RestController
 @RequestMapping("/service-cases")
 class ServiceCaseController(private val serviceCaseService: ServiceCaseService) {

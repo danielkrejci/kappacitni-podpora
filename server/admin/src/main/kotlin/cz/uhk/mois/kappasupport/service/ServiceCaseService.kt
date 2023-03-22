@@ -26,6 +26,18 @@ class ServiceCaseService(
     private val messageService: MessageService,
     private val mapper: DomainMapper,
 ) {
+    companion object {
+        var EMPTY_RESULT = Mono.just(
+            PaginatedObject(
+                hasNext = false,
+                hasPrev = false,
+                data = emptyList(),
+                page = 1,
+                totalPages = 1
+            )
+        )
+    }
+
     fun getAllServiceCases(
         operatorId: Long?,
         state: Long?,
@@ -50,7 +62,9 @@ class ServiceCaseService(
         return serviceCasesMono.collectList()
             .flatMap { serviceCases ->
                 val totalPages = ceil(serviceCases.size.toDouble() / pageSize).toInt()
-
+                if (page > totalPages) {
+                    return@flatMap EMPTY_RESULT
+                }
                 Flux.fromIterable(serviceCases.subList(offset, min(offset + pageSize, serviceCases.size)))
                     .flatMap { serviceCase ->
                         usersServiceCasesService.getOperatorsFromServiceCase(serviceCase.id!!)
@@ -76,7 +90,7 @@ class ServiceCaseService(
 
                         }
                     }
-            }
+            }.switchIfEmpty(EMPTY_RESULT)
     }
 
     private fun findAllByOperatorId(operatorId: Long): Flux<ServiceCase> {
@@ -86,9 +100,8 @@ class ServiceCaseService(
             } else {
                 usersServiceCasesService.getServiceCasesForOperator(operatorId)
                     .flatMap { serviceCaseRepository.findById(it) }
-                    .switchIfEmpty(Mono.error(GenericException("This operator does not have any service cases")))
             }
-        }.switchIfEmpty(Mono.error(UserNotFoundException("User with is $operatorId not found")))
+        }
     }
 
     fun getServiceCasesForOperator(id: Long): Flux<ServiceCaseDto> {
@@ -123,7 +136,7 @@ class ServiceCaseService(
     }
 
     fun sortData(cases: List<ServiceCaseData>, ascending: Boolean): List<ServiceCaseData> {
-        val sortOrder = if (ascending) 1 else -1
+        val sortOrder = if (!ascending) 1 else -1
         val sortedCases = cases.sortedWith(compareBy { it.dateBegin })
         return sortedCases.sortedWith(compareBy { it.dateBegin!!.toEpochMilli() * sortOrder })
     }
