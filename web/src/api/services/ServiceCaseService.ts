@@ -32,7 +32,7 @@ export class ServiceCaseService {
     }
 
     static async getAdminServiceCase(id: string) {
-        return await ApiService.get<ServiceCaseDetail>(`${ADMIN_API_URL}/service-cases/${id}`)
+        return await ApiService.get<ServiceCaseDetail>(`${ADMIN_API_URL}/admin/service-cases/${id}`)
     }
 
     static async createServiceCase(serviceCase: ServiceCaseForm) {
