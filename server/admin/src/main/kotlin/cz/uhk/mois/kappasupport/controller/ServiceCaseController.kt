@@ -20,7 +20,7 @@ class ServiceCaseController(private val serviceCaseService: ServiceCaseService) 
         @RequestParam(required = false, defaultValue = "date-desc") sort: String,
         @RequestParam(required = false, defaultValue = "1") page: Int,
     ): ResponseEntity<Mono<ServiceCaseService.PaginatedObject>> {
-        return ResponseEntity.ok(serviceCaseService.getAllServiceCases(operatorId, state, sort, page))
+        return ResponseEntity.ok(serviceCaseService.getAllServiceCases(operatorId, clientId, state, sort, page))
     }
 
     @GetMapping("/operator/{operatorId}")

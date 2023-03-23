@@ -32,4 +32,8 @@ class UsersServiceCasesService(
         return repository.save(mapper.fromDto(usc))
     }
 
+    fun findAllByOperatorIdAndClientId(operatorId: Long, clientId: Long): Flux<UsersServiceCases> {
+        return repository.findAllByUserIdIn(listOf(operatorId, clientId).distinct())
+    }
+
 }

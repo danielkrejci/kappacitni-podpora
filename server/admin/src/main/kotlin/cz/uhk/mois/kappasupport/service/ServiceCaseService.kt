@@ -39,6 +39,7 @@ class ServiceCaseService(
 
     fun getAllServiceCases(
         operatorId: Long?,
+        clientId: Long?,
         state: Long?,
         sort: String,
         page: Int
@@ -46,17 +47,7 @@ class ServiceCaseService(
         val pageSize = 10
         val offset = (page - 1) * pageSize
 
-        val serviceCasesMono = if (operatorId != null && state != null) {
-            findAllByOperatorId(operatorId)
-                .filter { it.stateId == state }
-        } else if (operatorId != null) {
-            findAllByOperatorId(operatorId)
-        } else if (state != null) {
-            serviceCaseRepository.findAll()
-                .filter { it.stateId == state }
-        } else {
-            serviceCaseRepository.findAll()
-        }
+        val serviceCasesMono = getServiceCases(operatorId, clientId, state)
 
         return serviceCasesMono.collectList()
             .flatMap { serviceCases ->
@@ -87,12 +78,11 @@ class ServiceCaseService(
                     .flatMap { data ->
 
                         convertToServiceCaseData(data).collectList().flatMap { convertedData ->
-                            val sorted = sortData(convertedData, sort == "date-desc")
                             Mono.just(
                                 PaginatedObject(
                                     hasNext = page < totalPages,
                                     hasPrev = page > 1,
-                                    data = sorted,
+                                    data = sortData(convertedData, sort == "date-desc"),
                                     page = page,
                                     totalPages = totalPages
                                 )
@@ -101,6 +91,36 @@ class ServiceCaseService(
                         }
                     }
             }.switchIfEmpty(EMPTY_RESULT)
+    }
+
+    private fun getServiceCases(operatorId: Long?, clientId: Long?, state: Long?): Flux<ServiceCase> {
+        return if (operatorId != null && state != null && clientId != null) {
+            findAllByOperatorIdAndClientId(operatorId, clientId)
+                .filter { it.stateId == state }
+        } else if (operatorId != null && clientId != null) {
+            findAllByOperatorIdAndClientId(operatorId, clientId)
+        } else if (state != null && clientId != null) {
+            serviceCaseRepository.findAllByUserId(clientId)
+                .filter { it.stateId == state }
+        } else if (operatorId != null && state != null) {
+            findAllByOperatorId(operatorId)
+                .filter { it.stateId == state }
+        } else if (operatorId != null) {
+            findAllByOperatorId(operatorId)
+        } else if (state != null) {
+            serviceCaseRepository.findAll()
+                .filter { it.stateId == state }
+        } else if (clientId != null) {
+            serviceCaseRepository.findAllByUserId(clientId)
+        } else {
+            serviceCaseRepository.findAll()
+        }
+    }
+
+    private fun findAllByOperatorIdAndClientId(operatorId: Long, clientId: Long): Flux<ServiceCase> {
+        return usersServiceCasesService.findAllByOperatorIdAndClientId(operatorId, clientId).flatMap {
+            serviceCaseRepository.findById(it.serviceCaseId)
+        }
     }
 
     private fun findAllByOperatorId(operatorId: Long): Flux<ServiceCase> {
