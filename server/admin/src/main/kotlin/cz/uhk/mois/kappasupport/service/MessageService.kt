@@ -13,7 +13,6 @@ class MessageService(
     private val mapper: DomainMapper
 ) {
 
-
     fun getMessagesCount(clientId: Long, serviceCaseId: Long): Mono<Long> {
         return messageRepository.findAllByServiceCaseIdAndUserIdAndStateIdOrderByDateDesc(clientId, serviceCaseId, 1L)
             .count()

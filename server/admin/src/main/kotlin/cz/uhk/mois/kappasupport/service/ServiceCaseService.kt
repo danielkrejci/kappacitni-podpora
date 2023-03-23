@@ -68,7 +68,14 @@ class ServiceCaseService(
                         Mono.just(it)
                     }
                 }
-                Flux.fromIterable(serviceCases.subList(offset, min(offset + pageSize, serviceCases.size)))
+
+                var sorted = if (sort == "date-desc") {
+                    serviceCases.sortedBy { it.dateBegin }.reversed()
+                } else {
+                    serviceCases.sortedBy { it.dateBegin }
+                }
+
+                Flux.fromIterable(sorted.subList(offset, min(offset + pageSize, serviceCases.size)))
                     .flatMap { serviceCase ->
                         usersServiceCasesService.getOperatorsFromServiceCase(serviceCase.id!!)
                             .collectList()
