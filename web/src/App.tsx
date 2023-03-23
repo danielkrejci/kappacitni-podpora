@@ -22,6 +22,9 @@ import { ServiceCaseListPage } from './pages/admin/service-case/list/ServiceCase
 import { ServiceCaseListStore } from './pages/admin/service-case/list/ServiceCaseListStore'
 import { AdminServiceCaseDetailStore } from './pages/admin/service-case/detail/AdminServiceCaseDetailStore'
 import { AdminServiceCaseDetailPage } from './pages/admin/service-case/detail/AdminServiceCaseDetailPage'
+import { AccountPage } from './pages/admin/account/AccountPage'
+import { AccountStore } from './pages/admin/account/AccountStore'
+import { SettingsPage } from './pages/admin/settings/SettingsPage'
 
 // Global navigation store instance
 export const navigationStore = new NavigationStore(browserHistory)
@@ -31,6 +34,7 @@ const rootStore = {
     serviceCaseFormStore: new ServiceCaseFormStore(),
     serviceCaseDetailStore: new ServiceCaseDetailStore(),
     loginStore: new LoginStore(),
+    accountStore: new AccountStore(),
     adminIndexStore: new AdminIndexStore(),
     adminUsersStore: new UserListStore(),
     adminServiceCasesListStore: new ServiceCaseListStore(),
@@ -96,6 +100,36 @@ export const App = observer((props: any) => {
                             ) : (
                                 <PageLayout>
                                     <LoginPage store={rootStore.loginStore} />
+                                </PageLayout>
+                            )
+                        }
+                    />
+
+                    <Route
+                        path={navigation.href.account()}
+                        render={() =>
+                            authService.isLoggedIn ? (
+                                <AdminPageLayout>
+                                    <AccountPage store={rootStore.accountStore} />
+                                </AdminPageLayout>
+                            ) : (
+                                <PageLayout>
+                                    <LoginPage store={rootStore.loginStore} loginRedirect={() => navigation.account()} />
+                                </PageLayout>
+                            )
+                        }
+                    />
+
+                    <Route
+                        path={navigation.href.settings()}
+                        render={() =>
+                            authService.isLoggedIn ? (
+                                <AdminPageLayout>
+                                    <SettingsPage />
+                                </AdminPageLayout>
+                            ) : (
+                                <PageLayout>
+                                    <LoginPage store={rootStore.loginStore} loginRedirect={() => navigation.settings()} />
                                 </PageLayout>
                             )
                         }

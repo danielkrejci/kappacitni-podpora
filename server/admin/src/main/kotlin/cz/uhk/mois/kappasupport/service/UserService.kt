@@ -17,7 +17,7 @@ class UserService(
     private val addressService: AddressService,
     private val mapper: DomainMapper,
     private val validationService: ValidationService,
-    private val serviceCasesService: UsersServiceCasesService
+    private val usersServiceCasesService: UsersServiceCasesService
 ) {
 
 
@@ -35,6 +35,17 @@ class UserService(
     fun findAllClients(): Flux<UserLoser> = userRepository.findAllClients()
         .flatMap(this::mapUserToUserLoser)
 
+    fun findAllByIdIn(id: List<Long>): Flux<User> {
+        return userRepository.findAllByIdIn(id)
+    }
+
+    fun updateUserPicture(userId: Long, picture: String?): Mono<User> {
+        return userRepository.findById(userId).flatMap {
+            it.picture = picture
+            userRepository.save(it)
+        }
+    }
+
     fun saveUser(user: UserLoser, id: Long?): Mono<Boolean> {
         return validationService.validateUser(user, true).flatMap {
             val userToSave = mapper.userLoserToUser(it)
@@ -45,7 +56,7 @@ class UserService(
             } else {
                 val address = mapper.fromUserLoserToAddress(user)
                 address.id = null
-                addressService.findAddressById(it.id).flatMap {
+                addressService.findById(it.id).flatMap {
                     it.street = user.street
                     it.city = user.city
                     it.houseNumber = user.houseNumber
@@ -80,7 +91,7 @@ class UserService(
                             }
                         }
                     } else {
-                        addressService.findAddressById(foundedUser.addressId!!).flatMap {
+                        addressService.findById(foundedUser.addressId!!).flatMap {
                             it.street = user.street
                             it.city = user.city
                             it.houseNumber = user.houseNumber
@@ -110,7 +121,7 @@ class UserService(
 
     fun deleteUser(userId: Long): Mono<Boolean> {
         return userRepository.findById(userId).flatMap { foundedUser ->
-            val assignedCases = serviceCasesService.getServiceCasesForOperator(foundedUser.id!!).collectList()
+            val assignedCases = usersServiceCasesService.getServiceCasesForOperatorId(foundedUser.id!!).collectList()
             if (foundedUser.isClient && !foundedUser.isOperator) {
                 Mono.error(UserIsClientException("Cannot delete client user"))
             } else if (foundedUser.isOperator && !foundedUser.isClient) {
@@ -151,7 +162,7 @@ class UserService(
                     userRepository.save(it)
                         .flatMap { savedUser ->
                             if (savedUser.addressId != null && !useros.hasIncompleteAddressAttributes() && !useros.hasEmptyAddressAttribute()) {
-                                addressService.findAddressById(it.addressId!!)
+                                addressService.findById(it.addressId!!)
                                     .flatMap { address ->
                                         address.city = useros.city
                                         address.houseNumber = useros.houseNumber
@@ -214,12 +225,16 @@ class UserService(
     private fun mapUserToUserLoser(user: User): Mono<UserLoser> {
         val userDto = mapper.toDto(user)
         return if (userDto.addressId != null) {
-            addressService.findAddressById(userDto.addressId!!).flatMap { address ->
+            addressService.findById(userDto.addressId!!).flatMap { address ->
                 Mono.just(mapper.toUserLoser(userDto, mapper.toDto(address)))
             }
         } else {
             Mono.just(mapper.toUserLoser(userDto))
         }
+    }
+
+    fun findById(userId: Long): Mono<User> {
+        return userRepository.findById(userId)
     }
 
 

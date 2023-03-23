@@ -14,6 +14,7 @@ CREATE TABLE users
     name       TEXT,
     surname    TEXT,
     phone      TEXT,
+    picture    TEXT,
     email      TEXT UNIQUE,
     isOperator boolean,
     isClient   boolean,
@@ -95,18 +96,19 @@ INSERT INTO public.addresses (street, housenumber, postalcode, city)
 VALUES ('Černý Benzo', 'c63s', '50000', 'Hradec Králové');
 
 /* OPERATORS */
-INSERT INTO public.users (addressid, name, surname, phone, email, isClient, isOperator)
-VALUES (1, 'Jan', 'Chaloupka', '+420 123 456 789', 'drdobbylp@gmail.com', false, true);
-INSERT INTO public.users (addressid, name, surname, phone, email, isClient, isOperator)
-VALUES (2, 'Daniel', 'Krejčí', '+420 123 456 789', 'daniel.krejci777@gmail.com', false, true);
+INSERT INTO public.users (addressid, name, surname, phone, picture, email, isClient, isOperator)
+VALUES (1, 'Jan', 'Chaloupka', '+420 123 456 789', null, 'drdobbylp@gmail.com', false, true);
+INSERT INTO public.users (addressid, name, surname, phone, picture, email, isClient, isOperator)
+VALUES (2, 'Daniel', 'Krejčí', '+420 123 456 789', null, 'daniel.krejci777@gmail.com', false, true);
 
 /* CLEINTS */
-INSERT INTO public.users (addressid, name, surname, phone, email, isClient, isOperator)
-VALUES (2, 'Honzik', 'Klientos', '+420 123 456 789', 'Honzik klient', true, false);
+INSERT INTO public.users (addressid, name, surname, phone, picture, email, isClient, isOperator)
+VALUES (2, 'Honzik', 'Klientos', '+420 123 456 789', null, 'chaloja1@uhk.cz', true, false);
 
 /* SERVICE-CASES */
-INSERT INTO public.service_cases ( userid, deviceid, casetypeid, stateid, hash, datebegin, dateend) VALUES ( 3, 1, 1, 1, 'hashos', '2023-03-21 22:29:35.000000', null);
+INSERT INTO public.service_cases (userid, deviceid, casetypeid, stateid, hash, datebegin, dateend) VALUES ( 3, 1, 1, 1, 'hashos', '2023-03-21 22:29:35.000000', null);
 
+INSERT INTO public.service_case_messages (userid, servicecaseid, stateid, message, date) VALUES (3, 1, 1, 'KOLESO', '2023-03-25 19:19:27.000000');
 
 
 /* TODO kontrola před vložením service_case že daný device_id existuje */

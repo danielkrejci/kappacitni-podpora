@@ -17,7 +17,11 @@ export class NavigationStore {
 
     login = () => this.history.push(this.href.login())
 
+    account = () => this.history.push(this.href.account())
+
     adminIndex = () => this.history.push(this.href.adminIndex())
+
+    settings = () => this.history.push(this.href.settings())
 
     adminUsers = (type: AnyParam) => this.history.push(this.href.adminUsers(type))
 
@@ -33,6 +37,8 @@ export class NavigationStore {
         serviceCaseForm: (deviceName?: AnyParam) => `/device/${deviceName ?? ':deviceName'}`,
         serviceCaseDetail: (id?: AnyParam, hash?: AnyParam) => `/detail/${id ?? ':id'}/${hash ?? ':hash'}`,
         login: () => '/admin/login',
+        account: () => '/admin/account',
+        settings: () => '/admin/settings',
         adminIndex: () => '/admin/index',
         adminUsers: (type?: AnyParam) => `/admin/users/${type ?? ':type'}`,
         adminServiceCaseList: (operatorId?: AnyParam, clientId?: AnyParam, state?: AnyParam, page?: AnyParam, sort?: AnyParam) => {

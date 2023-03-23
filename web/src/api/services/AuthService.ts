@@ -33,7 +33,7 @@ export class AuthService {
                         aud: userData.aud,
                         exp: userData.exp,
                         iat: userData.iat,
-                        picture: userData.picture,
+                        // picture: userData.picture,
                         ...result,
                     }
 

@@ -1,6 +1,12 @@
 import { action, computed, makeObservable, observable, runInAction } from 'mobx'
 import { DeviceType } from '../../../../api/models/DeviceType'
-import { ServiceCaseDetail, EMPTY_SERVICE_CASE_DETAIL, ServiceCaseType, ServiceCaseStates } from '../../../../api/models/ServiceCase'
+import {
+    ServiceCaseDetail,
+    EMPTY_SERVICE_CASE_DETAIL,
+    ServiceCaseType,
+    ServiceCaseStates,
+    ServiceCaseStateChange,
+} from '../../../../api/models/ServiceCase'
 import { ServiceCaseMessageForm } from '../../../../api/models/ServiceCaseMessage'
 import { isApiError } from '../../../../api/services/ApiService'
 import { DeviceService } from '../../../../api/services/DeviceService'
@@ -21,8 +27,6 @@ import { RemoveOperatorDialogStore } from './dialog/RemoveOperatorDialogStore'
 
 export class AdminServiceCaseDetailStore {
     isLoading = false
-
-    initDone = false
 
     serviceCase: ServiceCaseDetail = EMPTY_SERVICE_CASE_DETAIL
 
@@ -47,9 +51,9 @@ export class AdminServiceCaseDetailStore {
             isLoading: observable,
             codetables: observable,
             serviceCase: observable,
-            initDone: observable,
             init: action,
             save: action,
+            reOpen: action,
             reset: action,
             validate: action,
             showRemoveOperatorDialog: action,
@@ -60,7 +64,6 @@ export class AdminServiceCaseDetailStore {
     }
 
     init(id: string) {
-        this.initDone = true
         this.load(id)
     }
 
@@ -116,6 +119,32 @@ export class AdminServiceCaseDetailStore {
             )
             .finally(() => {
                 this.isLoading = false
+            })
+    }
+
+    reOpen() {
+        this.isLoading = true
+
+        const data: ServiceCaseStateChange = {
+            stateId: '2',
+        }
+
+        ServiceCaseService.changeState(this.serviceCase.serviceCase.id, data)
+            .then(data =>
+                runInAction(() => {
+                    this.isLoading = false
+
+                    if (!isApiError(data)) {
+                        this.reloadServiceCase()
+                    } else {
+                        showAlertDialog('Chyba', data.cause, AlertDialogType.Danger)
+                    }
+                })
+            )
+            .finally(() => {
+                runInAction(() => {
+                    this.isLoading = false
+                })
             })
     }
 
@@ -182,7 +211,7 @@ export class AdminServiceCaseDetailStore {
     get actionsDisabled(): boolean {
         return (
             this.serviceCase.serviceCase.id === '' ||
-            this.serviceCase.serviceCase.stateId === '4' ||
+            this.serviceCase.serviceCase.stateId.toString() === '4' ||
             !this.serviceCase.operators.map(operator => operator.id).includes(authService.authUser!.id)
         )
     }
@@ -190,7 +219,7 @@ export class AdminServiceCaseDetailStore {
     get getState(): string {
         const state = this.serviceCase.serviceCase.stateId
         if (state && Number(state) > 0) {
-            return this.codetables.caseStates[Number(state)]?.value ?? ''
+            return this.codetables.caseStates[Number(state) - 1]?.value ?? ''
         }
         return ''
     }
@@ -198,7 +227,7 @@ export class AdminServiceCaseDetailStore {
     get getCategory(): string {
         const category = this.serviceCase.serviceCase.caseTypeId
         if (category && Number(category) > 0) {
-            return this.codetables.caseTypes[Number(category)]?.value ?? ''
+            return this.codetables.caseTypes[Number(category) - 1]?.value ?? ''
         }
         return ''
     }

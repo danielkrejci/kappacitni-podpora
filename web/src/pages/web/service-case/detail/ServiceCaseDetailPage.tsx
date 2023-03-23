@@ -87,7 +87,7 @@ export const ServiceCaseDetailPage: React.FC<ServiceCaseDetailPageProps> = obser
                                 </div>
 
                                 <div className='position-relative'>
-                                    {serviceCase.serviceCase.stateId === '4' && (
+                                    {serviceCase.serviceCase.stateId.toString() === '4' && (
                                         <div
                                             id='form-overlay'
                                             style={{
@@ -101,10 +101,10 @@ export const ServiceCaseDetailPage: React.FC<ServiceCaseDetailPageProps> = obser
                                             }}>
                                             <h3
                                                 className='text-center'
-                                                style={{ top: '50%', position: 'relative', transform: 'translateY(-50%)' }}>
+                                                style={{ top: '45%', position: 'relative', transform: 'translateY(-50%)' }}>
                                                 Servisní případ je vyřešený a byl uzavřen.
                                                 <small className='d-block mt-3'>
-                                                    <button onClick={() => console.log('TODO')} type='button' className='btn btn-primary'>
+                                                    <button onClick={() => store.reOpen()} type='button' className='btn btn-primary'>
                                                         Znovu otevřít
                                                     </button>
                                                 </small>

@@ -89,6 +89,7 @@ export const UserListPage: React.FC<UserListPageProps> = observer(props => {
                                 store.users.map((user, idx) => (
                                     <tr key={idx}>
                                         <td style={{ width: '250px', whiteSpace: 'nowrap' }}>
+                                            {user.picture && <img src={user.picture} alt='' className='mr-2 rounded-circle' width={30} />}
                                             {user.name} {user.surname}
                                         </td>
                                         <td style={{ width: '250px' }}>{user.email}</td>

@@ -29,9 +29,7 @@ export const AdminServiceCaseDetailPage: React.FC<AdminServiceCaseDetailPageProp
     const { id } = useParams<{ id: string }>()
 
     useEffect(() => {
-        if (!store.initDone) {
-            store.init(id!)
-        }
+        store.init(id!)
     }, [id, store])
 
     return (
@@ -119,7 +117,7 @@ export const AdminServiceCaseDetailPage: React.FC<AdminServiceCaseDetailPageProp
                             </div>
 
                             <div className='position-relative'>
-                                {store.actionsDisabled && serviceCase.serviceCase.stateId !== '4' && (
+                                {store.actionsDisabled && serviceCase.serviceCase.stateId.toString() !== '4' && (
                                     <div
                                         id='form-overlay'
                                         style={{
@@ -133,12 +131,12 @@ export const AdminServiceCaseDetailPage: React.FC<AdminServiceCaseDetailPageProp
                                         }}>
                                         <h3
                                             className='text-center'
-                                            style={{ top: '50%', position: 'relative', transform: 'translateY(-50%)' }}>
+                                            style={{ top: '45%', position: 'relative', transform: 'translateY(-50%)' }}>
                                             Tento servisní případ není přidělen tobě.
                                         </h3>
                                     </div>
                                 )}
-                                {serviceCase.serviceCase.stateId === '4' && (
+                                {serviceCase.serviceCase.stateId.toString() === '4' && (
                                     <div
                                         id='form-overlay'
                                         style={{
@@ -152,10 +150,10 @@ export const AdminServiceCaseDetailPage: React.FC<AdminServiceCaseDetailPageProp
                                         }}>
                                         <h3
                                             className='text-center'
-                                            style={{ top: '50%', position: 'relative', transform: 'translateY(-50%)' }}>
+                                            style={{ top: '45%', position: 'relative', transform: 'translateY(-50%)' }}>
                                             Servisní případ je vyřešený a byl uzavřen.
                                             <small className='d-block mt-3'>
-                                                <button onClick={() => console.log('TODO')} type='button' className='btn btn-primary'>
+                                                <button onClick={() => store.reOpen()} type='button' className='btn btn-primary'>
                                                     Znovu otevřít
                                                 </button>
                                             </small>
@@ -190,26 +188,30 @@ export const AdminServiceCaseDetailPage: React.FC<AdminServiceCaseDetailPageProp
                                     <p className='mb-0'>
                                         Stav:&nbsp;
                                         <strong>{store.getState}</strong>
-                                        <Button
-                                            style={{ marginTop: '-2px' }}
-                                            className='ml-2 p-0'
-                                            size='sm'
-                                            type='link'
-                                            onClick={() => store.stateDialogStore.show()}>
-                                            změnit
-                                        </Button>
+                                        {!store.actionsDisabled && (
+                                            <Button
+                                                style={{ marginTop: '-2px' }}
+                                                className='ml-2 p-0'
+                                                size='sm'
+                                                type='link'
+                                                onClick={() => store.stateDialogStore.show()}>
+                                                změnit
+                                            </Button>
+                                        )}
                                     </p>
                                     <p className='mb-0'>
                                         Kategorie:&nbsp;
                                         <strong>{store.getCategory}</strong>
-                                        <Button
-                                            style={{ marginTop: '-2px' }}
-                                            className='ml-2 p-0'
-                                            size='sm'
-                                            type='link'
-                                            onClick={() => store.categoryDialogStore.show()}>
-                                            změnit
-                                        </Button>
+                                        {!store.actionsDisabled && (
+                                            <Button
+                                                style={{ marginTop: '-2px' }}
+                                                className='ml-2 p-0'
+                                                size='sm'
+                                                type='link'
+                                                onClick={() => store.categoryDialogStore.show()}>
+                                                změnit
+                                            </Button>
+                                        )}
                                     </p>
                                     <p className='mb-0'>
                                         Datum vytvoření:&nbsp;
@@ -276,19 +278,21 @@ export const AdminServiceCaseDetailPage: React.FC<AdminServiceCaseDetailPageProp
                                                 <div key={idx} className='col-12 mb-3'>
                                                     <p className='mb-0'>
                                                         {operator.name} {operator.surname}
-                                                        <Button
-                                                            style={{ marginTop: '-4px' }}
-                                                            className='ml-2 p-0'
-                                                            size='sm'
-                                                            type='link'
-                                                            onClick={() =>
-                                                                store.showRemoveOperatorDialog(
-                                                                    operator,
-                                                                    <RemoveOperatorDialog store={store.removeOperatorDialogStore} />
-                                                                )
-                                                            }>
-                                                            odebrat
-                                                        </Button>
+                                                        {!store.actionsDisabled && (
+                                                            <Button
+                                                                style={{ marginTop: '-4px' }}
+                                                                className='ml-2 p-0'
+                                                                size='sm'
+                                                                type='link'
+                                                                onClick={() =>
+                                                                    store.showRemoveOperatorDialog(
+                                                                        operator,
+                                                                        <RemoveOperatorDialog store={store.removeOperatorDialogStore} />
+                                                                    )
+                                                                }>
+                                                                odebrat
+                                                            </Button>
+                                                        )}
                                                     </p>
                                                     <p className='mb-0'>{operator.email}</p>
                                                     {operator.phone && <p className='mb-0'>{operator.phone}</p>}
@@ -298,7 +302,6 @@ export const AdminServiceCaseDetailPage: React.FC<AdminServiceCaseDetailPageProp
                                     ) : (
                                         <p className='mb-0 font-italic'>Zatím nebyl přidělen.</p>
                                     )}
-
                                     <Button size='sm' className='p-0' type='link' onClick={() => store.operatorDialogStore.show()}>
                                         Přidat operátora
                                     </Button>

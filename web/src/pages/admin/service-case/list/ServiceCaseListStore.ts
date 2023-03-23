@@ -155,7 +155,7 @@ export class ServiceCaseListStore {
 
         ServiceCaseService.getServiceCases(
             this.filter.operators.value.code,
-            this.filter.clients.value.value,
+            this.filter.clients.value.code,
             this.filter.state.value.code,
             `${this.currentPage}`,
             this.filter.sort.value.code

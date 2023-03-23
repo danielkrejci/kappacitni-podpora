@@ -55,7 +55,9 @@ export class ServiceCaseFormStore {
             save: action,
             reset: action,
             validate: action,
+            validateAddress: action,
             isSaved: computed,
+            isValid: computed,
         })
     }
 
@@ -140,6 +142,10 @@ export class ServiceCaseFormStore {
         return this.saved.id !== '' && this.saved.hash !== ''
     }
 
+    get isValid(): boolean {
+        return Form.isValid(this.form)
+    }
+
     validate(): boolean {
         Form.resetAllValidations(this.form)
 
@@ -156,6 +162,17 @@ export class ServiceCaseFormStore {
         if (this.form.phone.value.length > 0) {
             ValidationUtils.phone(this.form.phone)
         }
+
+        this.validateAddress()
+
+        return Form.isValid(this.form)
+    }
+
+    validateAddress() {
+        this.form.street.validation.reset()
+        this.form.houseNumber.validation.reset()
+        this.form.city.validation.reset()
+        this.form.postalCode.validation.reset()
 
         if (
             (this.form.street.value === '' ||
@@ -181,8 +198,6 @@ export class ServiceCaseFormStore {
         ) {
             ValidationUtils.postalCode(this.form.postalCode)
         }
-
-        return Form.isValid(this.form)
     }
 
     reset() {

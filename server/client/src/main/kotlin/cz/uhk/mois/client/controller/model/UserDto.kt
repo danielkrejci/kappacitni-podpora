@@ -8,7 +8,8 @@ data class UserDto(
     var phone: String?,
     var email: String,
     var isOperator: Boolean,
-    var isClient: Boolean
+    var isClient: Boolean,
+    var picture: String?,
 ) {
 
     override fun toString(): String {

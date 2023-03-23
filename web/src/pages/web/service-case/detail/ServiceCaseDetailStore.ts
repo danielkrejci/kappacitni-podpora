@@ -37,6 +37,7 @@ export class ServiceCaseDetailStore {
             init: action,
             save: action,
             reset: action,
+            reOpen: action,
             validate: action,
         })
     }
@@ -72,6 +73,10 @@ export class ServiceCaseDetailStore {
                     this.isLoading = false
                 })
             })
+    }
+
+    reOpen() {
+        this.serviceCase.serviceCase.stateId = '2'
     }
 
     reloadServiceCase() {
@@ -131,7 +136,7 @@ export class ServiceCaseDetailStore {
     get getState(): string {
         const state = this.serviceCase.serviceCase.stateId
         if (state && Number(state) > 0) {
-            return this.codetables.caseStates[Number(state)]?.value ?? ''
+            return this.codetables.caseStates[Number(state) - 1]?.value ?? ''
         }
         return ''
     }
@@ -139,7 +144,7 @@ export class ServiceCaseDetailStore {
     get getCategory(): string {
         const category = this.serviceCase.serviceCase.caseTypeId
         if (category && Number(category) > 0) {
-            return this.codetables.caseTypes[Number(category)]?.value ?? ''
+            return this.codetables.caseTypes[Number(category) - 1]?.value ?? ''
         }
         return ''
     }

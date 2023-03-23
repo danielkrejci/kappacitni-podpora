@@ -1,19 +1,26 @@
 package cz.uhk.mois.kappasupport.service
 
+import cz.uhk.mois.kappasupport.controller.model.MessageDto
 import cz.uhk.mois.kappasupport.controller.model.ServiceCaseDto
 import cz.uhk.mois.kappasupport.controller.model.UserDto
 import cz.uhk.mois.kappasupport.controller.model.UsersServiceCasesDto
+import cz.uhk.mois.kappasupport.domain.Message
 import cz.uhk.mois.kappasupport.domain.ServiceCase
-import cz.uhk.mois.kappasupport.domain.UsersServiceCases
+import cz.uhk.mois.kappasupport.exception.GenericException
 import cz.uhk.mois.kappasupport.exception.ServiceCaseNotFoundException
 import cz.uhk.mois.kappasupport.exception.UserIsNotOperatorException
 import cz.uhk.mois.kappasupport.exception.UserNotFoundException
 import cz.uhk.mois.kappasupport.mapper.DomainMapper
 import cz.uhk.mois.kappasupport.repository.ServiceCaseRepository
+import cz.uhk.mois.kappasupport.util.*
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 import kotlin.math.ceil
 import kotlin.math.min
 
@@ -21,11 +28,16 @@ import kotlin.math.min
 class ServiceCaseService(
     private val serviceCaseRepository: ServiceCaseRepository,
     private val usersServiceCasesService: UsersServiceCasesService,
+    private val addressService: AddressService,
     private val userService: UserService,
-    private val messageService: MessageService,
     private val mapper: DomainMapper,
+    private val deviceService: DeviceService,
+    private val messageService: MessageService,
+    private val jwtService: JwtService
 ) {
     companion object {
+        private const val format = "yyyy-MM-dd HH:mm:ss"
+        private val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern(format).withZone(ZoneId.systemDefault())
         var EMPTY_RESULT = Mono.just(
             PaginatedObject(
                 hasNext = false,
@@ -35,6 +47,70 @@ class ServiceCaseService(
                 totalPages = 1
             )
         )
+    }
+
+    fun sendMessage(message: SendMessage, id: String, token: String): Mono<Boolean> {
+        return serviceCaseRepository.findById(id.toLong())
+            .flatMap { serviceCase ->
+                jwtService.getUserFromToken(token)
+                    .flatMap { operator ->
+                        usersServiceCasesService.getOperatorsFromServiceCase(serviceCase.id!!)
+                            .collectList()
+                            .flatMap { operatorsInServiceCase ->
+                                if (operatorsInServiceCase.contains(operator)) {
+                                    if (message.message.isEmpty() || message.message.isBlank()) {
+                                        Mono.error(GenericException("Message is empty"))
+                                    } else {
+                                        val messageToSave = MessageDto(
+                                            null,
+                                            operator.id!!,
+                                            serviceCase.id!!,
+                                            1L,
+                                            message.message,
+                                            Instant.now()
+                                        )
+
+                                        val allMessagesForUser =
+                                            messageService.findMessagesByUserIdAndServiceCaseIdAndDateBeforeNow(
+                                                listOf(serviceCase.userId!!),
+                                                id.toLong()
+                                            )
+
+                                        bulkUpdateMessages(id.toLong(), allMessagesForUser, 3, messageToSave).flatMap {
+                                            updateServiceCaseState(id.toLong(), 3L).flatMap {
+                                                Mono.just(true)
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    Mono.error(GenericException("User ${operator.name} ${operator.surname} does not have aassigned service case with id ${serviceCase.id}"))
+                                }
+                            }
+                    }
+            }
+            .switchIfEmpty(Mono.error(ServiceCaseNotFoundException("Service case with id $id not found")))
+    }
+
+
+    private fun bulkUpdateMessages(
+        serviceCaseId: Long,
+        allMessagesForUser: Flux<Message>,
+        serviceCaseState: Long,
+        messageDto: MessageDto
+    ): Mono<Boolean> {
+        return updateServiceCaseState(serviceCaseId, serviceCaseState)
+            .flatMapMany { serviceCase ->
+                allMessagesForUser
+                    .flatMap { message ->
+                        messageService.updateMessageState(message.id!!, 2L)
+                    }
+            }.collectList()
+            .flatMap {
+                var message = mapper.fromDto(messageDto)
+                messageService.saveMessage(message).flatMap {
+                    Mono.just(true)
+                }
+            }
     }
 
     fun getAllServiceCases(
@@ -55,7 +131,7 @@ class ServiceCaseService(
                 if (page > totalPages || page <= 0) {
                     return@flatMap EMPTY_RESULT.flatMap {
                         it.page = page
-                        it.totalPages = totalPages
+                        it.totalPages = if (totalPages == 0) 1 else totalPages
                         Mono.just(it)
                     }
                 }
@@ -76,13 +152,12 @@ class ServiceCaseService(
                     }
                     .collectList()
                     .flatMap { data ->
-
                         convertToServiceCaseData(data).collectList().flatMap { convertedData ->
                             Mono.just(
                                 PaginatedObject(
                                     hasNext = page < totalPages,
                                     hasPrev = page > 1,
-                                    data = sortData(convertedData, sort == "date-desc"),
+                                    data = sortData(convertedData, sort == "date-desc").distinctBy { it.id },
                                     page = page,
                                     totalPages = totalPages
                                 )
@@ -128,7 +203,7 @@ class ServiceCaseService(
             if (!it.isOperator) {
                 Flux.empty()
             } else {
-                usersServiceCasesService.getServiceCasesForOperator(operatorId)
+                usersServiceCasesService.getServiceCasesForOperatorId(operatorId)
                     .flatMap { serviceCaseRepository.findById(it) }
             }
         }
@@ -137,7 +212,7 @@ class ServiceCaseService(
     fun getServiceCasesForOperator(id: Long): Flux<ServiceCaseDto> {
         return isOperator(id).flatMapMany {
             if (!it) throw UserIsNotOperatorException("User with $id is not operator")
-            usersServiceCasesService.getServiceCasesForOperator(id)
+            usersServiceCasesService.getServiceCasesForOperatorId(id)
                 .flatMap { id ->
                     serviceCaseRepository.findById(id)
                         .map { mapper.toDto(it) }
@@ -145,16 +220,69 @@ class ServiceCaseService(
         }
     }
 
-    fun assignOperatorToServiceCase(operatorId: Long, serviceCaseId: Long): Mono<UsersServiceCases> {
-        return isOperator(operatorId).flatMap {
-            if (!it) throw UserIsNotOperatorException("User with $operatorId is not operator")
-            serviceCaseRepository.findById(serviceCaseId)
-                .switchIfEmpty(Mono.error(ServiceCaseNotFoundException("Service case not found")))
-                .flatMap {
-                    var usc = UsersServiceCasesDto(operatorId, serviceCaseId)
-                    usersServiceCasesService.save(usc)
+    fun getServiceCaseDetail(id: String): Mono<Map<String, Any>> {
+        val map = HashMap<String, Any>()
+        //TODO validation for id.toLong
+        return serviceCaseRepository.findById(id.toLong())
+            .switchIfEmpty(Mono.error(ServiceCaseNotFoundException("Service case with $id not found")))
+            .flatMap { serviceCase ->
+
+                map["serviceCase"] = mapOf(
+                    Pair("id", serviceCase.id),
+                    Pair("stateId", serviceCase.stateId),
+                    Pair("caseTypeId", serviceCase.caseTypeId),
+                    Pair("dateBegin", formatter.format(serviceCase.dateBegin)),
+                    Pair("dateEnd", serviceCase.dateEnd?.let { formatter.format(serviceCase.dateEnd) }),
+                    Pair("hash", serviceCase.hash)
+                )
+
+
+                val user = userService.findById(serviceCase.userId!!).map { mapper.toDto(it) }
+                    .flatMap { userToUserLoser(it) }
+                val operators = usersServiceCasesService.findAllByServiceCaseId(serviceCase.id!!)
+                    .map { it.userId }
+                    .collectList()
+                    .flatMap { ids ->
+                        userService.findAllByIdIn(ids)
+                            .filter { it.isOperator }
+                            .map { mapper.toDto(it) }
+                            .flatMap { userToUserLoser(it) }
+                            .collectList()
+                    }
+                val device = deviceService.findByDeviceId(serviceCase.deviceId!!)
+                val messages = messageService.findAllMessagesByServiceCaseId(serviceCase.id!!)
+                    .flatMap { message ->
+                        userService.findById(message.userId)
+                            .flatMap { user ->
+                                Mono.just(Pair(userToUserLoser(mapper.toDto(user)), Mono.just(message)))
+                            }
+                            .flatMap {
+                                Mono.zip(it.first, it.second)
+                                    .flatMap {
+                                        val user = it.t1
+                                        val msg = it.t2
+                                        val map = mapOf(
+                                            Pair("author", user),
+                                            Pair("id", msg.id),
+                                            Pair("date", formatter.format(msg.date)),
+                                            Pair("message", msg.message),
+                                            Pair("state", msg.stateId),
+                                        )
+                                        Mono.just(map)
+                                    }
+                            }
+                    }
+                    .collectList()
+
+                Mono.zip(user, operators, device, messages).flatMap { data ->
+                    map["client"] = data.t1
+                    map["operators"] = data.t2
+                    map["device"] = data.t3
+                    map["messages"] = data.t4.sortedBy { getMessageTime(it["date"] as CharSequence) }
+                    Mono.just(map)
                 }
-        }
+            }
+
     }
 
     private fun isOperator(id: Long): Mono<Boolean> {
@@ -162,6 +290,24 @@ class ServiceCaseService(
             .switchIfEmpty(Mono.error(UserNotFoundException("User with $id does not exists")))
             .flatMap {
                 Mono.just(it.isOperator)
+            }
+    }
+
+    private fun getMessageTime(das: CharSequence): Instant {
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+        val localDateTime = LocalDateTime.parse(das as CharSequence?, formatter)
+        val zonedDateTime = ZonedDateTime.of(localDateTime, ZoneId.systemDefault())
+        return zonedDateTime.toInstant()
+    }
+
+    private fun userToUserLoser(user: UserDto): Mono<UserLoser> {
+        if (user.addressId == null) {
+            return Mono.just(mapper.toUserLoser(user))
+        }
+
+        return addressService.findById(user.addressId!!)
+            .map { address ->
+                mapper.toUserLoser(user, mapper.toDto(address))
             }
     }
 
@@ -197,6 +343,105 @@ class ServiceCaseService(
                 )
             }
         }
+    }
+
+    fun changeCategory(id: String, category: ChangeCategory): Mono<Boolean> {
+        return getServiceCaseTypeById(category.categoryId)
+            .flatMap {
+                updateServiceCaseCategory(id.toLong(), it.id)
+                    .flatMap {
+                        Mono.just(true)
+                    }
+            }
+    }
+
+    fun changeState(id: String, state: ChangeState): Mono<Boolean> {
+        return getServiceCaseStateById(state.stateId.toLong())
+            .flatMap {
+                updateServiceCaseState(id.toLong(), it.id)
+                    .flatMap {
+                        if (state.stateId.toLong() == 4L) {
+                            updateServiceCaseDateEnd(id.toLong(), Instant.now()).flatMap {
+                                Mono.just(true)
+                            }
+                        } else {
+                            updateServiceCaseDateEnd(id.toLong(), null).flatMap {
+                                Mono.just(true)
+                            }
+                        }
+                    }
+            }
+    }
+
+    private fun updateServiceCaseCategory(serviceCaseId: Long, categoryId: Long): Mono<ServiceCase> {
+        return serviceCaseRepository.findById(serviceCaseId)
+            .flatMap {
+                it.caseTypeId = categoryId
+                serviceCaseRepository.save(it)
+            }
+    }
+
+    private fun updateServiceCaseState(serviceCaseId: Long, stateId: Long): Mono<ServiceCase> {
+        return serviceCaseRepository.findById(serviceCaseId)
+            .flatMap {
+                it.stateId = stateId
+                serviceCaseRepository.save(it)
+            }
+    }
+
+    fun updateServiceCaseDateEnd(scId: Long, dateEnd: Instant?): Mono<ServiceCase> {
+        return serviceCaseRepository.findById(scId).flatMap {
+            it.dateEnd = dateEnd
+            serviceCaseRepository.save(it)
+        }
+    }
+
+    fun assignOperator(serviceCaseId: String, assignOperator: AssignUser): Mono<Boolean> {
+        var operatorId = assignOperator.userId.toLong()
+        return userService.findByUserId(operatorId)
+            .flatMap {
+                usersServiceCasesService.getServiceCasesForOperatorId(operatorId)
+                    .collectList()
+                    .flatMap { currentlyAssignedCases ->
+                        if (currentlyAssignedCases.contains(serviceCaseId.toLong())) {
+                            Mono.error(GenericException("Operator with id: $operatorId already have this service case"))
+                        } else {
+                            var dt = UsersServiceCasesDto(
+                                operatorId,
+                                serviceCaseId.toLong()
+                            )
+                            usersServiceCasesService.save(dt)
+                                .flatMap {
+                                    Mono.just(true)
+                                }
+                        }
+                    }
+            }.switchIfEmpty(Mono.error(UserNotFoundException("User with id ${assignOperator.userId} not found")))
+    }
+
+    fun removeOperatorFromSc(serviceCaseId: String, assignOperator: AssignUser): Mono<Boolean> {
+        val operatorId = assignOperator.userId.toLong()
+        return userService.findByUserId(operatorId)
+            .flatMap {
+                usersServiceCasesService.getServiceCasesForOperatorId(operatorId)
+                    .collectList()
+                    .flatMap { serviceCasesForOperator ->
+                        if (serviceCasesForOperator.contains(serviceCaseId.toLong())) {
+                            usersServiceCasesService.findAllByServiceCaseId(serviceCaseId.toLong())
+                                .collectList()
+                                .flatMap { allUsersForServiceCase ->
+                                    if (allUsersForServiceCase.size <= 2) {
+                                        Mono.error(GenericException("Cannot deelte oeprator atleast one operator has to have this servicecase"))
+                                    } else {
+                                        usersServiceCasesService.delete(operatorId, serviceCaseId.toLong())
+                                    }
+                                }
+                        } else {
+                            Mono.error(GenericException("Operator with id $operatorId doees not have assigned service case with id $serviceCaseId"))
+                        }
+
+                    }
+            }
     }
 
     data class ServiceCaseData(

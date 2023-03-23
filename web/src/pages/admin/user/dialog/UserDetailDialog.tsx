@@ -19,6 +19,14 @@ export const UserDetailDialog: React.FC<UserDetailDialogProps> = observer(props 
 
     return (
         <>
+            {store.selectedUser?.picture && (
+                <Row mb={3}>
+                    <Col xs={12}>
+                        <img src={store.selectedUser.picture} alt='' className='rounded-circle' width={60} />
+                    </Col>
+                </Row>
+            )}
+
             <Row>
                 <Col xs={12} md={6}>
                     <FormGroup>
