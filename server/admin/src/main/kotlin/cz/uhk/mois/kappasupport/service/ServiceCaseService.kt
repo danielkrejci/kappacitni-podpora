@@ -13,24 +13,125 @@ import cz.uhk.mois.kappasupport.repository.ServiceCaseRepository
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import java.time.Instant
+import kotlin.math.ceil
+import kotlin.math.min
 
 @Service
 class ServiceCaseService(
     private val serviceCaseRepository: ServiceCaseRepository,
     private val usersServiceCasesService: UsersServiceCasesService,
     private val userService: UserService,
+    private val messageService: MessageService,
     private val mapper: DomainMapper,
 ) {
+    companion object {
+        var EMPTY_RESULT = Mono.just(
+            PaginatedObject(
+                hasNext = false,
+                hasPrev = false,
+                data = emptyList(),
+                page = 1,
+                totalPages = 1
+            )
+        )
+    }
 
-    fun getAllServiceCases(): Flux<EnhancedServiceCaseDto> {
-        return serviceCaseRepository.findAll()
-            .flatMap { serviceCase ->
-                usersServiceCasesService.getOperatorIdsFromServiceCase(serviceCase.id!!)
-                    .collectList()
-                    .map {
-                        EnhancedServiceCaseDto(serviceCase, it)
+    fun getAllServiceCases(
+        operatorId: Long?,
+        clientId: Long?,
+        state: Long?,
+        sort: String,
+        page: Int
+    ): Mono<PaginatedObject> {
+        val pageSize = 10
+        val offset = (page - 1) * pageSize
+
+        val serviceCasesMono = getServiceCases(operatorId, clientId, state)
+
+        return serviceCasesMono.collectList()
+            .flatMap { serviceCases ->
+                val totalPages = ceil(serviceCases.size.toDouble() / pageSize).toInt()
+                if (page > totalPages || page <= 0) {
+                    return@flatMap EMPTY_RESULT.flatMap {
+                        it.page = page
+                        it.totalPages = totalPages
+                        Mono.just(it)
                     }
+                }
+
+                var sorted = if (sort == "date-desc") {
+                    serviceCases.sortedBy { it.dateBegin }.reversed()
+                } else {
+                    serviceCases.sortedBy { it.dateBegin }
+                }
+
+                Flux.fromIterable(sorted.subList(offset, min(offset + pageSize, serviceCases.size)))
+                    .flatMap { serviceCase ->
+                        usersServiceCasesService.getOperatorsFromServiceCase(serviceCase.id!!)
+                            .collectList()
+                            .flatMap {
+                                Mono.just(EnhancedServiceCaseDto(serviceCase, it as List<UserDto>))
+                            }
+                    }
+                    .collectList()
+                    .flatMap { data ->
+
+                        convertToServiceCaseData(data).collectList().flatMap { convertedData ->
+                            Mono.just(
+                                PaginatedObject(
+                                    hasNext = page < totalPages,
+                                    hasPrev = page > 1,
+                                    data = sortData(convertedData, sort == "date-desc"),
+                                    page = page,
+                                    totalPages = totalPages
+                                )
+                            )
+
+                        }
+                    }
+            }.switchIfEmpty(EMPTY_RESULT)
+    }
+
+    private fun getServiceCases(operatorId: Long?, clientId: Long?, state: Long?): Flux<ServiceCase> {
+        return if (operatorId != null && state != null && clientId != null) {
+            findAllByOperatorIdAndClientId(operatorId, clientId)
+                .filter { it.stateId == state }
+        } else if (operatorId != null && clientId != null) {
+            findAllByOperatorIdAndClientId(operatorId, clientId)
+        } else if (state != null && clientId != null) {
+            serviceCaseRepository.findAllByUserId(clientId)
+                .filter { it.stateId == state }
+        } else if (operatorId != null && state != null) {
+            findAllByOperatorId(operatorId)
+                .filter { it.stateId == state }
+        } else if (operatorId != null) {
+            findAllByOperatorId(operatorId)
+        } else if (state != null) {
+            serviceCaseRepository.findAll()
+                .filter { it.stateId == state }
+        } else if (clientId != null) {
+            serviceCaseRepository.findAllByUserId(clientId)
+        } else {
+            serviceCaseRepository.findAll()
+        }
+    }
+
+    private fun findAllByOperatorIdAndClientId(operatorId: Long, clientId: Long): Flux<ServiceCase> {
+        return usersServiceCasesService.findAllByOperatorIdAndClientId(operatorId, clientId).flatMap {
+            serviceCaseRepository.findById(it.serviceCaseId)
+        }
+    }
+
+    private fun findAllByOperatorId(operatorId: Long): Flux<ServiceCase> {
+        return userService.findByUserId(operatorId).flatMapMany {
+            if (!it.isOperator) {
+                Flux.empty()
+            } else {
+                usersServiceCasesService.getServiceCasesForOperator(operatorId)
+                    .flatMap { serviceCaseRepository.findById(it) }
             }
+        }
     }
 
     fun getServiceCasesForOperator(id: Long): Flux<ServiceCaseDto> {
@@ -64,8 +165,61 @@ class ServiceCaseService(
             }
     }
 
+    fun sortData(cases: List<ServiceCaseData>, ascending: Boolean): List<ServiceCaseData> {
+        val sortOrder = if (!ascending) 1 else -1
+        val sortedCases = cases.sortedWith(compareBy { it.dateBegin })
+        return sortedCases.sortedWith(compareBy { it.dateBegin!!.toEpochMilli() * sortOrder })
+    }
+
+    fun convertToServiceCaseData(cases: List<EnhancedServiceCaseDto>): Flux<ServiceCaseData> {
+        return Flux.fromIterable(cases).flatMap {
+            val id = it.serviceCase.id!!
+            val dateBegin = it.serviceCase.dateBegin
+            val dateEnd = it.serviceCase.dateEnd
+            val clientMono = userService.findByUserId(it.serviceCase.userId!!)
+                .switchIfEmpty(Mono.error(UserNotFoundException("User with serviceCaseId: ${it.serviceCase.userId} not found")))
+            val messageMono = messageService.findFirstFromClient(it.serviceCase.id!!)
+            val messageCountMono = messageService.getMessagesCount(it.serviceCase.userId!!, it.serviceCase.id!!)
+            val stateId = it.serviceCase.stateId
+            val operators = it.operators.map { "${it.name} ${it.surname}" }
+            Mono.zip(clientMono, messageMono, messageCountMono).flatMap {
+                Mono.just(
+                    ServiceCaseData(
+                        id,
+                        dateBegin,
+                        dateEnd,
+                        "${it.t1.name} ${it.t1.surname}",
+                        it.t2.message,
+                        it.t3,
+                        stateId,
+                        operators
+                    )
+                )
+            }
+        }
+    }
+
+    data class ServiceCaseData(
+        var id: Long,
+        var dateBegin: Instant?,
+        var dateEnd: Instant?,
+        var client: String,
+        var message: String,
+        var newMessagesCount: Long,
+        var stateId: Long,
+        var operators: List<String>
+    )
+
     data class EnhancedServiceCaseDto(
         var serviceCase: ServiceCase,
         var operators: List<UserDto>
+    )
+
+    data class PaginatedObject(
+        var hasNext: Boolean,
+        var hasPrev: Boolean,
+        var data: List<ServiceCaseData>,
+        var page: Int,
+        var totalPages: Int
     )
 }

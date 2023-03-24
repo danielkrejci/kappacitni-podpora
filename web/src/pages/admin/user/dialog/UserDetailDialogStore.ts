@@ -64,6 +64,7 @@ export class UserDetailDialogStore extends DialogStore {
             this.form.phone.value = selectedUser.phone.slice(5, selectedUser.phone.length)
         } else {
             this.form.phone.value = ''
+            this.form.phonePrefix.value = this.prefixCodetable[0]
         }
     }
 
@@ -148,6 +149,7 @@ export class UserDetailDialogStore extends DialogStore {
         this.form.name.value = ''
         this.form.surname.value = ''
         this.form.email.value = ''
+        this.form.phonePrefix.value = this.prefixCodetable[0]
         this.form.phone.value = ''
         this.form.street.value = ''
         this.form.houseNumber.value = ''

@@ -7,6 +7,7 @@ import { LoginStore } from './LoginStore'
 
 interface LoginPageProps {
     store: LoginStore
+    loginRedirect?: () => void
 }
 
 export const LoginPage: React.FC<LoginPageProps> = observer(props => {
@@ -14,9 +15,9 @@ export const LoginPage: React.FC<LoginPageProps> = observer(props => {
 
     useEffect(() => {
         if (!store.initDone) {
-            store.init()
+            store.init(props.loginRedirect)
         }
-    }, [store])
+    }, [props.loginRedirect, store])
 
     return (
         <div className='content'>

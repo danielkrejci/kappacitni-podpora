@@ -11,8 +11,9 @@ import { Loader } from '../../../../common/components/Loader'
 import { DateUtils } from '../../../../common/utils/DateUtils'
 import { Link } from 'react-router-dom'
 import { GroupAlign } from '../../../../common/components/GroupAlign'
-import { Paging } from '../../../../common/components/Paging'
 import { navigationStore } from '../../../../App'
+import { ListUtils } from '../../../../common/utils/ListUtils'
+import Pagination from '../../../../common/components/Pagination'
 
 interface ServiceCaseListPageProps {
     store: ServiceCaseListStore
@@ -23,9 +24,7 @@ export const ServiceCaseListPage: React.FC<ServiceCaseListPageProps> = observer(
     const { search } = useLocation()
 
     useEffect(() => {
-        if (!store.initDone) {
-            store.init(search)
-        }
+        store.init(search)
     }, [search, store])
 
     return (
@@ -41,23 +40,29 @@ export const ServiceCaseListPage: React.FC<ServiceCaseListPageProps> = observer(
             <Row mb={3}>
                 <Col xs={12}>
                     <Row horizontal='between'>
-                        <Col xs={6}>
+                        <Col xs={8}>
                             <Row>
-                                <Col xs={6}>
+                                <Col xs={4}>
                                     <FormGroup>
                                         <Label id='state'>Stav případu:</Label>
                                         <Select name='state' onFieldChange={() => store.reload()} field={store.filter.state} />
                                     </FormGroup>
                                 </Col>
-                                <Col xs={6}>
+                                <Col xs={4}>
                                     <FormGroup>
                                         <Label id='operator'>Operátor:</Label>
                                         <Select name='operator' onFieldChange={() => store.reload()} field={store.filter.operators} />
                                     </FormGroup>
                                 </Col>
+                                <Col xs={4}>
+                                    <FormGroup>
+                                        <Label id='client'>Klient:</Label>
+                                        <Select name='client' onFieldChange={() => store.reload()} field={store.filter.clients} />
+                                    </FormGroup>
+                                </Col>
                             </Row>
                         </Col>
-                        <Col xs={2}>
+                        <Col xs={3} md={3} xl={2}>
                             <FormGroup>
                                 <Label id='operator'>Seřadit podle:</Label>
                                 <Select name='sort' onFieldChange={() => store.reload()} field={store.filter.sort} />
@@ -71,8 +76,8 @@ export const ServiceCaseListPage: React.FC<ServiceCaseListPageProps> = observer(
                 <Col xs={12} mb={4}>
                     {store.serviceCases.data.length > 0 ? (
                         <>
-                            {store.serviceCases.data.map((serviceCase, idx) => (
-                                <div className='p-3 service-case-item' key={`${serviceCase.id}_${idx}`}>
+                            {ListUtils.asList(store.serviceCases.data).map((serviceCase, idx) => (
+                                <div className='p-3 service-case-item mb-4' key={`${serviceCase.id}_${idx}`}>
                                     <h3>
                                         #{serviceCase.id}
                                         <span className='text-muted float-right mt-2'>{DateUtils.toUIDateTime(serviceCase.dateBegin)}</span>
@@ -81,7 +86,7 @@ export const ServiceCaseListPage: React.FC<ServiceCaseListPageProps> = observer(
                                         <strong>{serviceCase.client}</strong>&nbsp;
                                         {serviceCase.message}
                                     </p>
-                                    {serviceCase.newMessagesCount && (
+                                    {serviceCase.newMessagesCount > 0 && (
                                         <p className='mb-1'>
                                             Nové zprávy:&nbsp;<strong>{serviceCase.newMessagesCount}</strong>
                                         </p>
@@ -109,12 +114,15 @@ export const ServiceCaseListPage: React.FC<ServiceCaseListPageProps> = observer(
                                 </div>
                             ))}
 
-                            <GroupAlign horizontal='end' mt={5}>
-                                <Paging
+                            <GroupAlign horizontal='end' mt={4}>
+                                <Pagination
+                                    page={store.currentPage}
+                                    totalPages={store.serviceCases.totalPages}
                                     hasNext={store.serviceCases.hasNext}
                                     hasPrev={store.serviceCases.hasPrev}
                                     onNextClick={() => store.nextPage()}
                                     onPrevClick={() => store.prevPage()}
+                                    onPageChangeClick={page => store.pageChange(page)}
                                 />
                             </GroupAlign>
                         </>

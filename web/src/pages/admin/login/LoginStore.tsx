@@ -18,14 +18,18 @@ export class LoginStore {
         })
     }
 
-    init() {
+    init(loginRedirect?: () => void) {
         const token = localStorage.getItem('token')
 
         if (token && token.length > 0) {
             authService.login(token).then(result =>
                 runInAction(() => {
                     if (result) {
-                        navigationStore.adminIndex()
+                        if (loginRedirect) {
+                            loginRedirect()
+                        } else {
+                            navigationStore.adminIndex()
+                        }
                     }
                 })
             )

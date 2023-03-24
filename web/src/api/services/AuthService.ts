@@ -1,6 +1,5 @@
 import jwtDecode from 'jwt-decode'
 import { action, computed, makeObservable, observable, runInAction } from 'mobx'
-import { showAlertDialog, AlertDialogType } from '../../common/components/AlertDialog'
 import { AuthUser, User } from '../models/User'
 import { ADMIN_API_URL, ApiService, isApiError } from './ApiService'
 
@@ -41,7 +40,7 @@ export class AuthService {
                     return true
                 } else {
                     this.logout()
-                    showAlertDialog('Chyba', result.cause, AlertDialogType.Danger)
+                    // showAlertDialog('Chyba', result.cause, AlertDialogType.Danger)
                 }
                 return false
             })

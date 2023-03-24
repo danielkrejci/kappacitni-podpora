@@ -100,5 +100,13 @@ VALUES (1, 'Jan', 'Chaloupka', '+420 123 456 789', 'drdobbylp@gmail.com', false,
 INSERT INTO public.users (addressid, name, surname, phone, email, isClient, isOperator)
 VALUES (2, 'Daniel', 'Krejčí', '+420 123 456 789', 'daniel.krejci777@gmail.com', false, true);
 
+/* CLEINTS */
+INSERT INTO public.users (addressid, name, surname, phone, email, isClient, isOperator)
+VALUES (2, 'Honzik', 'Klientos', '+420 123 456 789', 'Honzik klient', true, false);
+
+/* SERVICE-CASES */
+INSERT INTO public.service_cases ( userid, deviceid, casetypeid, stateid, hash, datebegin, dateend) VALUES ( 3, 1, 1, 1, 'hashos', '2023-03-21 22:29:35.000000', null);
+
+
 
 /* TODO kontrola před vložením service_case že daný device_id existuje */
