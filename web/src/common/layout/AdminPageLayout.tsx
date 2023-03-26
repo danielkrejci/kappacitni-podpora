@@ -36,12 +36,12 @@ export const AdminPageLayout: React.FC<AdminPageLayoutProps> = observer(props =>
                                         </Link>
                                     </li>
                                     <li className='nav flex-column'>
-                                        <Link className='nav-link' to={'#'}>
+                                        <Link className='nav-link' to={navigationStore.href.account()}>
                                             Můj účet
                                         </Link>
                                     </li>
                                     <li className='nav flex-column'>
-                                        <Link className='nav-link' to={'#'}>
+                                        <Link className='nav-link' to={navigationStore.href.settings()}>
                                             Nastavení
                                         </Link>
                                     </li>

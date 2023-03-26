@@ -128,7 +128,6 @@ class ServiceCaseService(
                 sc.dateBegin = Instant.now()
                 userRepository.findByEmail(serviceCase.email)
                     .flatMap { user ->
-
                         user.name = serviceCase.name
                         user.surname = serviceCase.surname
                         user.email = serviceCase.email
@@ -185,7 +184,8 @@ class ServiceCaseService(
                                 serviceCase.phone,
                                 serviceCase.email,
                                 false,
-                                true
+                                true,
+                                null
                             )
                             val user = mapper.fromDto(newUser)
                             userRepository.save(user)
@@ -203,7 +203,8 @@ class ServiceCaseService(
                                             serviceCase.phone,
                                             serviceCase.email,
                                             false,
-                                            true
+                                            true,
+                                            null
                                         )
                                         val user = mapper.fromDto(newUser)
                                         userRepository.save(user)
@@ -223,6 +224,9 @@ class ServiceCaseService(
         return serviceCaseRepository.findById(serviceCaseId)
             .switchIfEmpty(Mono.error(ServiceCaseNotFoundException("Service case with id $serviceCaseId not found")))
             .flatMap {
+                if (it.stateId == 4L) {
+                    it.dateEnd = null
+                }
                 it.stateId = stateId
                 serviceCaseRepository.save(it)
             }
@@ -326,5 +330,6 @@ data class UserLoser(
     var city: String?,
     var postalCode: String?,
     var isClient: Boolean,
-    var isOperator: Boolean
+    var isOperator: Boolean,
+    var picture: String?
 )

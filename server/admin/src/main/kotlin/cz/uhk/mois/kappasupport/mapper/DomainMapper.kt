@@ -18,7 +18,11 @@ interface DomainMapper {
     fun fromDto(usersServiceCasesDto: UsersServiceCasesDto): UsersServiceCases
     fun toDto(usersServiceCases: UsersServiceCases): UsersServiceCasesDto
 
+    fun toDto(device: Device): DeviceDto
+    fun fromDto(deviceDto: DeviceDto): Device
+
     @Mapping(source = "userDto.id", target = "id")
+    @Mapping(source = "userDto.picture", target = "picture")
     fun toUserLoser(userDto: UserDto, addressDto: AddressDto): UserLoser
     fun fromUserLoserToAddress(userLoser: UserLoser): AddressDto
     fun userLoserToUser(userLoser: UserLoser): User

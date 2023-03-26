@@ -170,13 +170,23 @@ export const ServiceCaseFormPageForm: React.FC<ServiceCaseFormPageFormProps> = o
                                     <Col xs={12} md={4}>
                                         <FormGroup>
                                             <Label id='street'>Ulice:</Label>
-                                            <Input field={store.form.street} name='street' type='text' />
+                                            <Input
+                                                field={store.form.street}
+                                                onChange={() => !store.isValid && store.validateAddress()}
+                                                name='street'
+                                                type='text'
+                                            />
                                         </FormGroup>
                                     </Col>
                                     <Col xs={12} md={2}>
                                         <FormGroup>
                                             <Label id='houseNumber'>Číslo popisné:</Label>
-                                            <Input field={store.form.houseNumber} name='houseNumber' type='text' />
+                                            <Input
+                                                field={store.form.houseNumber}
+                                                onChange={() => !store.isValid && store.validateAddress()}
+                                                name='houseNumber'
+                                                type='text'
+                                            />
                                         </FormGroup>
                                     </Col>
                                 </Row>
@@ -185,13 +195,24 @@ export const ServiceCaseFormPageForm: React.FC<ServiceCaseFormPageFormProps> = o
                                     <Col xs={12} md={4}>
                                         <FormGroup>
                                             <Label id='city'>Město:</Label>
-                                            <Input field={store.form.city} name='city' type='text' />
+                                            <Input
+                                                field={store.form.city}
+                                                onChange={() => !store.isValid && store.validateAddress()}
+                                                name='city'
+                                                type='text'
+                                            />
                                         </FormGroup>
                                     </Col>
                                     <Col xs={12} md={2}>
                                         <FormGroup>
                                             <Label id='postalCode'>PSČ:</Label>
-                                            <Input field={store.form.postalCode} name='postalCode' maxLength={5} type='text' />
+                                            <Input
+                                                field={store.form.postalCode}
+                                                onChange={() => !store.isValid && store.validateAddress()}
+                                                name='postalCode'
+                                                maxLength={5}
+                                                type='text'
+                                            />
                                         </FormGroup>
                                     </Col>
                                 </Row>
@@ -211,8 +232,21 @@ export const ServiceCaseFormPageForm: React.FC<ServiceCaseFormPageFormProps> = o
                                         </FormGroup>
                                     </Col>
 
-                                    <Col xs={12} xl={6} className='text-center text-xl-right mt-5 mt-xl-0'>
-                                        <Button onClick={() => store.save()}>Odeslat</Button>
+                                    <Col xs={12} xl={6} className='mt-5 mt-xl-0'>
+                                        <Row horizontal='end'>
+                                            <Col xs={6}>
+                                                {!store.isValid && (
+                                                    <div className='alert p-2 m-0 alert-danger'>
+                                                        <p className='m-0' style={{ fontSize: '0.8rem' }}>
+                                                            Některý údaj není správně vyplněn.
+                                                        </p>
+                                                    </div>
+                                                )}
+                                            </Col>
+                                            <Col className='text-center text-xl-right' style={{ flex: 0 }}>
+                                                <Button onClick={() => store.save()}>Odeslat</Button>
+                                            </Col>
+                                        </Row>
                                     </Col>
                                 </Row>
                             </Col>

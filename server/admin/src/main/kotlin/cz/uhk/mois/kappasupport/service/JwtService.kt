@@ -3,6 +3,8 @@ package cz.uhk.mois.kappasupport.service
 import com.auth0.jwt.JWT
 import com.auth0.jwt.interfaces.Claim
 import com.auth0.jwt.interfaces.DecodedJWT
+import cz.uhk.mois.kappasupport.controller.model.UserDto
+import cz.uhk.mois.kappasupport.domain.User
 import cz.uhk.mois.kappasupport.exception.JWTException
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
@@ -21,14 +23,22 @@ class JwtService(
         }
     }
 
+    fun getUserFromToken(token: String): Mono<UserDto> {
+        return getEmailFromToken(token).flatMap { mail ->
+            userService.findByEmail(mail)
+        }
+    }
+
 
     fun checkToken(token: String): Mono<DecodedJWT> {
         val sanitizedToken = if (token.startsWith("Bearer ")) token.substring(7) else token
-
         val jwt = JWT.decode(sanitizedToken)
         val claims = jwt.claims
 
-        if (jwt.expiresAt?.before(Date()) == true) {
+        val cal = Calendar.getInstance()
+        cal.time = Date();
+        cal.add(Calendar.SECOND, 2);
+        if (jwt.expiresAt?.before(cal.time) == true) {
             return Mono.error(JWTException("Token is expired"))
         }
 
@@ -42,14 +52,22 @@ class JwtService(
             return Mono.error(JWTException("Invalid audience"))
         }
 
-        var userEmail = jwt.claims["email"]?.asString() ?: return Mono.error(JWTException("There is no email in token"))
+        val userEmail = jwt.claims["email"]?.asString() ?: return Mono.error(JWTException("There is no email in token"))
+
+        val userPicture = jwt.claims["picture"]?.asString() ?: ""
         return userService.findByEmail(userEmail).flatMap { user ->
-            if (!user.isOperator) {
-                Mono.error(JWTException("Email from token does not belong to opearotr"))
-            } else {
-                Mono.just(jwt)
+            updatePicture(user.id!!, userPicture).flatMap {
+                if (!user.isOperator) {
+                    Mono.error(JWTException("Email from token does not belong to opearotr"))
+                } else {
+                    Mono.just(jwt)
+                }
             }
         }
+    }
+
+    private fun updatePicture(userId: Long, picture: String?): Mono<User> {
+        return userService.updateUserPicture(userId, picture)
     }
 
 

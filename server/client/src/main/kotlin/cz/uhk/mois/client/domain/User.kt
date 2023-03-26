@@ -31,7 +31,10 @@ class User(
     var isOperator: Boolean,
 
     @Column("isClient")
-    var isClient: Boolean
+    var isClient: Boolean,
+
+    @Column("picture")
+    var picture: String?,
 ) {
     override fun toString(): String {
         return "User(id=$id, addressId=$addressId, name='$name', surname='$surname', phone='$phone', email='$email', isOperator=$isOperator, isClient=$isClient)"

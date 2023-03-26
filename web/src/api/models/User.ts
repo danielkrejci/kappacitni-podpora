@@ -18,6 +18,7 @@ export type User = Address & {
     surname: string
     email: string
     phone: string
+    picture: string
     isClient: boolean
     isOperator: boolean
 }
@@ -28,6 +29,7 @@ export const EMPTY_USER: User = {
     surname: '',
     email: '',
     phone: '',
+    picture: '',
     isClient: false,
     isOperator: false,
     ...EMPTY_ADDRESS,

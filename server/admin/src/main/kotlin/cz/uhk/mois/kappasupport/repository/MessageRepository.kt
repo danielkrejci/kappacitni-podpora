@@ -12,9 +12,14 @@ interface MessageRepository : ReactiveCrudRepository<Message, Long> {
 
     fun findAllByServiceCaseId(serviceCaseId: Long): Flux<Message>
 
-    @Query("SELECT * FROM service_case_messages WHERE userid = :userId AND serviceCaseId = :serviceCaseId AND date < :now")
+    @Query(
+        """
+        SELECT * FROM service_case_messages
+        WHERE userid IN (:userIds) AND serviceCaseId = :serviceCaseId AND date < :now
+    """
+    )
     fun findMessagesByUserIdAndServiceCaseIdAndDateBeforeNow(
-        userId: Long,
+        userIds: List<Long>,
         serviceCaseId: Long,
         now: Instant = Instant.now()
     ): Flux<Message>

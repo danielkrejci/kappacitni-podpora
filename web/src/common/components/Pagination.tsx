@@ -1,6 +1,5 @@
 import React from 'react'
 import { useMemo } from 'react'
-import { Link } from 'react-router-dom'
 
 export interface PaginationProps {
     /**

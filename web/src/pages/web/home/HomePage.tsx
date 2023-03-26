@@ -23,7 +23,7 @@ export const HomePage = (props: HomePageProps): JSX.Element => {
                             <div className='row clearfix mt-5' id='devices'>
                                 <div className='col-6 col-md-4 col-lg-2 mb-5 mb-md-4 mb-lg-0'>
                                     <Link to={navigationStore.href.serviceCaseForm('myphone')}>
-                                        <img style={{ width: '40px', height: '80px' }} src='img/devices/myphone.png' alt='myPhone' />
+                                        <img style={{ width: '40px', height: '75px' }} src='img/devices/myphone.png' alt='myPhone' />
                                         <p>myPhone</p>
                                     </Link>
                                 </div>
@@ -37,7 +37,7 @@ export const HomePage = (props: HomePageProps): JSX.Element => {
 
                                 <div className='col-6 col-md-4 col-lg-2 mb-5 mb-md-4 mb-lg-0'>
                                     <Link to={navigationStore.href.serviceCaseForm('mybook')}>
-                                        <img style={{ width: '100px', height: '60px' }} src='img/devices/mybook.png' alt='myBook' />
+                                        <img style={{ width: '110px', height: '70px' }} src='img/devices/mybook.png' alt='myBook' />
                                         <p>myBook</p>
                                     </Link>
                                 </div>
@@ -51,7 +51,7 @@ export const HomePage = (props: HomePageProps): JSX.Element => {
 
                                 <div className='col-6 col-md-4 col-lg-2'>
                                     <Link to={navigationStore.href.serviceCaseForm('mywatch')}>
-                                        <img style={{ width: '90px', height: '75px' }} src='img/devices/mywatch.png' alt='myWatch' />
+                                        <img style={{ width: '90px', height: '70px' }} src='img/devices/mywatch.png' alt='myWatch' />
                                         <p>myWatch</p>
                                     </Link>
                                 </div>

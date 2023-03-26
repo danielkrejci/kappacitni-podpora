@@ -13,7 +13,7 @@ class AddressService(
     private val mapper: DomainMapper
 ) {
 
-    fun findAddressById(id: Long): Mono<Address> {
+    fun findById(id: Long): Mono<Address> {
         return addressRepository.findById(id)
     }
 
