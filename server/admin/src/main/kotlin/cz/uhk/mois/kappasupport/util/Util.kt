@@ -5,6 +5,7 @@ import cz.uhk.mois.kappasupport.controller.model.StateType
 import cz.uhk.mois.kappasupport.exception.GenericException
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import java.time.Instant
 
 
 data class SendMessage(
@@ -60,3 +61,11 @@ data class UserLoser(
     }
 
 }
+
+
+data class ServiceCaseLogResponse(
+    var id: Long?,
+    var date: Instant,
+    var user: UserLoser,
+    var action: String
+)

@@ -56,13 +56,19 @@ CREATE TABLE service_case_messages
     FOREIGN KEY (serviceCaseId) REFERENCES service_cases (id)
 );
 
-
-
 CREATE TABLE users_service_cases
 (
     id            SERIAL PRIMARY KEY,
     userId        BIGINT REFERENCES users (id),
     serviceCaseId BIGINT REFERENCES service_cases (id)
+);
+
+CREATE TABLE service_case_logs (
+    id                  SERIAL PRIMARY KEY,
+    userId             INTEGER REFERENCES users(id),
+    serviceCaseId     INTEGER REFERENCES service_cases(id),
+    date                TIMESTAMP WITHOUT TIME ZONE,
+    action              TEXT NOT NULL
 );
 
 /*

@@ -31,4 +31,7 @@ interface DomainMapper {
     fun fromDto(address: AddressDto): Address
     fun toDto(message: Message): MessageDto
     fun fromDto(messageDto: MessageDto): Message
+
+    fun fromDto(logDto: ServiceCaseLogDto): ServiceCaseLog
+    fun toDto(log: ServiceCaseLog): ServiceCaseLogDto
 }
