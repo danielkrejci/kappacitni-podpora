@@ -97,7 +97,9 @@ export const ServiceCaseListPage: React.FC<ServiceCaseListPageProps> = observer(
                                             {store.codetables.states.find(s => s.code.toString() === serviceCase.stateId.toString())
                                                 ?.value ?? '-'}
                                         </strong>
-                                        {serviceCase.dateEnd && <small>{DateUtils.toUIDateTime(serviceCase.dateEnd)}</small>}
+                                        {serviceCase.dateEnd && (
+                                            <small className='text-muted ml-1'>&nbsp;{DateUtils.toUIDateTime(serviceCase.dateEnd)}</small>
+                                        )}
                                     </p>
                                     <p>
                                         Případ řeší:&nbsp;

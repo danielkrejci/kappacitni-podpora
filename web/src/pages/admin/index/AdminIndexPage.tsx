@@ -1,3 +1,4 @@
+import { observer } from 'mobx-react'
 import { useEffect } from 'react'
 import { Col } from '../../../common/components/Col'
 import { Row } from '../../../common/components/Row'
@@ -7,7 +8,7 @@ interface AdminIndexPageProps {
     store: AdminIndexStore
 }
 
-export const AdminIndexPage = (props: AdminIndexPageProps): JSX.Element => {
+export const AdminIndexPage: React.FC<AdminIndexPageProps> = observer(props => {
     const store = props.store
 
     useEffect(() => {
@@ -109,4 +110,4 @@ export const AdminIndexPage = (props: AdminIndexPageProps): JSX.Element => {
             </Row>
         </>
     )
-}
+})

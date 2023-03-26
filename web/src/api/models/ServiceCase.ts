@@ -122,3 +122,10 @@ export type ServiceCaseCategoryChange = {
 export type ServiceCaseCaseOperatorChange = {
     userId: string
 }
+
+export type ServiceCaseLog = {
+    id: number
+    user: User
+    date: string
+    action: string
+}
