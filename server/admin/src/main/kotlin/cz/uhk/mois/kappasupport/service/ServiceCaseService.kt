@@ -48,20 +48,24 @@ class ServiceCaseService(
     }
 
     fun getLogsForServiceCase(scId: Long): Flux<ServiceCaseLogResponse> {
-        return logService.getLogsForServiceCase(scId).flatMap { serviceCaseLog ->
-            userService.findById(serviceCaseLog.userId!!).flatMap { user ->
-                userToUserLoser(mapper.toDto(user)).flatMap { userLoser ->
-                    Mono.just(
-                        ServiceCaseLogResponse(
-                            serviceCaseLog.id!!,
-                            serviceCaseLog.date,
-                            userLoser,
-                            serviceCaseLog.action
-                        )
-                    )
-                }
+        return logService.getLogsForServiceCase(scId)
+            .flatMap { serviceCaseLog ->
+                userService.findById(serviceCaseLog.userId!!)
+                    .flatMap { user ->
+                        userToUserLoser(mapper.toDto(user))
+                            .flatMap { userLoser ->
+                                Mono.just(
+                                    ServiceCaseLogResponse(
+                                        serviceCaseLog.id!!,
+                                        serviceCaseLog.date,
+                                        userLoser,
+                                        serviceCaseLog.action
+                                    )
+                                )
+                            }
+                    }
             }
-        }
+            .sort(compareBy<ServiceCaseLogResponse> { it.date }.reversed())
     }
 
     fun findALlByIdIn(ids: List<Long>): Flux<ServiceCase> {
@@ -137,7 +141,7 @@ class ServiceCaseService(
                     logService.saveLog(
                         operatorId,
                         serviceCaseId,
-                        "Vytvořena zpráva operátorem s identifikátorem: $operatorId"
+                        "Vytvořena zpráva operátorem"
                     ).flatMap {
                         Mono.just(true)
                     }
@@ -271,16 +275,17 @@ class ServiceCaseService(
 
                 val user = userService.findById(serviceCase.userId!!).map { mapper.toDto(it) }
                     .flatMap { userToUserLoser(it) }
-                val operators = usersServiceCasesService.findAllByServiceCaseId(serviceCase.id!!)
-                    .map { it.userId }
-                    .collectList()
-                    .flatMap { ids ->
-                        userService.findAllByIdIn(ids)
-                            .filter { it.isOperator }
-                            .map { mapper.toDto(it) }
-                            .flatMap { userToUserLoser(it) }
-                            .collectList()
-                    }
+                val operators =
+                    usersServiceCasesService.findAllByServiceCaseId(serviceCase.id!!).sort(compareBy { it.id!! })
+                        .map { it.userId }
+                        .collectList()
+                        .flatMap { ids ->
+                            userService.findAllByIdIn(ids)
+                                .filter { it.isOperator }
+                                .map { mapper.toDto(it) }
+                                .flatMap { userToUserLoser(it) }
+                                .collectList()
+                        }
                 val device = deviceService.findByDeviceId(serviceCase.deviceId!!)
                 val messages = messageService.findAllMessagesByServiceCaseId(serviceCase.id!!)
                     .flatMap { message ->
@@ -505,7 +510,7 @@ class ServiceCaseService(
                                     .collectList()
                                     .flatMap { allUsersForServiceCase ->
                                         if (allUsersForServiceCase.size <= 2) {
-                                            Mono.error(GenericException("Cannot deelte oeprator atleast one operator has to have this servicecase"))
+                                            Mono.error(GenericException("Cannot delete operator. At least one operator has to have this service case"))
                                         } else {
                                             usersServiceCasesService.delete(operatorId, serviceCaseId.toLong())
                                                 .flatMap {

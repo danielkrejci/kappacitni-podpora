@@ -290,36 +290,44 @@ class ServiceCaseService(
 
                     messageService.save(msg)
                         .flatMap {
-                            logService.saveLog(sc.userId!!, sc.id!!, "Vytvořena zpráva klientem").flatMap {
-                                val userToSave = UsersServiceCasesDto(savedServiceCase.userId!!, savedServiceCase.id!!)
-                                usersServiceCasesService.save(userToSave)
-                                    .flatMap { userServiceCases ->
-                                        logger.info { "User [${userServiceCases.userId}] assigned to service case [${userServiceCases.serviceCaseId}] " }
-                                        userRepository.findById(userId).flatMap { user ->
-                                            logService.saveLog(
-                                                userId,
-                                                sc.id!!,
-                                                "${user.name} ${user.surname} vytvořil servisní případ"
-                                            ).flatMap {
-                                                getAssignOperatorId()
-                                                    .flatMap { opId ->
-                                                        val operatorToSave =
-                                                            UsersServiceCasesDto(opId, savedServiceCase.id!!)
-                                                        usersServiceCasesService.save(operatorToSave)
-                                                            .flatMap {
-                                                                userRepository.findById(it.userId).flatMap { assignedOperator ->
-                                                                    logService.saveLog(userId, assignedOperator.id!!, "Přidán operátor ${assignedOperator.name} ${assignedOperator.surname}").flatMap {
-                                                                        logger.info { "Operator [${it.userId}] assigned to service case [${it.serviceCaseId}] " }
-                                                                        Mono.just(savedServiceCase)
-                                                                    }
 
+                            val userToSave = UsersServiceCasesDto(savedServiceCase.userId!!, savedServiceCase.id!!)
+                            usersServiceCasesService.save(userToSave)
+                                .flatMap { userServiceCases ->
+                                    logger.info { "User [${userServiceCases.userId}] assigned to service case [${userServiceCases.serviceCaseId}] " }
+                                    userRepository.findById(userId).flatMap { user ->
+                                        logService.saveLog(
+                                            userId,
+                                            sc.id!!,
+                                            "${user.name} ${user.surname} vytvořil servisní případ"
+                                        ).flatMap {
+                                            logService.saveLog(sc.userId!!, sc.id!!, "Vytvořena zpráva klientem")
+                                                .flatMap {
+                                                    getAssignOperatorId()
+                                                        .flatMap { opId ->
+                                                            val operatorToSave =
+                                                                UsersServiceCasesDto(opId, savedServiceCase.id!!)
+                                                            usersServiceCasesService.save(operatorToSave)
+                                                                .flatMap {
+                                                                    userRepository.findById(it.userId)
+                                                                        .flatMap { assignedOperator ->
+                                                                            logService.saveLog(
+                                                                                userId,
+                                                                                assignedOperator.id!!,
+                                                                                "Přidán operátor ${assignedOperator.name} ${assignedOperator.surname}"
+                                                                            ).flatMap {
+                                                                                logger.info { "Operator [${it.userId}] assigned to service case [${it.serviceCaseId}] " }
+                                                                                Mono.just(savedServiceCase)
+                                                                            }
+
+                                                                        }
                                                                 }
-                                                            }
-                                                    }
-                                            }
+                                                        }
+                                                }
                                         }
+
                                     }
-                            }
+                                }
                         }
                 }
         }
