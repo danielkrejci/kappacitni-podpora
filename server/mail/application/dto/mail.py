@@ -1,15 +1,14 @@
-import config
 from typing import *
 from pydantic import *
 
 
 class MailSendDtoIn(BaseModel):
-    sender: EmailStr = Field(default_factory=lambda: config.default_sender)
+    sender: Optional[EmailStr]
     to: List[EmailStr]
     subject: str
 
     text: Optional[str]
-    body: Optional[str]
+    html: Optional[str]
 
     template_name: Optional[str]
     template_context: Dict[str, Any] = Field(default_factory=dict)

@@ -10,7 +10,8 @@ from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 app = FastAPI(
     title=config.app_name,
     version=config.app_version,
-    debug=config.debug
+    debug=config.debug,
+    docs_url='/'
 )
 
 # Templating - "Hacked" to be used as email templating
