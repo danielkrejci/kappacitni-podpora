@@ -22,7 +22,9 @@ class MessageService(
     @Lazy private val serviceCaseService: ServiceCaseService,
     private val mapper: DomainMapper,
     private val validationService: ValidationService,
-    private val logService: LogService
+    private val logService: LogService,
+    private val emailService: EmailService
+
 ) {
 
     fun save(message: MessageDto): Mono<Message> {
@@ -74,6 +76,10 @@ class MessageService(
                     bulkUpdateMessages(serviceCaseId, allMessagesForUser, 3L, messageDto,senderUser.id!!)
                 }
 
+            }.flatMap {
+                emailService.sendEmail(senderUser,currentServiceCase).flatMap {
+                    Mono.just(true)
+                }
             }
         }
     }

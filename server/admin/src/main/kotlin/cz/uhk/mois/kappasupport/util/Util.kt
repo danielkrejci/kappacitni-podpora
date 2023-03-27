@@ -69,3 +69,19 @@ data class ServiceCaseLogResponse(
     var user: UserLoser,
     var action: String
 )
+
+enum class DeviceType(
+    val deviceType: String,
+    val deviceName: String,
+    val code: Long
+) {
+    MY_PHONE("Mobilní telefon", "myPhone", 1),
+    MY_PAD("Tablet", "myPad", 2),
+    MY_BOOK("Notebook", "myBook", 3),
+    MY_STUDIO("Osobní počítač", "myStudio", 4),
+    MY_WATCH("Chytré hodinky", "myWatch", 5),
+    MY_PODS("Sluchátka", "myPods", 6),
+    ACCESSORIES("Ostatní", "accessories", 7);
+}
+
+

@@ -30,7 +30,8 @@ class ServiceCaseService(
     private val deviceService: DeviceService,
     private val messageService: MessageService,
     private val usersServiceCasesService: UsersServiceCasesService,
-    private val logService: LogService
+    private val logService: LogService,
+    private val emailService: EmailService
 ) {
 
     private val logger = Logger.getLogger(this.javaClass.name)
@@ -296,37 +297,48 @@ class ServiceCaseService(
                                 .flatMap { userServiceCases ->
                                     logger.info { "User [${userServiceCases.userId}] assigned to service case [${userServiceCases.serviceCaseId}] " }
                                     userRepository.findById(userId).flatMap { user ->
-                                        logService.saveLog(
-                                            userId,
-                                            sc.id!!,
-                                            "${user.name} ${user.surname} vytvořil servisní případ"
-                                        ).flatMap {
-                                            logService.saveLog(sc.userId!!, sc.id!!, "Vytvořena zpráva klientem")
-                                                .flatMap {
-                                                    getAssignOperatorId()
-                                                        .flatMap { opId ->
-                                                            val operatorToSave =
-                                                                UsersServiceCasesDto(opId, savedServiceCase.id!!)
-                                                            usersServiceCasesService.save(operatorToSave)
-                                                                .flatMap {
-                                                                    userRepository.findById(it.userId)
-                                                                        .flatMap { assignedOperator ->
-                                                                            logService.saveLog(
-                                                                                userId,
-                                                                                assignedOperator.id!!,
-                                                                                "Přidán operátor ${assignedOperator.name} ${assignedOperator.surname}"
-                                                                            ).flatMap {
-                                                                                logger.info { "Operator [${it.userId}] assigned to service case [${it.serviceCaseId}] " }
-                                                                                Mono.just(savedServiceCase)
-                                                                            }
+                                        emailService.sendEmail( user, sc)
+                                            .flatMap {
+                                                logService.saveLog(
+                                                    userId,
+                                                    sc.id!!,
+                                                    "${user.name} ${user.surname} vytvořil servisní případ"
+                                                ).flatMap {
+                                                    logService.saveLog(
+                                                        sc.userId!!,
+                                                        sc.id!!,
+                                                        "Vytvořena zpráva klientem"
+                                                    )
+                                                        .flatMap {
+                                                            getAssignOperatorId()
+                                                                .flatMap { opId ->
+                                                                    val operatorToSave =
+                                                                        UsersServiceCasesDto(
+                                                                            opId,
+                                                                            savedServiceCase.id!!
+                                                                        )
+                                                                    usersServiceCasesService.save(operatorToSave)
+                                                                        .flatMap {
+                                                                            userRepository.findById(it.userId)
+                                                                                .flatMap { assignedOperator ->
+                                                                                    logService.saveLog(
+                                                                                        userId,
+                                                                                        assignedOperator.id!!,
+                                                                                        "Přidán operátor ${assignedOperator.name} ${assignedOperator.surname}"
+                                                                                    ).flatMap {
+                                                                                        logger.info { "Operator [${it.userId}] assigned to service case [${it.serviceCaseId}] " }
+                                                                                        Mono.just(savedServiceCase)
+                                                                                    }
 
+                                                                                }
                                                                         }
                                                                 }
                                                         }
                                                 }
-                                        }
 
+                                            }
                                     }
+
                                 }
                         }
                 }

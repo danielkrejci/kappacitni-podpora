@@ -31,7 +31,9 @@ class ServiceCaseService(
     private val deviceService: DeviceService,
     private val messageService: MessageService,
     private val jwtService: JwtService,
-    private val logService: LogService
+    private val logService: LogService,
+    private val emailService: EmailService
+
 ) {
     companion object {
         private const val format = "yyyy-MM-dd HH:mm:ss"
@@ -107,7 +109,13 @@ class ServiceCaseService(
                                             operator.id!!
                                         ).flatMap {
                                             updateServiceCaseState(id.toLong(), 3L, operator.id!!).flatMap {
-                                                Mono.just(true)
+                                                userService.findById(serviceCase.userId!!).flatMap { user ->
+                                                    emailService.sendEmail(user, serviceCase).flatMap {
+                                                        Mono.just(true)
+                                                    }
+                                                }
+
+
                                             }
                                         }
                                     }
@@ -272,21 +280,23 @@ class ServiceCaseService(
                     Pair("hash", serviceCase.hash)
                 )
 
-                val user = userService.findById(serviceCase.userId!!).map { mapper.toDto(it) }
+                val userMono = userService.findById(serviceCase.userId!!).map { mapper.toDto(it) }
                     .flatMap { userToUserLoser(it) }
-                val operators =
+                val operatorsMono =
                     usersServiceCasesService.findAllByServiceCaseId(serviceCase.id!!)
                         .collectList()
                         .flatMap { ucServices ->
-                            var sorted = ucServices.sortedWith(compareBy { it.id!! }).map { it.userId }
+                            val sorted = ucServices.sortedWith(compareBy { it.id!! }).map { it.userId }
                             userService.findAllByIdIn(sorted)
                                 .filter { it.isOperator }
                                 .map { mapper.toDto(it) }
                                 .flatMap { userToUserLoser(it) }
-                                .collectList()
+                                .collectList().flatMap {
+                                    Mono.just(Pair(it, sorted))
+                                }
                         }
-                val device = deviceService.findByDeviceId(serviceCase.deviceId!!)
-                val messages = messageService.findAllMessagesByServiceCaseId(serviceCase.id!!)
+                val deviceMono = deviceService.findByDeviceId(serviceCase.deviceId!!)
+                val messagesMono = messageService.findAllMessagesByServiceCaseId(serviceCase.id!!)
                     .flatMap { message ->
                         userService.findById(message.userId)
                             .flatMap { user ->
@@ -310,9 +320,14 @@ class ServiceCaseService(
                     }
                     .collectList()
 
-                Mono.zip(user, operators, device, messages).flatMap { data ->
+                Mono.zip(userMono, operatorsMono, deviceMono, messagesMono).flatMap { data ->
+                    val operators = data.t2.first
+                    val idS = data.t2.second
+                    val filteredOrderList = idS.filter { id -> operators.any { user -> user.id == id } }
+                    val sortedUserList = operators.sortedBy { filteredOrderList.indexOf(it.id) }
+
                     map["client"] = data.t1
-                    map["operators"] = data.t2
+                    map["operators"] = sortedUserList
                     map["device"] = data.t3
                     map["messages"] = data.t4.sortedBy { getMessageTime(it["date"] as CharSequence) }
                     Mono.just(map)
