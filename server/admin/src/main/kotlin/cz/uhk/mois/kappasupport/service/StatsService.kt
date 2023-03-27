@@ -19,11 +19,11 @@ class StatsService(
         val totalClientsFlux = userService.findAllClients()
         val totalActiveServiceCasesMono = serviceCaseService.getAllActiveServiceCases()
         val activeOperatorsFlux = totalOperatorsFlux.flatMap { operator ->
-            getOperatorStats(operator, 2L, true)
+            getOperatorStats(operator, listOf(1L, 2L, 3L), true)
         }
         val totalClosedServiceCasesMono = serviceCaseService.getAllClosedServiceCases()
         val closedOperatorFlux = totalOperatorsFlux.flatMap { operator ->
-            getOperatorStats(operator, 4L, false)
+            getOperatorStats(operator, listOf(4L), false)
         }
 
         return Flux.zip(
@@ -53,10 +53,10 @@ class StatsService(
     }
 
 
-    private fun getOperatorStats(operator: User, stateId: Long, active: Boolean) =
+    private fun getOperatorStats(operator: User, stateIds: List<Long>, active: Boolean) =
         usersServiceCasesService.getActiveCaseForOperatorId(operator.id!!).map { it.serviceCaseId }.collectList()
             .flatMap {
-                serviceCaseService.findALlByIdIn(it).filter { it.stateId == stateId }.count().flatMap {
+                serviceCaseService.findALlByIdIn(it).filter { stateIds.contains(it.stateId) }.count().flatMap {
                     Mono.just(
                         if (active) {
                             Stats.OperatorStatsActive(

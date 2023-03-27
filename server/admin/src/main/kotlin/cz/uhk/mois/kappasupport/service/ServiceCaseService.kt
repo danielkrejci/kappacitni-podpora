@@ -272,15 +272,14 @@ class ServiceCaseService(
                     Pair("hash", serviceCase.hash)
                 )
 
-
                 val user = userService.findById(serviceCase.userId!!).map { mapper.toDto(it) }
                     .flatMap { userToUserLoser(it) }
                 val operators =
-                    usersServiceCasesService.findAllByServiceCaseId(serviceCase.id!!).sort(compareBy { it.id!! })
-                        .map { it.userId }
+                    usersServiceCasesService.findAllByServiceCaseId(serviceCase.id!!)
                         .collectList()
-                        .flatMap { ids ->
-                            userService.findAllByIdIn(ids)
+                        .flatMap { ucServices ->
+                            var sorted = ucServices.sortedWith(compareBy { it.id!! }).map { it.userId }
+                            userService.findAllByIdIn(sorted)
                                 .filter { it.isOperator }
                                 .map { mapper.toDto(it) }
                                 .flatMap { userToUserLoser(it) }
@@ -539,7 +538,7 @@ class ServiceCaseService(
     }
 
     fun getAllActiveServiceCases(): Mono<Long> {
-        return serviceCaseRepository.countAllByStateId(2L)
+        return serviceCaseRepository.countAllByStateIdIn(listOf(1L, 2L, 3L))
     }
 
     fun getAllClosedServiceCases(): Mono<Long> {

@@ -10,6 +10,7 @@ interface ServiceCaseRepository : ReactiveCrudRepository<ServiceCase, Long> {
     fun findAllByUserId(clientId: Long): Flux<ServiceCase>
 
     fun countAllByStateId(stateId: Long): Mono<Long>
+    fun countAllByStateIdIn(states: List<Long>): Mono<Long>
 
     fun findAllByIdIn(ids: List<Long>): Flux<ServiceCase>
 
