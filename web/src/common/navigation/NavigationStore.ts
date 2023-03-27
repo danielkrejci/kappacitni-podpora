@@ -11,7 +11,11 @@ export class NavigationStore {
     }
 
     index = () => this.history.push(this.href.index())
+
+    privacyPolicy = () => this.history.push(this.href.privacyPolicy())
+
     serviceCaseForm = (deviceName: AnyParam) => this.history.push(this.href.serviceCaseForm(deviceName))
+
     serviceCaseDetail = (serviceCaseId: AnyParam, serviceCaseHash: AnyParam) =>
         this.history.push(this.href.serviceCaseDetail(serviceCaseId, serviceCaseHash))
 
@@ -33,7 +37,8 @@ export class NavigationStore {
     back = () => this.history.goBack()
 
     href = {
-        index: () => `/index`,
+        index: () => '/index',
+        privacyPolicy: () => '/privacy-policy',
         serviceCaseForm: (deviceName?: AnyParam) => `/device/${deviceName ?? ':deviceName'}`,
         serviceCaseDetail: (id?: AnyParam, hash?: AnyParam) => `/detail/${id ?? ':id'}/${hash ?? ':hash'}`,
         login: () => '/admin/login',

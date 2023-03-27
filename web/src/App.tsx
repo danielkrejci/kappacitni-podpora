@@ -25,6 +25,7 @@ import { AdminServiceCaseDetailPage } from './pages/admin/service-case/detail/Ad
 import { AccountPage } from './pages/admin/account/AccountPage'
 import { AccountStore } from './pages/admin/account/AccountStore'
 import { SettingsPage } from './pages/admin/settings/SettingsPage'
+import { PrivacyPolicyPage } from './pages/web/privacy-policy/PrivacyPolicyPage'
 
 // Global navigation store instance
 export const navigationStore = new NavigationStore(browserHistory)
@@ -55,6 +56,15 @@ export const App = observer((props: any) => {
                         render={() => (
                             <PageLayout>
                                 <HomePage store={rootStore.homeStore} />
+                            </PageLayout>
+                        )}
+                    />
+
+                    <Route
+                        path={navigation.href.privacyPolicy()}
+                        render={() => (
+                            <PageLayout>
+                                <PrivacyPolicyPage />
                             </PageLayout>
                         )}
                     />

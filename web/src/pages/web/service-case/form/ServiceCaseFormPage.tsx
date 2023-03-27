@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react'
 import { useEffect } from 'react'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { navigationStore } from '../../../../App'
 import { Button } from '../../../../common/components/Button'
 import { Checkbox } from '../../../../common/components/Checkbox'
@@ -223,9 +223,9 @@ export const ServiceCaseFormPageForm: React.FC<ServiceCaseFormPageFormProps> = o
                                             <Checkbox field={store.form.terms} id='terms' required>
                                                 <>
                                                     Potvrzuji, že jsem se seznámil/a s{' '}
-                                                    <a href='/privacy-policy' target='_blank'>
+                                                    <Link to={navigationStore.href.privacyPolicy()} target='_blank'>
                                                         podmínkami zpracovávání osobních údajů
-                                                    </a>{' '}
+                                                    </Link>{' '}
                                                     společností Kappacitní Podpora s.r.o.
                                                 </>
                                             </Checkbox>
