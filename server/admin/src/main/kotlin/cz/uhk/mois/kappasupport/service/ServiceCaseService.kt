@@ -500,7 +500,7 @@ class ServiceCaseService(
                                         logService.saveLog(
                                             user.id!!,
                                             serviceCaseId.toLong(),
-                                            "Přiřazen operátor ${foundedOperator.name} ${foundedOperator.surname}"
+                                            "Přidán operátor ${foundedOperator.name} ${foundedOperator.surname}"
                                         ).flatMap {
                                             Mono.just(true)
                                         }

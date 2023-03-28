@@ -10,3 +10,6 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: accounts.google.com
+
+email:
+  url: "localhost:5000/sendEmail"

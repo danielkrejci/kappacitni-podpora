@@ -5,3 +5,6 @@ spring:
     password: postgres
 server:
   port: 8081
+
+email:
+  url: "localhost:5000/sendEmail"

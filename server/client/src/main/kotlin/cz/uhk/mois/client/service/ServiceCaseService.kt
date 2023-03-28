@@ -287,8 +287,6 @@ class ServiceCaseService(
                             Instant.now()
                         )
 
-                    logger.info { msg.toString() }
-
                     messageService.save(msg)
                         .flatMap {
 
@@ -322,9 +320,9 @@ class ServiceCaseService(
                                                                             userRepository.findById(it.userId)
                                                                                 .flatMap { assignedOperator ->
                                                                                     logService.saveLog(
-                                                                                        userId,
                                                                                         assignedOperator.id!!,
-                                                                                        "Přidán operátor ${assignedOperator.name} ${assignedOperator.surname}"
+                                                                                        savedServiceCase.id!!,
+                                                                                        "Přiřazen operátor ${assignedOperator.name} ${assignedOperator.surname}"
                                                                                     ).flatMap {
                                                                                         logger.info { "Operator [${it.userId}] assigned to service case [${it.serviceCaseId}] " }
                                                                                         Mono.just(savedServiceCase)
