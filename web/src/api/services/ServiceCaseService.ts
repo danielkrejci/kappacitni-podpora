@@ -5,6 +5,7 @@ import {
     ServiceCaseDetail,
     ServiceCaseForm,
     ServiceCaseList,
+    ServiceCaseLog,
     ServiceCaseState,
     ServiceCaseStateChange,
     ServiceCaseType,
@@ -27,6 +28,10 @@ export class ServiceCaseService {
 
     static async getServiceCaseStates() {
         return await ApiService.get<ServiceCaseState[]>(`${CLIENT_API_URL}/service-cases/states`)
+    }
+
+    static async getServiceCaseLogs(id: string) {
+        return await ApiService.get<ServiceCaseLog[]>(`${ADMIN_API_URL}/admin/service-cases/${id}/logs`)
     }
 
     static async getServiceCase(id: string, hash: string) {

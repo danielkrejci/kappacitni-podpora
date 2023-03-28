@@ -24,12 +24,14 @@ import { User, UserType } from '../../../../api/models/User'
 import { UserService } from '../../../../api/services/UserService'
 import { showAlertDialog, AlertDialogType } from '../../../../common/components/AlertDialog'
 import { RemoveOperatorDialogStore } from './dialog/RemoveOperatorDialogStore'
+import { LoggerDialogStore } from './dialog/LoggerDialogStore'
 
 export class AdminServiceCaseDetailStore {
     isLoading = false
 
     serviceCase: ServiceCaseDetail = EMPTY_SERVICE_CASE_DETAIL
 
+    loggerDialogStore = new LoggerDialogStore(this)
     stateDialogStore = new ChangeStateDialogStore(this)
     categoryDialogStore = new ChangeCategoryDialogStore(this)
     operatorDialogStore = new AddOperatorDialogStore(this)

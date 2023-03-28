@@ -5,6 +5,7 @@ import cz.uhk.mois.kappasupport.controller.model.StateType
 import cz.uhk.mois.kappasupport.exception.GenericException
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import java.time.Instant
 
 
 data class SendMessage(
@@ -60,3 +61,27 @@ data class UserLoser(
     }
 
 }
+
+
+data class ServiceCaseLogResponse(
+    var id: Long?,
+    var date: Instant,
+    var user: UserLoser,
+    var action: String
+)
+
+enum class DeviceType(
+    val deviceType: String,
+    val deviceName: String,
+    val code: Long
+) {
+    MY_PHONE("Mobilní telefon", "myPhone", 1),
+    MY_PAD("Tablet", "myPad", 2),
+    MY_BOOK("Notebook", "myBook", 3),
+    MY_STUDIO("Osobní počítač", "myStudio", 4),
+    MY_WATCH("Chytré hodinky", "myWatch", 5),
+    MY_PODS("Sluchátka", "myPods", 6),
+    ACCESSORIES("Ostatní", "accessories", 7);
+}
+
+

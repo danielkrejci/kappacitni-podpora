@@ -28,14 +28,16 @@ class UsersServiceCasesService(
         return repository.findAllByUserId(operatorId).map { it.serviceCaseId }
     }
 
+    fun getActiveCaseForOperatorId(operatorId: Long): Flux<UsersServiceCases> {
+        return repository.findAllByUserId(operatorId)
+    }
+
     fun save(usc: UsersServiceCasesDto): Mono<UsersServiceCases> {
         return repository.save(mapper.fromDto(usc))
     }
 
-    fun findAllByServiceCaseId(id: Long): Flux<UsersServiceCasesDto> {
-        return repository.findAllByServiceCaseId(id).map {
-            mapper.toDto(it)
-        }
+    fun findAllByServiceCaseId(id: Long): Flux<UsersServiceCases> {
+        return repository.findAllByServiceCaseId(id)
     }
 
     fun delete(operatorId: Long, serviceCaseId: Long): Mono<Boolean> {

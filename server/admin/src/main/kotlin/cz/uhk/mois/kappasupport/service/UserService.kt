@@ -29,10 +29,10 @@ class UserService(
         .flatMap(this::mapUserToUserLoser)
         .switchIfEmpty(Mono.error(UserNotFoundException("User with email $email not found")))
 
-    fun findAllOperators(): Flux<UserLoser> = userRepository.findAllOperators()
+    fun findAllOperatorsUl(): Flux<UserLoser> = userRepository.findAllOperators()
         .flatMap(this::mapUserToUserLoser)
 
-    fun findAllClients(): Flux<UserLoser> = userRepository.findAllClients()
+    fun findAllClientsUl(): Flux<UserLoser> = userRepository.findAllClients()
         .flatMap(this::mapUserToUserLoser)
 
     fun findAllByIdIn(id: List<Long>): Flux<User> {
@@ -218,8 +218,12 @@ class UserService(
             .map { mapper.toDto(it) }
     }
 
-    fun getUsersByIdIn(ids: List<Long>): Flux<UserDto> {
-        return userRepository.getUsersByIdIn(ids).map { mapper.toDto(it) }
+    fun findAllOperators(): Flux<User> {
+        return userRepository.findAllOperators()
+    }
+
+    fun findAllClients(): Flux<User> {
+        return userRepository.findAllClients()
     }
 
     private fun mapUserToUserLoser(user: User): Mono<UserLoser> {
