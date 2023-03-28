@@ -1,0 +1,12 @@
+spring:
+  r2dbc:
+    url: r2dbc:postgresql://PostgreSQL:5432/postgres
+    username: postgres
+    password: postgres
+  webflux:
+    base-path: /admin
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: accounts.google.com

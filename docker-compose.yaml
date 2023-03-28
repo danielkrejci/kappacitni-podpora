@@ -1,0 +1,53 @@
+version: "3.8"
+
+services:
+  admin_spring:
+    image: moizbot/mois-admin
+    ports:
+    - "8080:8080"
+    depends_on:
+      - PostgreSQL
+    environment:
+      SPRING_DATASOURCE_URL: r2dbc:postgresql://PostgreSQL:5432/postgres
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_PROFILES_ACTIVE: postgres
+    networks:
+      - mynet
+
+  client_spring:
+    image: moizbot/mois-client
+    ports:
+    - "8081:8081"
+    depends_on:
+      - PostgreSQL
+    environment:
+      SPRING_DATASOURCE_URL: r2dbc:postgresql://PostgreSQL:5432/postgres
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_PROFILES_ACTIVE: postgres
+    networks:
+      - mynet
+
+  client_web:
+    image: mois-web
+    ports:
+    - "3000:3000"
+    networks:
+      - mynet
+
+  PostgreSQL:
+    image: postgres:12.4    
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - mynet
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/initasdlkdj.sql
+
+networks:
+  mynet:
+    driver: bridge
