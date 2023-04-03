@@ -12,10 +12,12 @@ debug = True
 app_name = 'Podpora mailer'
 app_version = '0.1.0'
 
+default_sender = 'kappasupport@danielkrajci.cz'
+
 mail_gun_auth = 'api', 'e6822a56e977424d34d6d86c378bc04b-7764770b-f803d377'
 mail_gun_sandbox = 'sandboxe08a2604ceed4538970daa8d886130b0.mailgun.org'
+mail_gun_default_sender = f'mailgun@{mail_gun_sandbox}'
 
-mail_chimp_api_key = '37622a28bcaf43f18a6adf6c0ec54b22-us21'
-
-
-default_sender = f'mailgun@{mail_gun_sandbox}'
+# mail_chimp_api_key = 'f151709c877cda82310face8f938cf23-us21'
+# mail_chimp_api_key = '8b466d40e74724c32faec995744eb2a6-us21'
+mail_chimp_api_key = 'md-Gia4VjmstOJIZRw_-w_NKA'

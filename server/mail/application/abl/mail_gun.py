@@ -19,7 +19,7 @@ async def send_mail(dto: MailSendDtoIn) -> MailSendDtoOut:
     request_data = dto.dict()
 
     # Data transform
-    request_data['from'] = dto.sender
+    request_data['from'] = dto.sender or config.mail_gun_default_sender
 
     if dto.template_name:  # Render template if template name specified
         request_data['html'] = render_email_template(dto.template_name, dto.template_context)
