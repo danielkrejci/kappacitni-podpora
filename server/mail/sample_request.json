@@ -1,0 +1,12 @@
+{
+  "to": [
+    "mail@bla.bla"
+  ],
+  "subject": "This is a test",
+  "template_name": "podpora.html",
+  "template_context": {
+    "text": "Nějaký text",
+    "button": "knoflík",
+    "text_after": "Text nakonec"
+  }
+}

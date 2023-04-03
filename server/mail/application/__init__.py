@@ -1,1 +1,1 @@
-from application.routes.mail import *
+from application.routes.commands import *

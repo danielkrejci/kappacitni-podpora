@@ -4,6 +4,7 @@ from pathlib import Path
 env = os.environ
 base_path = Path(os.path.abspath(os.path.dirname(__file__)))
 templates_path = base_path / 'templates'
+resources_path = base_path / 'resources'
 
 host = env.get('HOST', '0.0.0.0')
 port = int(env.get('PORT', 5000))
