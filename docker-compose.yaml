@@ -30,7 +30,7 @@ services:
       - mynet
 
   client_web:
-    image: mois-web
+    image: moizbot/mois-web
     ports:
     - "3000:3000"
     networks:
