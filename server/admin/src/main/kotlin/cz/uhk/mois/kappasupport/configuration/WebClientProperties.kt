@@ -7,4 +7,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 data class WebClientProperties(
     @Value("url")
     val url: String,
+
+    @Value("serviceCaseUrl")
+    val serviceCaseUrl: String
 )
