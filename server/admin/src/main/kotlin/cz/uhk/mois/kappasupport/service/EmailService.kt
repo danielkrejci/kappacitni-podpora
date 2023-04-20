@@ -30,7 +30,9 @@ class EmailService(
                 "Tvoje zpráva se vyřizuje!",
                 device.modelName,
                 getDeviceCategory(device.typeId),
-                device.serialNumber
+                device.serialNumber,
+                "Servisní případ",
+                webClientProperties.serviceCaseUrl + "/${sc.id}/${sc.hash}"
             )
 
             webClient.post()
@@ -43,7 +45,11 @@ class EmailService(
                 .onErrorResume {
                     logger.warning("Error when sending email: $it")
                     Mono.just(email)
-                }.flatMap {
+                }
+                .doOnSuccess {
+                    logger.info("Sended mail $it")
+                }
+                .flatMap {
                     Mono.just(user)
                 }
 
@@ -66,5 +72,8 @@ data class SendEmail(
     var message: String,
     var device: String,
     var type: String,
-    var serialNumber: String
+    var serialNumber: String,
+    var buttonText: String,
+    var buttonLink: String
+
 )
