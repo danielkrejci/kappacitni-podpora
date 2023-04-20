@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+<p>
+    Ahoj {{ name }},<br>
+    tvoje žádost na podporu byla aktualozována.<br>
+    Mrkni o co jde. 🌞
+</p>
+
+<table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn btn-primary">
+    <tbody>
+    <tr>
+        <td align="left">
+            <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                <tbody>
+                <tr>
+                    <td>
+                        <a href="{{ buttonLink or '#' }}" class="btn btn-primary" target="_blank">
+                            {{ buttonText or 'Otevřít' }}
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<p>
+    Tvé:<br><br>
+    Jeméno: {{ name }}<br>
+    Email: <a href="mailto:{{ email }}" target="_blank">{{ email }}</a><br><br>
+    Kategorie: {{ category }}<br>
+    Zařízení: {{ device }}<br>
+    Typ zařízení: {{ type }}<br>
+    Sériové číslo: {{ serialNumber }}<br>
+</p>
+{% endblock %}

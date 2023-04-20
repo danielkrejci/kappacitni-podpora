@@ -20,7 +20,8 @@ async def send_mail(dto: MailSendDtoIn) -> MailSendDtoOut:
     if dto.template_name:  # Render template if template name specified
         request_data['html'] = render_email_template(dto.template_name, dto.template_context)
 
-    if not any((request_data.get('text'), request_data.get('html'))):  # Self-explanatory error handling
+    # Self-explanatory error handling
+    if not any((request_data.get('text'), request_data.get('html'), request_data.get('template_name'))):
         raise HTTPException(400, 'At least one of text, body or template_name must be specified.')
 
     if not request_data.get('text'):  # Set text attribute from parsed html

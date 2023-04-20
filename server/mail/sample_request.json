@@ -3,10 +3,14 @@
     "mail@bla.bla"
   ],
   "subject": "This is a test",
-  "template_name": "podpora.html",
+  "template_name": "status.html",
   "template_context": {
-    "text": "Nějaký text",
-    "button": "knoflík",
-    "text_after": "Text nakonec"
+    name='Jméno',
+    email='random@mail.com',
+    category='nějaká kategorie',
+    message='zpráva vole',
+    device='zařízení',
+    type='typ nebo co',
+    serialNumber='sériový číslo'
   }
 }

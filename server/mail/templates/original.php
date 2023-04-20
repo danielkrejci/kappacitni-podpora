@@ -1,8 +1,8 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="viewport" content="width=device-width"/>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>E-mail</title>
     <style>
         /* -------------------------------------
@@ -304,6 +304,7 @@
                 border-color: #34495e !important;
             }
         }
+
     </style>
 </head>
 <body class="">
@@ -322,37 +323,29 @@
                             <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                                 <tr>
                                     <td>
-                                        {% if text %}
-                                        <p>{{ text | safe }}</p>
-                                        {% endif %}
-
-                                        {% if button %}
-                                        <table role="presentation" border="0" cellpadding="0" cellspacing="0"
-                                               class="btn btn-primary">
-                                            <tbody>
-                                            <tr>
-                                                <td align="left">
-                                                    <table role="presentation" border="0" cellpadding="0"
-                                                           cellspacing="0">
-                                                        <tbody>
-                                                        <tr>
-                                                            <td>
-                                                                <a href="{{ button_link }}" target="_blank">
-                                                                    {{ button_text | safe }}
-                                                                </a>
-                                                            </td>
-                                                        </tr>
-                                                        </tbody>
-                                                    </table>
-                                                </td>
-                                            </tr>
-                                            </tbody>
-                                        </table>
-                                        {% endif %}
-
-                                        {% if text_after %}
-                                        <p>{{ text_after | safe }}</p>
-                                        {% endif %}
+                                        <?php if (isset($text)) { ?>
+                                            <p><?=$text?></p>
+                                        <?php } ?>
+                                        <?php if (isset($button)) { // <a href="http://htmlemail.io" target="_blank">Call To Action</a> ?>
+                                            <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn btn-primary">
+                                                <tbody>
+                                                <tr>
+                                                    <td align="left">
+                                                        <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                                                            <tbody>
+                                                            <tr>
+                                                                <td> <?=$button?> </td>
+                                                            </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        <?php } ?>
+                                        <?php if (isset($text_after)) { ?>
+                                            <p><?=$text_after?></p>
+                                        <?php } ?>
                                     </td>
                                 </tr>
                             </table>
@@ -367,7 +360,8 @@
                     <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                         <tr>
                             <td class="content-block">
-                                <span class="apple-link">Copyright © {{ now_utc.year }} Kappacitní Podpora s.r.o. Všechna práva vyhrazena.</span>
+                                <span class="apple-link">Copyright © 2020 Kappacitní Podpora s.r.o. Všechna práva vyhrazena.</span>
+                                <br><a href="http://www.pharma-pm.cz">www.support.danielkrejci.cz</a>.
                             </td>
                         </tr>
                     </table>

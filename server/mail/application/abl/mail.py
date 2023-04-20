@@ -20,7 +20,10 @@ def render_email_template(template_name: str, template_context: Dict[str, Any]) 
         now=datetime.now()
     )
     context.update(template_context)  # Client defined context
-    return template.render(**context)  # Render with context
+    try:
+        return template.render(**context)  # Render with context
+    except jinja2.TemplateError:
+        raise HTTPException(400, 'Error while rendering a template.')
 
 
 def text_from_html(html_str: str) -> str:
