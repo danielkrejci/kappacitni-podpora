@@ -13,6 +13,7 @@ debug = True
 app_name = 'Podpora mailer'
 app_version = '0.1.2'
 
+default_send_method = 'smtp'
 default_sender = 'kappasupport@danielkrajci.cz'
 
 mail_gun_auth = 'api', 'e6822a56e977424d34d6d86c378bc04b-7764770b-f803d377'
