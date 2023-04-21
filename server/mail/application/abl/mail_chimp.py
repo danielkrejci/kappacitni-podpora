@@ -15,7 +15,7 @@ async def send_mail(dto: MailSendDtoIn) -> MailSendDtoOut:
     # Data transform
     request_data['from_email'] = dto.sender or config.default_sender
     request_data['from_name'] = dto.sender or config.default_sender
-    request_data['to'] = [MailChipToDtoIn(email=mail, name=mail) for mail in dto.to]
+    request_data['to'] = [MailChipToDtoIn(email=mail.email, name=mail.name or mail.email) for mail in dto.to]
 
     if dto.template_name:  # Render template if template name specified
         request_data['html'] = render_email_template(dto.template_name, dto.template_context)
@@ -34,6 +34,7 @@ async def send_mail(dto: MailSendDtoIn) -> MailSendDtoOut:
             'message': MailChimpDtoIn.parse_obj(request_data).dict()
         }
     )
+
     response_data: List[dict] = response.json()  # Response data
     response_data = response_data[0]
 
@@ -42,6 +43,8 @@ async def send_mail(dto: MailSendDtoIn) -> MailSendDtoOut:
         response_data['status'] = 'fail'
     elif response_data['status'] == 'sent':
         response_data['status'] = 'success'
+    else:
+        response_data['status'] = 'fail'
 
     response_data['message'] = response_data['status'].title()
 

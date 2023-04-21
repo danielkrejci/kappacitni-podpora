@@ -1,16 +1,17 @@
 from typing import *
 from pydantic import *
+from application.dto.mail import EmailType
 
 
 class MailChipToDtoIn(BaseModel):
-    email: EmailStr
+    email: EmailType
     name: Optional[str]
 
 
 class MailChimpDtoIn(BaseModel):
-    html: str
-    text: str
+    html: Optional[str]
+    text: Optional[str]
     subject: str
-    from_email: EmailStr
+    from_email: EmailType
     from_name: Optional[str]
     to: List[MailChipToDtoIn]

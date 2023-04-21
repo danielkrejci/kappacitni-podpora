@@ -1,16 +1,16 @@
 {
   "to": [
-    "mail@bla.bla"
+    "David Tláskal <tlaskda1@uhk.cz>"
   ],
-  "subject": "This is a test",
+  "subject": "Aktualizace stavu",
   "template_name": "status.html",
   "template_context": {
-    name='Jméno',
-    email='random@mail.com',
-    category='nějaká kategorie',
-    message='zpráva vole',
-    device='zařízení',
-    type='typ nebo co',
-    serialNumber='sériový číslo'
+    "name": "David",
+    "email": "David Tláskal <tlaskda1@uhk.cz>",
+    "category": "nějaká kategorie",
+    "message": "zpráva vole",
+    "device": "zařízení",
+    "type": "typ nebo co",
+    "serialNumber": "sériový číslo"
   }
 }

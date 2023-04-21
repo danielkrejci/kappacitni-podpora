@@ -1,10 +1,12 @@
 from typing import *
 from pydantic import *
 
+EmailType = NameEmail | EmailStr
+
 
 class MailSendDtoIn(BaseModel):
-    sender: Optional[EmailStr]
-    to: List[EmailStr]
+    sender: Optional[EmailType]
+    to: List[EmailType]
     subject: str
 
     text: Optional[str]

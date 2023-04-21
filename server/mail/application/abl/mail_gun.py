@@ -3,7 +3,6 @@ from fastapi import HTTPException
 from application.abl.http_client import get_async_session
 from application.dto.mail import MailSendDtoIn, MailSendDtoOut
 from application.abl.mail import render_email_template, text_from_html
-from application.dto.mail_gun import MailGunDtoIn
 
 
 def get_mail_gun_session():
@@ -33,7 +32,7 @@ async def send_mail(dto: MailSendDtoIn) -> MailSendDtoOut:
 
     response = await session.post(  # Make request
         f'https://api.mailgun.net/v3/{config.mail_gun_sandbox}/messages',
-        data=MailGunDtoIn.parse_obj(request_data).dict()
+        data=request_data
     )
     response_data: dict = response.json()  # Response data
 
