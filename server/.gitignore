@@ -40,3 +40,6 @@ out/
 ### David vole
 !**/venv
 !**/__pycache__
+.idea/
+!**/.idea/
+*.pyc
