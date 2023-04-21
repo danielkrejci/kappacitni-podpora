@@ -7,7 +7,7 @@ from application.abl.mail import render_email_template, text_from_html
 
 def get_mail_gun_session():
     """ Get http session with MailGun auth """
-    session = get_async_session(timeout=10)
+    session = get_async_session()
     session.auth = config.mail_gun_auth
     return session
 

@@ -34,7 +34,7 @@ async def mail_smtp_send(dto_in: MailSendDtoIn, user: UserDto = AuthDepends) -> 
 
 @app.post(
     '/default/send', response_model=MailSendDtoOut,
-    tags=['Default'],
+    tags=['Default configured'],
     description='Send email using method described in config. ',
 )
 async def mail_default_send(dto_in: MailSendDtoIn, user: UserDto = AuthDepends) -> MailSendDtoOut:

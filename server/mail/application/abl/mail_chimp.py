@@ -3,7 +3,7 @@ from typing import List
 from fastapi import HTTPException
 from application.abl.http_client import get_async_session
 from application.dto.mail import MailSendDtoIn, MailSendDtoOut
-from application.dto.mail_chimp import MailChimpDtoIn, MailChipToDtoIn
+from application.dto.mail_chimp import MailChipToDtoIn, MailChimpDtoIn
 from application.abl.mail import render_email_template, text_from_html
 
 
@@ -36,16 +36,13 @@ async def send_mail(dto: MailSendDtoIn) -> MailSendDtoOut:
     )
 
     response_data: List[dict] = response.json()  # Response data
-    response_data = response_data[0]
+    response_data: dict = response_data[0]
 
     # Define status
-    if response_data['status'] == 'error':
-        response_data['status'] = 'fail'
-    elif response_data['status'] == 'sent':
+    if response_data['status'] == 'sent':
         response_data['status'] = 'success'
     else:
         response_data['status'] = 'fail'
-
-    response_data['message'] = response_data['status'].title()
+    response_data['message'] = response_data.get('message') or response_data['status'].title()
 
     return MailSendDtoOut.parse_obj(response_data)  # Dto out

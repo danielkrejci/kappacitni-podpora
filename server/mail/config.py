@@ -17,6 +17,7 @@ app_name = 'KappaSupport mailer'
 app_version = '0.1.3'
 
 # App settings
+default_http_timeout = 10  # In seconds
 default_send_method = env('DEFAULT_SENDING_METHOD', default='mailgun')
 default_sender = 'KappaSupport <kappasupport@danielkrajci.cz>'
 

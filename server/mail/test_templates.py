@@ -3,7 +3,7 @@ import jinja2
 from pathlib import Path
 from datetime import datetime
 
-template_name = 'acknowledgement.html'
+template_name = 'ack.html'
 context = dict(
     now_utc=datetime.utcnow(),
     **json.loads(Path('./sample_request.json').read_text('utf-8'))['template_context']

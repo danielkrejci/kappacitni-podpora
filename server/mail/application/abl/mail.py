@@ -27,5 +27,5 @@ def render_email_template(template_name: str, template_context: Dict[str, Any]) 
 
 
 def text_from_html(html_str: str) -> str:
-    """ Extract text from html """
+    """ Extract text from html (text part of mail) """
     return BeautifulSoup(html_str, html5lib.__name__).text

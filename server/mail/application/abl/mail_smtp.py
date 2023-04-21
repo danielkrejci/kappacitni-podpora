@@ -39,7 +39,7 @@ def create_smtp(username: str) -> SMTP:  # Create SMTP object and login
 
 
 async def send_mail(dto_in: MailSendDtoIn) -> MailSendDtoOut:
-    """ Send mail using MailGun API """
+    """ Send mail using SMTP API """
 
     if dto_in.template_name:  # Render template if template name specified
         dto_in.html = render_email_template(dto_in.template_name, dto_in.template_context)
