@@ -1,8 +1,8 @@
 import config
 import socket
 from typing import *
-from fastapi import HTTPException
 from smtplib import SMTP, SMTPException
+from fastapi import HTTPException, status
 from application.dto.mail_smtp import SMTPUserDto
 from application.dto.mail import MailSendDtoIn, MailSendDtoOut
 from application.abl.mail import render_email_template, text_from_html
@@ -23,17 +23,17 @@ def create_smtp(username: str) -> SMTP:  # Create SMTP object and login
     smtp_user = get_smtp_user(username)
 
     if not smtp_user:
-        raise HTTPException(400, f'Unknown SMTP sender {username}.')
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, f'Unknown SMTP sender {username}.')
 
     try:  # Connect or error
         smtp = SMTP(host=smtp_user.host, port=smtp_user.port)
     except (SMTPException, socket.gaierror):
-        raise HTTPException(500, f'Invalid SMTP server configuration for user {username}.')
+        raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, f'Invalid SMTP server configuration for user {username}.')
 
     try:  # Login or error
         smtp.login(smtp_user.username, smtp_user.password)
     except SMTPException:
-        raise HTTPException(500, f'Invalid credentials for user {username}')
+        raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, f'Invalid credentials for user {username}')
 
     return smtp
 
@@ -46,7 +46,10 @@ async def send_mail(dto_in: MailSendDtoIn) -> MailSendDtoOut:
 
     # Self-explanatory error handling
     if not any((dto_in.text, dto_in.html, dto_in.template_name)):
-        raise HTTPException(400, 'At least one of text, body or template_name must be specified.')
+        raise HTTPException(
+            status.HTTP_400_BAD_REQUEST,
+            'At least one of text, body or template_name must be specified.'
+        )
 
     if not dto_in.text:  # Set text attribute from parsed html
         dto_in.text = text_from_html(dto_in.html)
@@ -65,7 +68,7 @@ async def send_mail(dto_in: MailSendDtoIn) -> MailSendDtoOut:
 
     response_data = dict()  # Send and make response
     try:
-        result = smtp.sendmail(dto_in.sender, dto_in.to, message.as_string())
+        result = smtp.sendmail(dto_in.sender, dto_in.to, message.as_string())  # Send it!
         response_data['status'] = 'success'
         response_data['message'] = f'OK or partially ok: {result}'
     except SMTPException as exc:
