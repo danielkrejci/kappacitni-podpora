@@ -49,6 +49,8 @@ services:
       - ./init.sql:/docker-entrypoint-initdb.d/initasdlkdj.sql
   mail:
     image: moizbot/mois-mail
+    environment:
+      DEBUG: "false"
     ports:
       - "5000:5000"
     networks:
