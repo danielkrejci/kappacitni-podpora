@@ -2,10 +2,7 @@ package cz.uhk.mois.kappasupport.controller
 
 import cz.uhk.mois.kappasupport.controller.model.ServiceCaseDto
 import cz.uhk.mois.kappasupport.service.ServiceCaseService
-import cz.uhk.mois.kappasupport.util.AssignUser
-import cz.uhk.mois.kappasupport.util.ChangeCategory
-import cz.uhk.mois.kappasupport.util.ChangeState
-import cz.uhk.mois.kappasupport.util.SendMessage
+import cz.uhk.mois.kappasupport.util.*
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Flux
@@ -46,28 +43,43 @@ class ServiceCaseController(private val serviceCaseService: ServiceCaseService) 
     }
 
     @PostMapping("/{id}/category")
-    fun changeCategory(@PathVariable id: String, @RequestBody category: ChangeCategory): ResponseEntity<Mono<Boolean>> {
-        return ResponseEntity.ok(serviceCaseService.changeCategory(id, category))
+    fun changeCategory(
+        @PathVariable id: String,
+        @RequestBody category: ChangeCategory,
+        @RequestHeader("Authorization") token: String
+    ): ResponseEntity<Mono<Boolean>> {
+        return ResponseEntity.ok(serviceCaseService.changeCategory(id, category, token))
     }
 
     @PostMapping("/{id}/state")
-    fun changeState(@PathVariable id: String, @RequestBody category: ChangeState): ResponseEntity<Mono<Boolean>> {
-        return ResponseEntity.ok(serviceCaseService.changeState(id, category))
+    fun changeState(
+        @PathVariable id: String,
+        @RequestBody category: ChangeState,
+        @RequestHeader("Authorization") token: String
+    ): ResponseEntity<Mono<Boolean>> {
+        return ResponseEntity.ok(serviceCaseService.changeState(id, category, token))
     }
 
     @DeleteMapping("/{id}/operator")
     fun deleteOperatorFromSc(
         @PathVariable id: String,
-        @RequestBody assignOperator: AssignUser
+        @RequestBody assignOperator: AssignUser,
+        @RequestHeader("Authorization") token: String
     ): ResponseEntity<Mono<Boolean>> {
-        return ResponseEntity.ok(serviceCaseService.removeOperatorFromSc(id, assignOperator))
+        return ResponseEntity.ok(serviceCaseService.removeOperatorFromSc(id, assignOperator, token))
     }
 
     @PostMapping("/{id}/operator")
     fun assignOperator(
         @PathVariable id: String,
-        @RequestBody assignOperator: AssignUser
+        @RequestBody assignOperator: AssignUser,
+        @RequestHeader("Authorization") token: String
     ): ResponseEntity<Mono<Boolean>> {
-        return ResponseEntity.ok(serviceCaseService.assignOperator(id, assignOperator))
+        return ResponseEntity.ok(serviceCaseService.assignOperator(id, assignOperator, token))
+    }
+
+    @GetMapping("/{id}/logs")
+    fun getLogs(@PathVariable id: String): ResponseEntity<Flux<ServiceCaseLogResponse>> {
+        return ResponseEntity.ok(serviceCaseService.getLogsForServiceCase(id.toLong()))
     }
 }

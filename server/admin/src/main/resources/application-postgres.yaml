@@ -1,6 +1,6 @@
 spring:
   r2dbc:
-    url: r2dbc:postgresql://localhost:5432/postgres
+    url: r2dbc:postgresql://PostgreSQL:5432/postgres
     username: postgres
     password: postgres
   webflux:
@@ -10,7 +10,3 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: accounts.google.com
-
-email:
-  url: "localhost:5000/sendEmail"
-  serviceCaseUrl: "localhost:8081/service-cases"

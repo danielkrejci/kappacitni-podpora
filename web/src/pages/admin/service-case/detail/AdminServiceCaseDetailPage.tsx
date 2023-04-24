@@ -17,6 +17,7 @@ import { RemoveOperatorDialog } from './dialog/RemoveOperatorDialog'
 import { ChangeCategoryDialog } from './dialog/ChangeCategoryDialog'
 import { AddOperatorDialog } from './dialog/AddOperatorDialog'
 import { ChangeStateDialog } from './dialog/ChangeStateDialog'
+import { LoggerDialog } from './dialog/LoggerDialog'
 
 interface AdminServiceCaseDetailPageProps {
     store: AdminServiceCaseDetailStore
@@ -91,6 +92,10 @@ export const AdminServiceCaseDetailPage: React.FC<AdminServiceCaseDetailPageProp
                     </Dialog>
 
                     <YesNoDialog store={store.removeOperatorDialogStore} />
+
+                    <Dialog size='xl' store={store.loggerDialogStore} title='Záznam událostí'>
+                        <LoggerDialog store={store.loggerDialogStore} />
+                    </Dialog>
 
                     <Row>
                         <Col xs={12} lg={8} className='pr-lg-5'>
@@ -229,6 +234,9 @@ export const AdminServiceCaseDetailPage: React.FC<AdminServiceCaseDetailPageProp
                                                 : '-'}
                                         </strong>
                                     </p>
+                                    <Button type='link' className='p-0 mt-3' onClick={() => store.loggerDialogStore.show()}>
+                                        Zobrazit záznam událostí
+                                    </Button>
                                 </Col>
                             </Row>
 

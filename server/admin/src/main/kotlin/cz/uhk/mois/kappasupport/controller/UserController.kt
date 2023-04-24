@@ -25,12 +25,12 @@ class UserController(
 
     @GetMapping("/operators")
     fun getAllOperators(): ResponseEntity<Flux<UserLoser>> {
-        return ResponseEntity.ok(userService.findAllOperators())
+        return ResponseEntity.ok(userService.findAllOperatorsUl())
     }
 
     @GetMapping("/clients")
     fun getAllClients(): ResponseEntity<Flux<UserLoser>> {
-        return ResponseEntity.ok(userService.findAllClients())
+        return ResponseEntity.ok(userService.findAllClientsUl())
     }
 
     @PostMapping("/{userId}")

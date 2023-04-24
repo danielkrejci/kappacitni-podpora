@@ -29,6 +29,7 @@ dependencies {
     implementation("javax.persistence:javax.persistence-api")
     implementation("javax.persistence:javax.persistence-api:2.2")
     implementation("commons-lang:commons-lang:2.6")
+    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     implementation("org.springdoc:springdoc-openapi-starter-webflux-ui:2.0.0")
     implementation("org.projectlombok:lombok:1.18.20")
 

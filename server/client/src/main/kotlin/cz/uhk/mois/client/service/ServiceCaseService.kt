@@ -29,7 +29,9 @@ class ServiceCaseService(
     private val validationService: ValidationService,
     private val deviceService: DeviceService,
     private val messageService: MessageService,
-    private val usersServiceCasesService: UsersServiceCasesService
+    private val usersServiceCasesService: UsersServiceCasesService,
+    private val logService: LogService,
+    private val emailService: EmailService
 ) {
 
     private val logger = Logger.getLogger(this.javaClass.name)
@@ -145,7 +147,12 @@ class ServiceCaseService(
                                     userRepository.save(user)
                                         .flatMap { user ->
                                             sc.userId = user.id!!
-                                            saveServiceCaseAndMessage(sc, serviceCase.message, serviceCase.serialNumber)
+                                            saveServiceCaseAndMessage(
+                                                sc,
+                                                serviceCase.message,
+                                                serviceCase.serialNumber,
+                                                user.id!!
+                                            )
                                         }
                                 }
                         } else
@@ -161,7 +168,8 @@ class ServiceCaseService(
                                                         saveServiceCaseAndMessage(
                                                             sc,
                                                             serviceCase.message,
-                                                            serviceCase.serialNumber
+                                                            serviceCase.serialNumber,
+                                                            user.id!!
                                                         )
                                                     }
                                             }
@@ -170,7 +178,12 @@ class ServiceCaseService(
                                 userRepository.save(user)
                                     .flatMap { user ->
                                         sc.userId = user.id!!
-                                        saveServiceCaseAndMessage(sc, serviceCase.message, serviceCase.serialNumber)
+                                        saveServiceCaseAndMessage(
+                                            sc,
+                                            serviceCase.message,
+                                            serviceCase.serialNumber,
+                                            user.id!!
+                                        )
                                     }
                             }
                     }.switchIfEmpty {
@@ -213,7 +226,7 @@ class ServiceCaseService(
                         }
                             .flatMap { user ->
                                 sc.userId = user.id!!
-                                saveServiceCaseAndMessage(sc, serviceCase.message, serviceCase.serialNumber)
+                                saveServiceCaseAndMessage(sc, serviceCase.message, serviceCase.serialNumber, user.id!!)
 
                             }
                     }
@@ -252,7 +265,12 @@ class ServiceCaseService(
             }
     }
 
-    private fun saveServiceCaseAndMessage(sc: ServiceCase, message: String, serialNUmber: String): Mono<ServiceCase> {
+    private fun saveServiceCaseAndMessage(
+        sc: ServiceCase,
+        message: String,
+        serialNUmber: String,
+        userId: Long
+    ): Mono<ServiceCase> {
         sc.hash = generateHash()
         return deviceService.findBySerialNumber(serialNUmber).flatMap {
             sc.deviceId = it.id!!
@@ -269,23 +287,56 @@ class ServiceCaseService(
                             Instant.now()
                         )
 
-                    logger.info { msg.toString() }
-
                     messageService.save(msg)
                         .flatMap {
+
                             val userToSave = UsersServiceCasesDto(savedServiceCase.userId!!, savedServiceCase.id!!)
                             usersServiceCasesService.save(userToSave)
-                                .flatMap {
-                                    logger.info { "User [${it.userId}] assigned to service case [${it.serviceCaseId}] " }
-                                    getAssignOperatorId()
-                                        .flatMap { opId ->
-                                            val operatorToSave = UsersServiceCasesDto(opId, savedServiceCase.id!!)
-                                            usersServiceCasesService.save(operatorToSave)
-                                                .flatMap {
-                                                    logger.info { "Operator [${it.userId}] assigned to service case [${it.serviceCaseId}] " }
-                                                    Mono.just(savedServiceCase)
+                                .flatMap { userServiceCases ->
+                                    logger.info { "User [${userServiceCases.userId}] assigned to service case [${userServiceCases.serviceCaseId}] " }
+                                    userRepository.findById(userId).flatMap { user ->
+                                        emailService.sendEmail( user, sc)
+                                            .flatMap {
+                                                logService.saveLog(
+                                                    userId,
+                                                    sc.id!!,
+                                                    "${user.name} ${user.surname} vytvořil servisní případ"
+                                                ).flatMap {
+                                                    logService.saveLog(
+                                                        sc.userId!!,
+                                                        sc.id!!,
+                                                        "Vytvořena zpráva klientem"
+                                                    )
+                                                        .flatMap {
+                                                            getAssignOperatorId()
+                                                                .flatMap { opId ->
+                                                                    val operatorToSave =
+                                                                        UsersServiceCasesDto(
+                                                                            opId,
+                                                                            savedServiceCase.id!!
+                                                                        )
+                                                                    usersServiceCasesService.save(operatorToSave)
+                                                                        .flatMap {
+                                                                            userRepository.findById(it.userId)
+                                                                                .flatMap { assignedOperator ->
+                                                                                    logService.saveLog(
+                                                                                        assignedOperator.id!!,
+                                                                                        savedServiceCase.id!!,
+                                                                                        "Přiřazen operátor ${assignedOperator.name} ${assignedOperator.surname}"
+                                                                                    ).flatMap {
+                                                                                        logger.info { "Operator [${it.userId}] assigned to service case [${it.serviceCaseId}] " }
+                                                                                        Mono.just(savedServiceCase)
+                                                                                    }
+
+                                                                                }
+                                                                        }
+                                                                }
+                                                        }
                                                 }
-                                        }
+
+                                            }
+                                    }
+
                                 }
                         }
                 }

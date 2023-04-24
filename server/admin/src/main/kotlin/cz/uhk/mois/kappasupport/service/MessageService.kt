@@ -46,7 +46,6 @@ class MessageService(
         messageRepository.findById(messageId)
             .switchIfEmpty(Mono.error(GenericException("Message with id $messageId not found")))
             .flatMap {
-                println("Update message $messageId state top $stateId")
                 it.stateId = stateId
                 messageRepository.save(it)
             }

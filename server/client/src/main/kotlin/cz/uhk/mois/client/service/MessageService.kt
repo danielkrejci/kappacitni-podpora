@@ -21,7 +21,10 @@ class MessageService(
     private val messageRepository: MessageRepository,
     @Lazy private val serviceCaseService: ServiceCaseService,
     private val mapper: DomainMapper,
-    private val validationService: ValidationService
+    private val validationService: ValidationService,
+    private val logService: LogService,
+    private val emailService: EmailService
+
 ) {
 
     fun save(message: MessageDto): Mono<Message> {
@@ -45,7 +48,6 @@ class MessageService(
                 Instant.now()
             )
 
-
             var assignedOperator = serviceCaseService.getAssignedOperatorsForServiceCase(serviceCaseId).map { it.id }
 
 
@@ -56,14 +58,14 @@ class MessageService(
                  listOf(senderUser.id!!),
                         serviceCaseId
                     )
-                    bulkUpdateMessages(serviceCaseId, allMessagesForUser,  2L, messageDto)
+                    bulkUpdateMessages(serviceCaseId, allMessagesForUser,  2L, messageDto, senderUser.id!!)
                 } else if (senderUser.isClient) {
                     // CLIENT
                     val allMessagesForUser = messageRepository.findMessagesByUserIdAndServiceCaseIdAndDateBeforeNow(
                         operatorIds,
                         serviceCaseId
                     )
-                    bulkUpdateMessages(serviceCaseId, allMessagesForUser,  2L, messageDto)
+                    bulkUpdateMessages(serviceCaseId, allMessagesForUser,  2L, messageDto, senderUser.id!!)
 
                 } else {
                     //OPERATOR
@@ -71,9 +73,13 @@ class MessageService(
                         listOf(currentServiceCase.userId!!),
                         serviceCaseId
                     )
-                    bulkUpdateMessages(serviceCaseId, allMessagesForUser, 3L, messageDto)
+                    bulkUpdateMessages(serviceCaseId, allMessagesForUser, 3L, messageDto,senderUser.id!!)
                 }
 
+            }.flatMap {
+                emailService.sendEmail(senderUser,currentServiceCase).flatMap {
+                    Mono.just(true)
+                }
             }
         }
     }
@@ -82,7 +88,8 @@ class MessageService(
         serviceCaseId: Long,
         allMessagesForUser: Flux<Message>,
         serviceCaseState: Long,
-        messageDto: MessageDto
+        messageDto: MessageDto,
+        userId: Long
     ): Mono<Boolean> {
         return updateServiceCaseState(serviceCaseId, serviceCaseState)
             .flatMapMany { serviceCase ->
@@ -94,7 +101,9 @@ class MessageService(
             .flatMap {
                 var message = mapper.fromDto(messageDto)
                 messageRepository.save(message).flatMap {
-                    Mono.just(true)
+                    logService.saveLog(userId,serviceCaseId, "Vytvořena zpráva klientem").flatMap {
+                        Mono.just(true)
+                    }
                 }
             }
     }

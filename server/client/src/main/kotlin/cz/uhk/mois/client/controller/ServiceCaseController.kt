@@ -49,7 +49,7 @@ class ServiceCaseController(
         return ResponseEntity.ok(types)
     }
 
-    @Operation(summary = "Send Messages to Ibm Mq", description = "Send Message to the related ibm mq")
+    @Operation(summary = "Create a service case", description = "Send Message to the related ibm mq")
     @PostMapping
     fun createServiceCase(@RequestBody sc: CreateServiceCaseDto): ResponseEntity<Mono<SavedServiceCaseDto>> {
         return ResponseEntity(
