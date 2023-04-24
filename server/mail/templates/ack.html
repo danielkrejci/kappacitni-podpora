@@ -2,7 +2,7 @@
 
 {% block content %}
 <p>
-    Ahoj {{ name }},<br>
+    Ahoj {{ name.split(' ')[0] }},<br>
     tvoje žádost na podporu byla přijata.<br>
     Brzy se ti ozveme.
 </p>
@@ -16,7 +16,7 @@
                 <tr>
                     <td>
                         <a href="{{ buttonLink or '#' }}" class="btn btn-primary" target="_blank">
-                            {{ buttonText or 'Otevřít' }}
+                            {{ buttonText or 'Sledovat stav žádosti' }}
                         </a>
                     </td>
                 </tr>

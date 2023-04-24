@@ -1,12 +1,12 @@
 {
   "to": [
-    "David Tláskal <tlaskda1@uhk.cz>"
+    "tlaskda1@uhk.cz"
   ],
   "subject": "Aktualizace stavu",
-  "template_name": "status.html",
-  "template_context": {
+  "templateName": "status",
+  "templateContext": {
     "name": "David",
-    "email": "David Tláskal <tlaskda1@uhk.cz>",
+    "email": "tlaskda1@uhk.cz",
     "category": "nějaká kategorie",
     "message": "zpráva vole",
     "device": "zařízení",
