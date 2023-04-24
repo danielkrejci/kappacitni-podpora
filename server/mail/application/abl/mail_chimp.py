@@ -9,7 +9,6 @@ from application.abl.mail import render_email_template, text_from_html
 
 async def send_mail(dto: MailSendDtoIn) -> MailSendDtoOut:
     """ Send mail using MailChimp API """
-    session = get_async_session()
     request_data = dto.dict()
 
     # Data transform
@@ -30,6 +29,7 @@ async def send_mail(dto: MailSendDtoIn) -> MailSendDtoOut:
     if not request_data.get('text'):  # Set text attribute from parsed html
         request_data['text'] = text_from_html(request_data['html'])
 
+    session = get_async_session()
     response = await session.post(  # Send it!
         'https://mandrillapp.com/api/1.0/messages/send',
         json={

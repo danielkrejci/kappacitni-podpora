@@ -14,7 +14,6 @@ def get_mail_gun_session():
 
 async def send_mail(dto: MailSendDtoIn) -> MailSendDtoOut:
     """ Send mail using MailGun API """
-    session = get_mail_gun_session()
     request_data = dto.dict()
 
     # Data transform
@@ -33,6 +32,7 @@ async def send_mail(dto: MailSendDtoIn) -> MailSendDtoOut:
     if not request_data.get('text'):  # Set text attribute from parsed html
         request_data['text'] = text_from_html(request_data['html'])
 
+    session = get_mail_gun_session()
     response = await session.post(  # Send it!
         f'https://api.mailgun.net/v3/{config.mail_gun_sandbox}/messages',
         data=request_data
