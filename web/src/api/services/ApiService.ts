@@ -5,8 +5,8 @@ export type ApiError = {
     cause: string
 }
 
-export const CLIENT_API_URL = process.env.NODE_ENV === 'production' ? 'http://64.226.91.143:8081' : 'http://localhost:8081'
-export const ADMIN_API_URL = process.env.NODE_ENV === 'production' ? 'http://64.226.91.143:8080' : 'http://localhost:8080'
+export const CLIENT_API_URL = process.env.REACT_APP_ENV === 'prod' ? 'http://64.226.91.143:8081' : 'http://localhost:8081'
+export const ADMIN_API_URL = process.env.REACT_APP_ENV === 'prod' ? 'http://64.226.91.143:8080' : 'http://localhost:8080'
 
 export function isApiError<T>(result: T | ApiError): result is ApiError {
     return result && Object.hasOwn(result, 'message') && Object.hasOwn(result, 'cause')
