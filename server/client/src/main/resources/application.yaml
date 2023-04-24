@@ -7,5 +7,5 @@ server:
   port: 8081
 
 email:
-  url: "localhost:5000/sendEmail"
-  serviceCaseUrl: "localhost:8081/service-cases"
+  url: "localhost:5000/default/send"
+  serviceCaseUrl: "http://localhost:3000/detail"

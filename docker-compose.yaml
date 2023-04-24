@@ -47,6 +47,12 @@ services:
       - mynet
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/initasdlkdj.sql
+  mail:
+    image: moizbot/mois-mail
+    ports:
+      - "5000:5000"
+    networks:
+      - mynet
 
 networks:
   mynet:
