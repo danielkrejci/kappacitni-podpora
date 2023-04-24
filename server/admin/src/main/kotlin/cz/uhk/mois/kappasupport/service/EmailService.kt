@@ -31,7 +31,7 @@ class EmailService(
                 device.modelName,
                 getDeviceCategory(device.typeId),
                 device.serialNumber,
-                "Detail servicsního případu",
+                "Detail servisního případu",
                 webClientProperties.serviceCaseUrl + "/${sc.id}/${sc.hash}"
             )
 
