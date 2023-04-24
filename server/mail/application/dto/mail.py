@@ -12,8 +12,8 @@ class MailSendDtoIn(BaseModel):
     text: Optional[str]
     html: Optional[str]
 
-    template_name: Optional[str]
-    template_context: Dict[str, Any] = Field(default_factory=dict)
+    template_name: Optional[str] = Field(alias='templateName')
+    template_context: Dict[str, Any] = Field(default_factory=dict, alias='templateContext')
 
     @classmethod
     @root_validator
