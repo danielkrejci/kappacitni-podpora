@@ -21,7 +21,7 @@ class EmailService(
 
     private val logger = Logger.getLogger(this.javaClass.name)
 
-    fun sendEmail(user: User, sc: ServiceCase): Mono<User> {
+    fun sendEmail(user: User, sc: ServiceCase, templateName: String): Mono<User> {
         return deviceService.findByDeviceId(sc.deviceId).flatMap { device ->
             val emailbody = SendEmailbody(
                 "${user.name} ${user.surname}",
@@ -36,9 +36,9 @@ class EmailService(
             )
 
             val email = SendEmail(
-                "Potvrzení přijetí žádosti na podporu",
+                "Potvrzení přijetí žádosti na podporu - Kappacitní Podpora",
                 listOf(user.email),
-                "ack.html",
+                templateName,
                 emailbody,
             )
 
