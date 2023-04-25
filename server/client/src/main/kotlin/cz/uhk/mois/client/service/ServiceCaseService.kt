@@ -58,18 +58,17 @@ class ServiceCaseService(
 
     fun getServiceCaseDetail(id: String, hash: String): Mono<Map<String, Any>> {
         val map = HashMap<String, Any>()
-        //TODO validation for id.toLong
-        return serviceCaseRepository.findById(id.toLong())
-            .switchIfEmpty(Mono.error(ServiceCaseNotFoundException("Service case with $id not found")))
-            .flatMap { serviceCase ->
-                if (serviceCase.hash == hash) {
-                    map["serviceCase"] = mapOf(
-                        Pair("id", serviceCase.id),
-                        Pair("stateId", serviceCase.stateId),
-                        Pair("caseTypeId", serviceCase.caseTypeId),
-                        Pair("dateBegin", formatter.format(serviceCase.dateBegin)),
-                        Pair("dateEnd", serviceCase.dateEnd?.let { formatter.format(serviceCase.dateEnd) }),
-                        Pair("hash", serviceCase.hash)
+         return serviceCaseRepository.findById(id.toLong())
+             .switchIfEmpty(Mono.error(ServiceCaseNotFoundException("Service case with $id not found")))
+             .flatMap { serviceCase ->
+                 if (serviceCase.hash == hash) {
+                     map["serviceCase"] = mapOf(
+                         Pair("id", serviceCase.id),
+                         Pair("stateId", serviceCase.stateId),
+                         Pair("caseTypeId", serviceCase.caseTypeId),
+                         Pair("dateBegin", formatter.format(serviceCase.dateBegin)),
+                         Pair("dateEnd", serviceCase.dateEnd?.let { formatter.format(serviceCase.dateEnd) }),
+                         Pair("hash", serviceCase.hash)
                     )
                 } else {
                     return@flatMap Mono.error(ValidationFailedException("Hash does not match"))
@@ -125,7 +124,6 @@ class ServiceCaseService(
     fun createServiceCase(serviceCase: CreateServiceCaseDto): Mono<ServiceCase> {
         return validationService.validateServiceCase(serviceCase)
             .flatMap {
-                //TODO UPDATE ADRES
                 val sc = mapper.fromDto(it)
                 sc.dateBegin = Instant.now()
                 userRepository.findByEmail(serviceCase.email)
@@ -286,7 +284,6 @@ class ServiceCaseService(
                             message,
                             Instant.now()
                         )
-
                     messageService.save(msg)
                         .flatMap {
 

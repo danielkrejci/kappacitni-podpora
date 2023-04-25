@@ -8,7 +8,8 @@ data class MessageDto(
     var serviceCaseId: Long,
     var stateId: Long,
     var message: String,
-    var date: Instant
+    //TODO: THIS NULL DATE
+    var date: Instant?
 )
 
 enum class MessageStateType(val representation: String, val code: Long) {
