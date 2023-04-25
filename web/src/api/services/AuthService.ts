@@ -54,7 +54,7 @@ export class AuthService {
     }
 
     private async loadUserData() {
-        return await ApiService.get<User>(`${ADMIN_API_URL}/admin/users/current`)
+        return await ApiService.get<User>(`${ADMIN_API_URL}/users/current`)
     }
 
     get isLoggedIn(): boolean {
