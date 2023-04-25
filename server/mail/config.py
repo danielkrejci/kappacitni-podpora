@@ -13,7 +13,7 @@ port = env('PORT', default=5000, cast=int)
 debug = env('DEBUG', default=True, cast=bool)
 
 # App description
-app_name = 'Kappacitní Podpora mailer'
+app_name = 'Kappacitni Podpora mailer'
 app_version = '0.1.3'
 
 # App settings
