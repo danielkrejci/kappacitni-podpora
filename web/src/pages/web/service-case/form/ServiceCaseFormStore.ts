@@ -27,11 +27,11 @@ export class ServiceCaseFormStore {
 
     form = {
         caseType: Field.select('caseType', SelectFieldUtils.optionNotSelected(), () => [SelectFieldUtils.optionNotSelected()]),
-        serialNumber: Field.text('serialNumber', 'SI2E26ZDBD6YVKQ'),
-        message: Field.text('message', 'Nejde zapnout'),
-        name: Field.text('name', 'Daniel'),
-        surname: Field.text('surname', 'Krejčí'),
-        email: Field.text('email', 'daniel-krejci@seznam.cz'),
+        serialNumber: Field.text('serialNumber', ''),
+        message: Field.text('message', ''),
+        name: Field.text('name', ''),
+        surname: Field.text('surname', ''),
+        email: Field.text('email', ''),
         phonePrefix: Field.select('phonePrefix', { code: '+420', value: '+420' }, () => [
             { code: '+420', value: '+420' },
             { code: '+421', value: '+421' },

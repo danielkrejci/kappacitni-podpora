@@ -1,3 +1,4 @@
+import { runInAction } from 'mobx'
 import { observer } from 'mobx-react'
 import { useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
@@ -117,7 +118,11 @@ export const ServiceCaseFormPageForm: React.FC<ServiceCaseFormPageFormProps> = o
                                     </Col>
                                     <Col xs={12} md={4}>
                                         <FormGroup>
-                                            <Label id='serialNumber'>Sériové číslo:</Label>
+                                            <Label
+                                                id='serialNumber'
+                                                onClick={() => runInAction(() => (store.form.serialNumber.value = 'SI2E26ZDBD6YVKQ'))}>
+                                                Sériové číslo:
+                                            </Label>
                                             <Input field={store.form.serialNumber} name='serialNumber' type='text' required />
                                         </FormGroup>
                                     </Col>
