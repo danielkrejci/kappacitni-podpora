@@ -38,7 +38,7 @@ class EmailService(
             val email = SendEmail(
                 "Stav tvé žádosti o podporu byl aktualizován",
                 listOf(user.email),
-                "status.html",
+                "admin_reply.html",
                 emailbody,
             )
 
