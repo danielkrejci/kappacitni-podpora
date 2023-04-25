@@ -11,12 +11,14 @@ export interface LabelProps {
      */
     className?: string
 
+    onClick?: () => void
+
     children?: React.ReactNode
 }
 
 export const Label: React.FC<LabelProps> = observer(props => {
     return (
-        <label htmlFor={props.id} className={`form-label ${props.className ?? ''}`}>
+        <label htmlFor={props.id} onClick={props.onClick} className={`form-label ${props.className ?? ''}`}>
             {props.children}
         </label>
     )
