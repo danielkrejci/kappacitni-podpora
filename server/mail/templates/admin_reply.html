@@ -2,9 +2,9 @@
 
 {% block content %}
 <p>
-    Ahoj {{ name.split(' ')[0] }} 🥵<br><br>
-    Tvoje žádost na podporu byla aktualozována.<br>
-    Mrkni o co jde.
+    Čus {{ name.split(' ')[0] }} 🥵<br><br>
+    tvoje žádost o podporu byla aktualozována operátorm!<br>
+    Prodívej se co ti píše.
 </p>
 
 <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn btn-primary">
@@ -16,7 +16,7 @@
                 <tr>
                     <td>
                         <a href="{{ buttonLink or '#' }}" class="btn btn-primary" target="_blank">
-                            {{ buttonText or 'Podívat se na stav žádosti' }}
+                            Prodívat se na stav žádosti
                         </a>
                     </td>
                 </tr>
@@ -28,11 +28,11 @@
 </table>
 
 <p>
-    Jeméno: {{ name }}<br>
-    Email: <a href="mailto:{{ email }}" target="_blank">{{ email }}</a><br><br>
-    Kategorie: {{ category }}<br>
+    Jméno: {{ name }}<br>
+    E-mail: <a href="mailto:{{ email }}" target="_blank">{{ email }}</a><br><br>
+    Téma: {{ category }}<br>
     Zařízení: {{ device }}<br>
-    Typ zařízení: {{ type }}<br>
+    Typ: {{ type }}<br>
     Sériové číslo: {{ serialNumber }}<br>
 </p>
 {% endblock %}
