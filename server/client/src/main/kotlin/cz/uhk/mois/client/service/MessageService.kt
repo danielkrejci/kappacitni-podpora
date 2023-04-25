@@ -1,7 +1,6 @@
 package cz.uhk.mois.client.service
 
 import cz.uhk.mois.client.controller.model.MessageDto
-import cz.uhk.mois.client.controller.model.MessageStateType
 import cz.uhk.mois.client.domain.Message
 import cz.uhk.mois.client.domain.ServiceCase
 import cz.uhk.mois.client.exception.MessageNotFoundException
@@ -13,8 +12,6 @@ import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import java.time.Instant
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 
 @Service
 class MessageService(
@@ -77,7 +74,7 @@ class MessageService(
                 }
 
             }.flatMap {
-                emailService.sendEmail(senderUser,currentServiceCase).flatMap {
+                emailService.sendEmail(senderUser, currentServiceCase, "client_reply.html").flatMap {
                     Mono.just(true)
                 }
             }

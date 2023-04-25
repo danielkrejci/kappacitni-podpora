@@ -292,7 +292,7 @@ class ServiceCaseService(
                                 .flatMap { userServiceCases ->
                                     logger.info { "User [${userServiceCases.userId}] assigned to service case [${userServiceCases.serviceCaseId}] " }
                                     userRepository.findById(userId).flatMap { user ->
-                                        emailService.sendEmail( user, sc)
+                                        emailService.sendEmail(user, sc, "ack.html")
                                             .flatMap {
                                                 logService.saveLog(
                                                     userId,
