@@ -123,7 +123,7 @@ class ServiceCaseServiceTest {
         `when`(deviceService.findBySerialNumber(createServiceCaseDto.serialNumber)).thenReturn(Mono.just(device))
         `when`(serviceCaseRepository.save(sc)).thenReturn(Mono.just(sc))
         `when`(userRepository.findById(1L)).thenReturn(Mono.just(user))
-        `when`(emailService.sendEmail(user, sc, "")).thenReturn(Mono.just(user))
+        `when`(emailService.sendEmail(user, sc, "ack.html")).thenReturn(Mono.just(user))
         `when`(logService.saveLog(1L, 1L, "${user.name} ${user.surname} vytvořil servisní případ")).thenReturn(
             Mono.just(ServiceCaseLog(1L, 1L, 1L, Instant.now(), "Now"))
         )
