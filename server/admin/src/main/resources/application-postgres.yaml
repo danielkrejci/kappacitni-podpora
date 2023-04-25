@@ -10,3 +10,7 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: accounts.google.com
+
+email:
+  url: "http://mail:5000/default/send"
+  serviceCaseUrl: "https://kappasupport.danielkrejci.cz/detail"

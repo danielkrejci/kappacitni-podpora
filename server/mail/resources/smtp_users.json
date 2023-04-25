@@ -1,0 +1,9 @@
+[
+  {
+    "username": "not-a-real@mail.com",
+    "password": "password123*",
+    "host": "mail.com",
+    "port": 25,
+    "description": "Dummy user"
+  }
+]

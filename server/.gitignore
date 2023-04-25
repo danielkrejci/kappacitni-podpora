@@ -35,3 +35,11 @@ out/
 
 ### VS Code ###
 .vscode/
+
+
+### David vole
+!**/venv
+!**/__pycache__
+.idea/
+!**/.idea/
+*.pyc

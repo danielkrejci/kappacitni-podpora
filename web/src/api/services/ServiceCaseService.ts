@@ -16,7 +16,7 @@ import { ADMIN_API_URL, ApiService, CLIENT_API_URL } from './ApiService'
 export class ServiceCaseService {
     static async getServiceCases(operatorId?: string, clientId?: string, state?: string, page?: string, sort?: string) {
         return await ApiService.get<ServiceCaseList>(
-            `${ADMIN_API_URL}/admin/service-cases?operatorId=${operatorId ?? ''}&clientId=${clientId ?? ''}&state=${state ?? ''}&page=${
+            `${ADMIN_API_URL}/service-cases?operatorId=${operatorId ?? ''}&clientId=${clientId ?? ''}&state=${state ?? ''}&page=${
                 page ?? ''
             }&sort=${sort ?? ''}`
         )
@@ -31,7 +31,7 @@ export class ServiceCaseService {
     }
 
     static async getServiceCaseLogs(id: string) {
-        return await ApiService.get<ServiceCaseLog[]>(`${ADMIN_API_URL}/admin/service-cases/${id}/logs`)
+        return await ApiService.get<ServiceCaseLog[]>(`${ADMIN_API_URL}/service-cases/${id}/logs`)
     }
 
     static async getServiceCase(id: string, hash: string) {
@@ -39,7 +39,7 @@ export class ServiceCaseService {
     }
 
     static async getAdminServiceCase(id: string) {
-        return await ApiService.get<ServiceCaseDetail>(`${ADMIN_API_URL}/admin/service-cases/${id}`)
+        return await ApiService.get<ServiceCaseDetail>(`${ADMIN_API_URL}/service-cases/${id}`)
     }
 
     static async createServiceCase(serviceCase: ServiceCaseForm) {
@@ -51,22 +51,22 @@ export class ServiceCaseService {
     }
 
     static async createAdminMessage(id: string, message: ServiceCaseMessageForm) {
-        return await ApiService.post<boolean>(`${ADMIN_API_URL}/admin/service-cases/${id}/message`, JSON.stringify(message))
+        return await ApiService.post<boolean>(`${ADMIN_API_URL}/service-cases/${id}/message`, JSON.stringify(message))
     }
 
     static async changeState(id: string, state: ServiceCaseStateChange) {
-        return await ApiService.post<boolean>(`${ADMIN_API_URL}/admin/service-cases/${id}/state`, JSON.stringify(state))
+        return await ApiService.post<boolean>(`${ADMIN_API_URL}/service-cases/${id}/state`, JSON.stringify(state))
     }
 
     static async changeCategory(id: string, category: ServiceCaseCategoryChange) {
-        return await ApiService.post<boolean>(`${ADMIN_API_URL}/admin/service-cases/${id}/category`, JSON.stringify(category))
+        return await ApiService.post<boolean>(`${ADMIN_API_URL}/service-cases/${id}/category`, JSON.stringify(category))
     }
 
     static async addOperator(id: string, operator: ServiceCaseCaseOperatorChange) {
-        return await ApiService.post<boolean>(`${ADMIN_API_URL}/admin/service-cases/${id}/operator`, JSON.stringify(operator))
+        return await ApiService.post<boolean>(`${ADMIN_API_URL}/service-cases/${id}/operator`, JSON.stringify(operator))
     }
 
     static async removeOperator(id: string, operator: ServiceCaseCaseOperatorChange) {
-        return await ApiService.delete<boolean>(`${ADMIN_API_URL}/admin/service-cases/${id}/operator`, JSON.stringify(operator))
+        return await ApiService.delete<boolean>(`${ADMIN_API_URL}/service-cases/${id}/operator`, JSON.stringify(operator))
     }
 }

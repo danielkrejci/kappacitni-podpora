@@ -1,0 +1,16 @@
+{
+  "to": [
+    "tlaskda1@uhk.cz"
+  ],
+  "subject": "Aktualizace stavu",
+  "templateName": "status",
+  "templateContext": {
+    "name": "David",
+    "email": "tlaskda1@uhk.cz",
+    "category": "nějaká kategorie",
+    "message": "zpráva vole",
+    "device": "zařízení",
+    "type": "typ nebo co",
+    "serialNumber": "sériový číslo"
+  }
+}

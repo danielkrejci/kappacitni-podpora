@@ -1,0 +1,8 @@
+uvicorn
+fastapi
+pydantic[email]
+httpx
+jinja2
+bs4
+html5lib
+python-decouple
