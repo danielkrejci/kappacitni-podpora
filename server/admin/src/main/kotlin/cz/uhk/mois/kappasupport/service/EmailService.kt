@@ -23,7 +23,7 @@ class EmailService(
 
     fun sendEmail(user: User, sc: ServiceCase): Mono<User> {
         return deviceService.findByDeviceId(sc.deviceId).flatMap { device ->
-            val email = SendEmail(
+            val emailbody = SendEmailbody(
                 "${user.name} ${user.surname}",
                 user.email,
                 getScType(sc.caseTypeId),
@@ -31,8 +31,15 @@ class EmailService(
                 device.modelName,
                 getDeviceCategory(device.typeId),
                 device.serialNumber,
-                "Servisní případ",
+                "Detail servisního případu",
                 webClientProperties.serviceCaseUrl + "/${sc.id}/${sc.hash}"
+            )
+
+            val email = SendEmail(
+                "Stav tvé žádosti o podporu byl aktualizován",
+                listOf(user.email),
+                "status.html",
+                emailbody,
             )
 
             webClient.post()
@@ -66,6 +73,13 @@ fun getDeviceCategory(id: Long): String {
 }
 
 data class SendEmail(
+    var subject: String,
+    var to: List<String>,
+    var templateName: String,
+    var templateContext: SendEmailbody,
+)
+
+data class SendEmailbody(
     var name: String,
     var email: String,
     var category: String,
@@ -75,5 +89,4 @@ data class SendEmail(
     var serialNumber: String,
     var buttonText: String,
     var buttonLink: String
-
 )

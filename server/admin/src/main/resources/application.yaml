@@ -12,5 +12,5 @@ spring:
           issuer-uri: accounts.google.com
 
 email:
-  url: "localhost:5000/sendEmail"
-  serviceCaseUrl: "localhost:8081/service-cases"
+  url: "http://localhost:5000/default/send"
+  serviceCaseUrl: "http://localhost:3000/detail"

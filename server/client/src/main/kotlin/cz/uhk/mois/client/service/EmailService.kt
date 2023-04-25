@@ -23,7 +23,7 @@ class EmailService(
 
     fun sendEmail(user: User, sc: ServiceCase): Mono<User> {
         return deviceService.findByDeviceId(sc.deviceId).flatMap { device ->
-            val email = SendEmail(
+            val emailbody = SendEmailbody(
                 "${user.name} ${user.surname}",
                 user.email,
                 getScType(sc.caseTypeId),
@@ -31,14 +31,20 @@ class EmailService(
                 device.modelName,
                 getDeviceCategory(device.typeId),
                 device.serialNumber,
-                "Servisní případ",
+                "Detail servisního případu",
                 webClientProperties.serviceCaseUrl + "/${sc.id}/${sc.hash}"
+            )
+
+            val email = SendEmail(
+                "Potvrzení přijetí žádosti na podporu",
+                listOf(user.email),
+                "ack.html",
+                emailbody,
             )
 
             webClient.post()
                 .uri(webClientProperties.url)
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                //.header(HttpHeaders.AUTHORIZATION, "Bearer koleso") TODO pořešit s Davidosem
                 .bodyValue(email)
                 .retrieve()
                 .bodyToMono(SendEmail::class.java)
@@ -48,7 +54,6 @@ class EmailService(
                 }.flatMap {
                     Mono.just(user)
                 }
-
         }
     }
 }
@@ -62,6 +67,13 @@ fun getDeviceCategory(id: Long): String {
 }
 
 data class SendEmail(
+    var subject: String,
+    var to: List<String>,
+    var templateName: String,
+    var templateContext: SendEmailbody,
+)
+
+data class SendEmailbody(
     var name: String,
     var email: String,
     var category: String,

@@ -39,6 +39,7 @@ dependencies {
     //test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("io.projectreactor:reactor-test")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:4.0.0")
 
     implementation("org.mapstruct:mapstruct:1.5.2.Final")
     kapt("org.mapstruct:mapstruct-processor:1.5.2.Final")
